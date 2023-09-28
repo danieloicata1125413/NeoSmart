@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeoSmart.Backend.Interfaces;
+using NeoSmart.Backend.Services;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Enum;
+using NeoSmart.ClassLibraries.Interfaces;
+using NeoSmart.ClassLibraries.Models;
 using NeoSmart.Data.Entities;
 
 namespace NeoSmart.Backend.Data
@@ -9,11 +12,13 @@ namespace NeoSmart.Backend.Data
     public class SeedDb
     {
         private readonly DataContext _context;
+        private readonly IApiService _apiService;
         private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IApiService apiService, IUserHelper userHelper)
         {
             _context = context;
+            _apiService = apiService;
             _userHelper = userHelper;
         }
         public async Task SeedAsync()
@@ -1262,6 +1267,65 @@ namespace NeoSmart.Backend.Data
                     country.States.Add(state);
                     _context.Countries.Add(country);
                     await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        private async Task CheckCountriesByApiAsync()
+        {
+            if (!_context.Countries.Any())
+            {
+                var responseCountries = await _apiService.GetAsync<List<CountryResponse>>("/v1", "/countries");
+                if (responseCountries.IsSuccess)
+                {
+                    var countries = responseCountries.Result!;
+                    foreach (var countryResponse in countries)
+                    {
+                        var country = await _context.Countries.FirstOrDefaultAsync(c => c.Name == countryResponse.Name!)!;
+                        if (country == null)
+                        {
+                            country = new() { Name = countryResponse.Name.ToUpper()!, States = new List<State>() };
+                            var responseStates = await _apiService.GetAsync<List<StateResponse>>("/v1", $"/countries/{countryResponse.Iso2}/states");
+                            if (responseStates.IsSuccess)
+                            {
+                                var states = responseStates.Result!;
+                                foreach (var stateResponse in states!)
+                                {
+                                    var state = country.States!.FirstOrDefault(s => s.Name == stateResponse.Name!)!;
+                                    if (state == null)
+                                    {
+                                        state = new() { Name = stateResponse.Name.ToUpper()!, Cities = new List<City>() };
+                                        var responseCities = await _apiService.GetAsync<List<CityResponse>>("/v1", $"/countries/{countryResponse.Iso2}/states/{stateResponse.Iso2}/cities");
+                                        if (responseCities.IsSuccess)
+                                        {
+                                            var cities = responseCities.Result!;
+                                            foreach (var cityResponse in cities)
+                                            {
+                                                if (cityResponse.Name == "Mosfellsbær" || cityResponse.Name == "Șăulița")
+                                                {
+                                                    continue;
+                                                }
+                                                var city = state.Cities!.FirstOrDefault(c => c.Name == cityResponse.Name!)!;
+                                                if (city == null)
+                                                {
+                                                    state.Cities.Add(new City() { Name = cityResponse.Name.ToUpper()! });
+                                                }
+                                            }
+                                        }
+                                        if (state.CitiesNumber > 0)
+                                        {
+                                            country.States.Add(state);
+                                        }
+                                    }
+                                }
+                            }
+                            if (country.StatesNumber > 0)
+                            {
+                                _context.Countries.Add(country);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
                 }
             }
         }

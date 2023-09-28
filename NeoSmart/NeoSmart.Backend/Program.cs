@@ -8,6 +8,7 @@ using NeoSmart.Backend.Helper;
 using NeoSmart.Backend.Interfaces;
 using NeoSmart.Backend.Intertfaces;
 using NeoSmart.Backend.Repositories;
+using NeoSmart.Backend.Services;
 using NeoSmart.Backend.UnitsOfWork;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helper;
@@ -35,7 +36,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "Api NeoSmart",
-        Description = "Una API web ASP.NET Core para administrar elementos de neosmart.com, CC 1090388348 - DANIEL OICATA HERNANDEZ",
+        Description = "Una API web ASP.NET Core para administrar elementos de neosmart.com, Grupo 2",
         TermsOfService = new Uri("https://neosmart.com"),
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         {
@@ -113,9 +114,10 @@ builder.Services.AddDbContext<DataContext>(x =>
 
 builder.Services.AddScoped(typeof(IGenericUnitOfWork<>), typeof(GenericUnitOfWork<>));
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
-builder.Services.AddScoped<IMailHelper, MailHelper>();
+builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<SeedDb>();
 
 

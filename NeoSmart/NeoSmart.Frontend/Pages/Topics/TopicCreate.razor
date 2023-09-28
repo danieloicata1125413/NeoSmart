@@ -1,0 +1,40 @@
+﻿@page "/topics/create"
+@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<h3>Nuevo Tema</h3>
+
+<TopicForm @ref="topicForm" Topic="topic" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Topic topic = new();
+    private TopicForm? topicForm;
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/topics", topic);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        topicForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/topics");
+    }
+}
