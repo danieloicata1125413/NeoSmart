@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.Backend.Intertfaces;
 using NeoSmart.ClassLibraries.DTOs;
@@ -9,7 +11,7 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Backend.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class CountriesController : GenericController<Country>
     {
@@ -17,6 +19,15 @@ namespace NeoSmart.Backend.Controllers
         public CountriesController(IGenericUnitOfWork<Country> unitOfWork, DataContext context) : base(unitOfWork, context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetComboAsync()
+        {
+            return Ok(await _context.Countries
+                .OrderBy(c => c.Name)
+                .ToListAsync());
         }
 
         [HttpGet]

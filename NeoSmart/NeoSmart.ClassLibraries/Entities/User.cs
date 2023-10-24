@@ -21,7 +21,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName { get; set; }
 
-        [Display(Name = "Identificación")]
+        [Display(Name = "Tipo de Identificación")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int DocumentTypeId { get; set; }
         public DocumentType DocumentType { get; set; }
 
         [Display(Name = "Dirección")]
@@ -38,12 +40,12 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Usuario")]
         public string FullName => $"{FirstName} {LastName}";
 
+        [Display(Name = "Habilitado")]
+        public bool Status { get; set; }
+
         [Display(Name = "Ciudad")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int CityId { get; set; }
         public City? City { get; set; }
-
-        [Display(Name = "Habilitado")]
-        public bool Status { get; set; }
     }
 }

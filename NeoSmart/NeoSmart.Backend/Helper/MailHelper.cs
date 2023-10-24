@@ -1,11 +1,8 @@
 ﻿using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
 using MimeKit;
-using System;
 using NeoSmart.ClassLibraries.Models;
 using System.Security.Authentication;
-
-namespace NeoSmart.ClassLibraries.Helper
+namespace NeoSmart.Backend.Helper
 {
     public class MailHelper : IMailHelper
     {
@@ -16,44 +13,44 @@ namespace NeoSmart.ClassLibraries.Helper
             _configuration = configuration;
         }
 
-        public Response<bool> SendMail(string to, string subject, string body)
+        public Response<string> SendMail(string toName, string toEmail, string subject, string body)
         {
             try
             {
-                string from = _configuration["Mail:From"];
-                string smtp = _configuration["Mail:Smtp"];
-                string port = _configuration["Mail:Port"];
-                string password = _configuration["Mail:Password"];
+                var from = _configuration["Mail:From"];
+                var name = _configuration["Mail:Name"];
+                var smtp = _configuration["Mail:Smtp"];
+                var port = _configuration["Mail:Port"];
+                var key = _configuration["Mail:Key"];
+                var password = _configuration["Mail:Password"];
 
-                MimeMessage message = new MimeMessage();
-                message.From.Add(new MailboxAddress("", from));
-                message.To.Add(new MailboxAddress("", to));
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress(name, from));
+                message.To.Add(new MailboxAddress(toName, toEmail));
                 message.Subject = subject;
-                BodyBuilder bodyBuilder = new BodyBuilder
+                var bodyBuilder = new BodyBuilder
                 {
                     HtmlBody = body
                 };
                 message.Body = bodyBuilder.ToMessageBody();
 
-                using (SmtpClient client = new SmtpClient())
+                using (var client = new SmtpClient())
                 {
-                    client.Connect(smtp, int.Parse(port), true);
+                    client.Connect(smtp, int.Parse(port!), true);
                     client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
-                    client.Authenticate(from, password);
+                    client.Authenticate(from, key);
                     client.Send(message);
                     client.Disconnect(true);
                 }
 
-                return new Response<bool> { IsSuccess = true };
-
+                return new Response<string> { IsSuccess = true };
             }
             catch (Exception ex)
             {
-                return new Response<bool>
+                return new Response<string>
                 {
                     IsSuccess = false,
                     Message = ex.Message,
-                    Result = false
                 };
             }
         }

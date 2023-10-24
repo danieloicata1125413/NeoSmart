@@ -5,13 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NeoSmart.Backend.Data;
 using NeoSmart.Backend.Helper;
+using NeoSmart.Backend.Helpers;
 using NeoSmart.Backend.Interfaces;
 using NeoSmart.Backend.Intertfaces;
 using NeoSmart.Backend.Repositories;
 using NeoSmart.Backend.Services;
 using NeoSmart.Backend.UnitsOfWork;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.ClassLibraries.Helper;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.Data.Entities;
 using System.Text;
@@ -52,11 +52,13 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme."
+        Description = @"JWT Authorization header using the Bearer scheme. <br /> <br />
+                      Enter 'Bearer' [space] and then your token in the text input below.<br /> <br />
+                      Example: 'Bearer 12345abcdef'<br /> <br />",
     });
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -67,7 +69,10 @@ builder.Services.AddSwaggerGen(options =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "bearerAuth"
-                }
+                },
+                Scheme = "oauth2",
+                  Name = "Bearer",
+                  In = ParameterLocation.Header,
             },
             new string[] {}
         }
@@ -76,11 +81,17 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddIdentity<User, IdentityRole>(x =>
 {
+    x.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+    x.SignIn.RequireConfirmedEmail = true;
+    x.User.RequireUniqueEmail = true;
     x.Password.RequireDigit = false;
     x.Password.RequiredUniqueChars = 0;
     x.Password.RequireLowercase = false;
     x.Password.RequireNonAlphanumeric = false;
     x.Password.RequireUppercase = false;
+    x.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    x.Lockout.MaxFailedAccessAttempts = 3;
+    x.Lockout.AllowedForNewUsers = true;
 })
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
@@ -99,8 +110,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey
-        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
         ClockSkew = TimeSpan.Zero
     };
 });
@@ -117,10 +127,9 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
-builder.Services.AddTransient<IMailHelper, MailHelper>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+builder.Services.AddScoped<IMailHelper, MailHelper>();
 builder.Services.AddTransient<SeedDb>();
-
-
 
 var app = builder.Build();
 SeedData(app);

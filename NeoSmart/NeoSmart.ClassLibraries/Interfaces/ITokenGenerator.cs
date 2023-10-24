@@ -1,7 +1,10 @@
-﻿namespace NeoSmart.ClassLibraries.Interfaces
+﻿using NeoSmart.ClassLibraries.DTOs;
+using NeoSmart.ClassLibraries.Entities;
+
+namespace NeoSmart.ClassLibraries.Interfaces
 {
     public interface ITokenGenerator
     {
-        string GenerateTokenJwt(string username);
+        TokenDTO GenerateTokenJwt(User user);
     }
 }

@@ -4,7 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar Departamento</h3>
+<h3>Editar Estado/Departamento</h3>
 
 @if (state is null)
 {
@@ -18,6 +18,9 @@ else
 @code {
     private State? state;
     private StateForm? stateForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
     public int StateId { get; set; }
@@ -47,7 +50,10 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
+
         var toast = sweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,

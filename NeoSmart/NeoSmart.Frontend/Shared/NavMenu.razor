@@ -14,13 +14,9 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Inicio
             </NavLink>
         </div>
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="Administrador">
             <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/topics">
-                        <span class="oi oi-bookmark" aria-hidden="true"></span> Temas
-                    </NavLink>
-                </div>
+                
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/trainings">
                         <span class="oi oi-book" aria-hidden="true"></span> Capacitaciones
@@ -28,7 +24,26 @@
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/countries">
-                        <span class="oi oi-globe" aria-hidden="true"></span> Ciudades
+                        <span class="oi oi-globe" aria-hidden="true"></span> Paises
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/users">
+                        <span class="oi oi-people" aria-hidden="true"></span> Usuarios
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/topics">
+                        <span class="oi oi-bookmark" aria-hidden="true"></span> Temas
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Empleado">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/">
+                        <span class="oi oi-dollar" aria-hidden="true"></span> Ver Mis Capacitaciones
                     </NavLink>
                 </div>
             </Authorized>

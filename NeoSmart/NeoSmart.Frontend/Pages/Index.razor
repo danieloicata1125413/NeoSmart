@@ -5,6 +5,8 @@
 <AuthorizeView Roles="Admin">
     <Authorized>
         <p>Estas autenticado y autorizado, @context.User.Identity?.Name</p>
+    </Authorized>
+    <NotAuthorized>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6">
@@ -37,9 +39,6 @@
                 </div>
             </div>
         </div>
-    </Authorized>
-    <NotAuthorized>
-        <p>No estas autorizado</p>
     </NotAuthorized>
 </AuthorizeView>
 
