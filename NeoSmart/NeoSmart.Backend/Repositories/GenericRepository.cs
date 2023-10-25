@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeoSmart.Backend.Intertfaces;
+using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Models;
 using NeoSmart.Data.Entities;
 
@@ -114,7 +115,14 @@ namespace NeoSmart.Backend.Repositories
                 };
             }
         }
+        public async Task<Country> GetCountryAsync(int id)
+        {
+            var country = await _context.Countries
+                .Include(c => c.States!)
+                .ThenInclude(s => s.Cities)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            return country!;
+        }
 
-       
     }
 }

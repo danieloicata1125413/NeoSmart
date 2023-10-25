@@ -1,4 +1,5 @@
-﻿using NeoSmart.ClassLibraries.Models;
+﻿using NeoSmart.ClassLibraries.Entities;
+using NeoSmart.ClassLibraries.Models;
 
 namespace NeoSmart.Backend.Intertfaces
 {
@@ -13,5 +14,7 @@ namespace NeoSmart.Backend.Intertfaces
         Task DeleteAsync(int id);
 
         Task<T> GetAsync(int id);
+
+        Task<Country> GetCountryAsync(int id);
     }
 }
