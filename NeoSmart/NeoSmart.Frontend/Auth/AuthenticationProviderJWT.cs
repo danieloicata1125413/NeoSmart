@@ -3,9 +3,9 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
-using NeoSmart.Frontend.Helpers;
+using NeoSmart.FrontEnd.Helpers;
 
-namespace NeoSmart.Frontend.Auth
+namespace NeoSmart.FrontEnd.Auth
 {
     public class AuthenticationProviderJWT : AuthenticationStateProvider, ILoginService
     {

@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.Backend.Intertfaces;
+using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
 
-namespace NeoSmart.Backend.Controllers
+namespace NeoSmart.BackEnd.Controllers
 {
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

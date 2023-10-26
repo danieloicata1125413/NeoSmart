@@ -1,4 +1,4 @@
-﻿namespace NeoSmart.ClassLibraries.Models
+﻿namespace NeoSmart.ClassLibraries.Responses
 {
     public class CountryResponse
     {

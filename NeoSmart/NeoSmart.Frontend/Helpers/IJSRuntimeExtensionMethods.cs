@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace NeoSmart.Frontend.Helpers
+namespace NeoSmart.FrontEnd.Helpers
 {
     public static class IJSRuntimeExtensionMethods
     {

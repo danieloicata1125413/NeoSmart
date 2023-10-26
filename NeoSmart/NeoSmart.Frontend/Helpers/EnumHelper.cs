@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace NeoSmart.Frontend.Helpers
+namespace NeoSmart.FrontEnd.Helpers
 {
     public class EnumHelper
     {

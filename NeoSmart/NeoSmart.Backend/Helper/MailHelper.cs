@@ -1,8 +1,8 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 using System.Security.Authentication;
-namespace NeoSmart.Backend.Helper
+namespace NeoSmart.BackEnd.Helper
 {
     public class MailHelper : IMailHelper
     {

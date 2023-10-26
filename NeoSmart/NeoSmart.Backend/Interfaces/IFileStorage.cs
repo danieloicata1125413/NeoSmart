@@ -1,4 +1,4 @@
-﻿namespace NeoSmart.Backend.Interfaces
+﻿namespace NeoSmart.BackEnd.Interfaces
 {
     public interface IFileStorage
     {

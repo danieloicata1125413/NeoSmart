@@ -1,4 +1,4 @@
-﻿namespace NeoSmart.Frontend.Auth
+﻿namespace NeoSmart.FrontEnd.Auth
 {
     public interface ILoginService
     {

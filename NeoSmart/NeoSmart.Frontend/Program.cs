@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
-using NeoSmart.Frontend;
-using NeoSmart.Frontend.Auth;
-using NeoSmart.Frontend.Repositories;
+using NeoSmart.FrontEnd;
+using NeoSmart.FrontEnd.Auth;
+using NeoSmart.FrontEnd.Repositories;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

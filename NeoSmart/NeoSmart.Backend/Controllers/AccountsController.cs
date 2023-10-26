@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NeoSmart.Backend.Helper;
-using NeoSmart.Backend.Interfaces;
+using NeoSmart.BackEnd.Helper;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.ClassLibraries.Interfaces;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-namespace NeoSmart.Backend.Controllers
+namespace NeoSmart.BackEnd.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -91,7 +91,7 @@ namespace NeoSmart.Backend.Controllers
             {
                 userid = user.Id,
                 token = myToken
-            }, HttpContext.Request.Scheme, _configuration["Url Frontend"]);
+            }, HttpContext.Request.Scheme, _configuration["Url FrontEnd"]);
 
             var response = _mailHelper.SendMail(user.FullName, user.Email!,
                 $"NeoSmart - Recuperación de contraseña",
@@ -292,7 +292,7 @@ namespace NeoSmart.Backend.Controllers
             {
                 userid = user.Id,
                 token = myToken
-            }, HttpContext.Request.Scheme, _configuration["Url Frontend"]);
+            }, HttpContext.Request.Scheme, _configuration["Url FrontEnd"]);
 
             return _mailHelper.SendMail(user.FullName, user.Email!,
                 $"NeoSmart - Confirmación de cuenta",

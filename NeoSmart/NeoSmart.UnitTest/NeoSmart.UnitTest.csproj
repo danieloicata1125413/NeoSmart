@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NeoSmart.Backend\NeoSmart.Backend.csproj" />
+    <ProjectReference Include="..\NeoSmart.BackEnd\NeoSmart.BackEnd.csproj" />
     <ProjectReference Include="..\NeoSmart.Data\NeoSmart.Data.csproj" />
   </ItemGroup>
 

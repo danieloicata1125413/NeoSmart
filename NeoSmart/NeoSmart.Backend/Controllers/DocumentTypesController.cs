@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.Data.Entities;
 
-namespace NeoSmart.Backend.Controllers
+namespace NeoSmart.BackEnd.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

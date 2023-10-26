@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NeoSmart.Backend.Interfaces;
-using NeoSmart.Backend.Services;
+using NeoSmart.BackEnd.Interfaces;
+using NeoSmart.BackEnd.Services;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Interfaces;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
 
-namespace NeoSmart.Backend.Data
+namespace NeoSmart.BackEnd.Data
 {
     public class SeedDb
     {

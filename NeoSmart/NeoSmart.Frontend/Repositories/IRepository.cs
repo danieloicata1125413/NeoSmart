@@ -1,4 +1,4 @@
-﻿namespace NeoSmart.Frontend.Repositories
+﻿namespace NeoSmart.FrontEnd.Repositories
 {
     public interface IRepository
     {

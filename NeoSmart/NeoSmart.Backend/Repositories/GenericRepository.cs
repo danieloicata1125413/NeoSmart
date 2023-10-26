@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NeoSmart.Backend.Intertfaces;
+using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
 
-namespace NeoSmart.Backend.Repositories
+namespace NeoSmart.BackEnd.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

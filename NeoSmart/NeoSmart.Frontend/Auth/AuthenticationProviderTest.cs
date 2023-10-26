@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace NeoSmart.Frontend.Auth
+namespace NeoSmart.FrontEnd.Auth
 {
     public class AuthenticationProviderTest : AuthenticationStateProvider
     {

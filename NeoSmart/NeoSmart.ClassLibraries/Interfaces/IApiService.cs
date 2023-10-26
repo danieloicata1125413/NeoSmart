@@ -1,4 +1,4 @@
-﻿using NeoSmart.ClassLibraries.Models;
+﻿using NeoSmart.ClassLibraries.Responses;
 
 namespace NeoSmart.ClassLibraries.Interfaces
 {

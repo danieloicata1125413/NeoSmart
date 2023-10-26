@@ -1,8 +1,8 @@
-﻿using NeoSmart.Backend.Intertfaces;
+﻿using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 
-namespace NeoSmart.Backend.UnitsOfWork
+namespace NeoSmart.BackEnd.UnitsOfWork
 {
     public class GenericUnitOfWork<T> : IGenericUnitOfWork<T> where T : class
     {

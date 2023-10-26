@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using NeoSmart.ClassLibraries.Interfaces;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 
-namespace NeoSmart.Backend.Services
+namespace NeoSmart.BackEnd.Services
 {
     public class ApiService : IApiService
     {

@@ -1,12 +1,12 @@
 ﻿
-using NeoSmart.Backend.Interfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.ClassLibraries.DTOs;
 
-namespace NeoSmart.Backend.Helper
+namespace NeoSmart.BackEnd.Helper
 {
     public class UserHelper : IUserHelper
     {

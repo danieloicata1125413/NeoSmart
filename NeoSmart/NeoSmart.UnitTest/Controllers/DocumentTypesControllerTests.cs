@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NeoSmart.Backend.Controllers;
-using NeoSmart.Backend.Interfaces;
+using NeoSmart.BackEnd.Controllers;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.Data.Entities;
 using System.Security.Claims;
 

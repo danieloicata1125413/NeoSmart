@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using NeoSmart.ClassLibraries.DTOs;
 
-namespace NeoSmart.Backend.Helper
+namespace NeoSmart.BackEnd.Helper
 {
     public class TokenGenerator : ITokenGenerator
     {

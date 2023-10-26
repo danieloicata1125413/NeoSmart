@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using NeoSmart.ClassLibraries.DTOs;
 
-namespace NeoSmart.Backend.Interfaces
+namespace NeoSmart.BackEnd.Interfaces
 {
     public interface IUserHelper
     {

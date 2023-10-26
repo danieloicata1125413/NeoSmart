@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace NeoSmart.Frontend.Repositories
+namespace NeoSmart.FrontEnd.Repositories
 {
     public class HttpResponseWrapper<T>
     {

@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.ClassLibraries", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.Data", "NeoSmart.Data\NeoSmart.Data.csproj", "{C36FD0E4-D4DC-45F9-ACA7-9FB30664BE96}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.Backend", "NeoSmart.Backend\NeoSmart.Backend.csproj", "{5CF7346C-7D45-4827-BAFA-FEE9ADADBF0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.BackEnd", "NeoSmart.Backend\NeoSmart.BackEnd.csproj", "{5CF7346C-7D45-4827-BAFA-FEE9ADADBF0F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.Frontend", "NeoSmart.Frontend\NeoSmart.Frontend.csproj", "{199D9434-77EB-4CD7-9F0D-108ED2C986A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.FrontEnd", "NeoSmart.Frontend\NeoSmart.FrontEnd.csproj", "{199D9434-77EB-4CD7-9F0D-108ED2C986A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoSmart.UnitTest", "NeoSmart.UnitTest\NeoSmart.UnitTest.csproj", "{30628DB2-3730-42D2-BB21-E397500D8FEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.UnitTest", "NeoSmart.UnitTest\NeoSmart.UnitTest.csproj", "{30628DB2-3730-42D2-BB21-E397500D8FEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

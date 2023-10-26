@@ -1,8 +1,8 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using NeoSmart.Backend.Interfaces;
+using NeoSmart.BackEnd.Interfaces;
 
-namespace NeoSmart.Backend.Helpers
+namespace NeoSmart.BackEnd.Helpers
 {
     public class FileStorage : IFileStorage
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.Backend.Intertfaces;
+using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
 
-namespace NeoSmart.Backend.Controllers
+namespace NeoSmart.BackEnd.Controllers
 {
     public class GenericController<T> : Controller where T : class
     {

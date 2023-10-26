@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace NeoSmart.Frontend.Repositories
+namespace NeoSmart.FrontEnd.Repositories
 {
     public class Repository : IRepository
     {

@@ -1,6 +1,6 @@
-﻿using NeoSmart.ClassLibraries.Models;
+﻿using NeoSmart.ClassLibraries.Responses;
 
-namespace NeoSmart.Backend.Helper
+namespace NeoSmart.BackEnd.Helper
 {
     public interface IMailHelper
     {

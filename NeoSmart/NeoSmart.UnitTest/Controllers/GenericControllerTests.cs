@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NeoSmart.Backend.Controllers;
-using NeoSmart.Backend.Intertfaces;
+using NeoSmart.BackEnd.Controllers;
+using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.ClassLibraries.Models;
+using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
 
 namespace NeoSmart.UnitTest.Controllers
