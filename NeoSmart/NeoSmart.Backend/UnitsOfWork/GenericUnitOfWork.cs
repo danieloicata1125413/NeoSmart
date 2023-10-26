@@ -20,5 +20,6 @@ namespace NeoSmart.Backend.UnitsOfWork
         public async Task<T> GetAsync(int id) => await _repository.GetAsync(id);
         public async Task<Response<T>> UpdateAsync(T model) => await _repository.UpdateAsync(model);
         public async Task<Country> GetCountryAsync(int id) => await _repository.GetCountryAsync(id);
+        public async Task<State> GetStateAsync(int id) => await _repository.GetStateAsync(id);
     }
 }

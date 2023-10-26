@@ -13,5 +13,6 @@ namespace NeoSmart.Backend.Intertfaces
         Task DeleteAsync(int id);
         Task<Response<T>> UpdateAsync(T entity);
         Task<Country> GetCountryAsync(int id);
+        Task<State> GetStateAsync(int id);
     }
 }

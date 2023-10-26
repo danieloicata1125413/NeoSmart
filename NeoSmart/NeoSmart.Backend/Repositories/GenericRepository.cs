@@ -124,5 +124,13 @@ namespace NeoSmart.Backend.Repositories
             return country!;
         }
 
+        public async Task<State> GetStateAsync(int id)
+        {
+            var state = await _context.States
+                .Include(s => s.Cities)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            return state!;
+        }
+
     }
 }

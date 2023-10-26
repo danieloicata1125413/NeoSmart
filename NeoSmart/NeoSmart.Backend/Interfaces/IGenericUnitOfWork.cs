@@ -16,5 +16,6 @@ namespace NeoSmart.Backend.Intertfaces
         Task<T> GetAsync(int id);
 
         Task<Country> GetCountryAsync(int id);
+        Task<State> GetStateAsync(int id);
     }
 }

@@ -15,22 +15,26 @@ namespace NeoSmart.UnitTest.Controllers
     [TestClass]
     public class CountriesControllerTests
     {
-        private Mock<IGenericUnitOfWork<Country>> _unitOfWorkMock;
-
+        private readonly Mock<IGenericUnitOfWork<Country>> _unitOfWorkMock;
+        private readonly DbContextOptions<DataContext> _options;
         private DataContext _mockDbContext = null!;
         private CountriesController _controller = null!;
         private Mock<IUserHelper> _mockUserHelper = null!;
+
+        public CountriesControllerTests()
+        {
+            _options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: "InMemoryDatabase")
+                .Options;
+            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Country>>();
+        }
 
         [TestInitialize]
         public void SetUp()
         {
             _mockUserHelper = new Mock<IUserHelper>();
             // Setting up InMemory database
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "InMemoryDatabase")
-                .Options;
-            _mockDbContext = new DataContext(options);
-            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Country>>();
+            _mockDbContext = new DataContext(_options);
             _controller = new CountriesController(_unitOfWorkMock.Object, _mockDbContext);
 
             // Mock user identity
@@ -117,11 +121,14 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetAsync_ReturnsOkWhenCountryFound()
         {
             // Arrange
-            var country = new Country { Id = 1, Name = "test" };
+            using var context = new DataContext(new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options);
+            var country = new Country { Id = 1, Name = "test", Cod = 1, Status = true  };
             _unitOfWorkMock.Setup(x => x.GetCountryAsync(country.Id)).ReturnsAsync(country);
-
+            var controller = new CountriesController(_unitOfWorkMock.Object, context);
             // Act
-            var result = await _controller.GetAsync(country.Id) as OkObjectResult;
+            var result = await controller.GetAsync(country.Id) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
