@@ -24,11 +24,10 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("combo/{proccessId:int}")]
-        public async Task<ActionResult> GetComboAsync(int proccessId)
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetComboAsync()
         {
             return Ok(await _context.Occupations
-                .Where(s => s.ProcessId == proccessId)
                 .OrderBy(s => s.Description)
                 .ToListAsync());
         }
@@ -37,6 +36,8 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Occupations
+                                .Include(o => o.Process)
+                                .Include(o => o.Trainings)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -53,7 +54,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Occupations.AsQueryable();
+            var queryable = _context.Occupations
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -70,6 +72,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var state = await _context.Occupations
                 .Include(s => s.Process)
+                .Include(o => o.Trainings)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
             {

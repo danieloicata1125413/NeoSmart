@@ -25,7 +25,9 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Trainings.AsQueryable();
+            var queryable = _context.Trainings
+                                .Include(o => o.Occupation)
+                                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -41,7 +43,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Trainings.AsQueryable();
+            var queryable = _context.Trainings
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -50,6 +53,19 @@ namespace NeoSmart.BackEnd.Controllers
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
+        }
+
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(int id)
+        {
+            var state = await _context.Trainings
+                .Include(o => o.Occupation)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (state == null)
+            {
+                return NotFound();
+            }
+            return Ok(state);
         }
     }
 }

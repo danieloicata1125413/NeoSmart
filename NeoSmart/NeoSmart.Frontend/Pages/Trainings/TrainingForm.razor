@@ -1,34 +1,85 @@
 ﻿@inject SweetAlertService sweetAlertService
+@inject IRepository repository
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
 
 @* <div class="col-md-4"> *@
-    <div class="card widget-inline">
-        <div class="card-body">
-            <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
-                <div class="mb-3">
-                    <div class="form-group">
-                        <label class="control-label">Tema:</label>
+<div class="card widget-inline">
+    <div class="card-body">
+        <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="mb-3">
+                <div class="form-group mb-2">
+                    <label>Cargo:</label>
+                    <select class="form-select" @bind="Training.OccupationId">
+                        <option value="0">-- Seleccione un cargo --</option>
+                        @if (occupations is not null)
+                        {
+                            @foreach (var occupation in occupations)
+                            {
+                                if (Training.OccupationId != 0)
+                                {
+                                    <option value="@occupation.Id" selected="@(occupation.Id == Training.Occupation!.Id)">@occupation.Description</option>
+                                }
+                                else
+                                {
+                                    <option value="@occupation.Id">@occupation.Description</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => Training.OccupationId)" />
+                </div>
+                <div class="form-group mb-2">
+                    <label class="control-label">Código:</label>
+                    <InputText class="form-control" @bind-Value="@Training.Cod" />
+                    <ValidationMessage For="@(() => Training.Cod)" />
+                </div>
+                <div class="form-group mb-2">
+                    <label class="control-label">Descripción:</label>
                     <InputText class="form-control" @bind-Value="@Training.Description" />
                     <ValidationMessage For="@(() => Training.Description)" />
-                    </div>
+                    <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado:</label>
                 </div>
-                <div class="form-group mt-2">
-                    <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
-                    <button class="btn btn-primary" type="submit">Guardar</button>
-                </div>
-            </EditForm>
-        </div>
+            </div>
+            <div class="form-group mt-2">
+                <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
+                <button class="btn btn-primary" type="submit">Guardar</button>
+            </div>
+        </EditForm>
     </div>
+</div>
 @* </div> *@
 
 @code {
     private EditContext editContext = null!;
-
-    protected override void OnInitialized()
+    private List<Occupation>? occupations;
+    private bool loading;
+    bool StatusValue
     {
+        get => Convert.ToBoolean(Training.Status);
+        set => Training.Status = value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOccupationsAsync();
         editContext = new(Training);
+    }
+
+    private async Task LoadOccupationsAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<List<Occupation>>("/api/occupations/combo");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        occupations = responseHttp.Response;
+        loading = false;
     }
 
     [EditorRequired]

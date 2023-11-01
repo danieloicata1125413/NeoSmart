@@ -9,8 +9,15 @@
 <TrainingForm @ref="trainingForm" Training="training" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
-    private Training training = new();
+    private Training training = new()
+    {
+            OccupationId = 0,
+            Status = true
+    };
     private TrainingForm? trainingForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     private async Task CreateAsync()
     {
@@ -21,6 +28,7 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
         var toast = sweetAlertService.Mixin(new SweetAlertOptions
             {

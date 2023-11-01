@@ -19,6 +19,9 @@ else
     private Training? training;
     private TrainingForm? trainingForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
     public int TrainingId { get; set; }
 
@@ -40,6 +43,7 @@ else
 
     private async Task SaveAsync()
     {
+        training!.Occupation = null;
         var response = await repository.PutAsync($"/api/trainings", training);
         if (response.Error)
         {
@@ -47,7 +51,10 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
+
         var toast = sweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,

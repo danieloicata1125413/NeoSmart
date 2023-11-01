@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NeoSmart.ClassLibraries.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Training
+    public class Training : ISoftDetete
     {
         public int Id { get; set; }
 

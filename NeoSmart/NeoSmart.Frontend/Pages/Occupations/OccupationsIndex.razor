@@ -25,7 +25,9 @@
                         <tr>
                             <th>Código</th>
                             <th>Cargo</th>
+                            <th>Proceso</th>
                             <th style="width:90px">Entrenamientos</th>
+                            <th>Habilitado</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
@@ -35,7 +37,9 @@
                             <tr>
                                 <td>@occupation.Cod</td>
                                 <td>@occupation.Description</td>
+                                <td>@occupation.Process!.Description</td>
                                 <td>@occupation.TrainingsNumber</td>
+                                <td><InputCheckbox @bind-Value=occupation.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(occupation.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(occupation))><i class="oi oi-trash" /> Borrar</button>

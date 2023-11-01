@@ -25,7 +25,10 @@
                 <table class="table table-responsive">
                     <thead>
                         <tr>
-                            <th>Capacitaciones</th>
+                            <th>Código</th>
+                            <th>Capacitación</th>
+                            <th>Cargo</th>
+                            <th>Habilitado</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
@@ -33,7 +36,10 @@
                         @foreach (var training in trainings!)
                         {
                             <tr>
+                                <td>@training.Cod</td>
                                 <td>@training.Description</td>
+                                <td>@training.Occupation!.Description</td>
+                                <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
