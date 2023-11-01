@@ -1,33 +1,33 @@
-﻿@page "/states/edit/{StateId:int}"
+﻿@page "/occupations/edit/{OccupationId:int}"
 @attribute [Authorize(Roles = "Administrador")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar Estado/Departamento</h3>
+<h3>Editar Cargo</h3>
 
-@if (state is null)
+@if (occupation is null)
 {
     <Loading />
 }
 else
 {
-    <StateForm @ref="stateForm" State="state" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <OccupationForm @ref="occupationForm" Occupation="occupation" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {
-    private State? state;
-    private StateForm? stateForm;
+    private Occupation? occupation;
+    private OccupationForm? occupationForm;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
-    public int StateId { get; set; }
+    public int OccupationId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        var response = await repository.GetAsync<State>($"/api/states/{StateId}");
+        var response = await repository.GetAsync<Occupation>($"/api/occupations/{OccupationId}");
         if (response.Error)
         {
             if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -38,12 +38,13 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        state = response.Response;
+        occupation = response.Response;
     }
 
     private async Task SaveAsync()
     {
-        var response = await repository.PutAsync($"/api/states", state);
+        occupation!.Process = null;
+        var response = await repository.PutAsync($"/api/occupations", occupation);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -66,7 +67,8 @@ else
 
     private void Return()
     {
-        stateForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/countries/details/{state!.CountryId}");
+        occupationForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/occupations");
     }
+
 }

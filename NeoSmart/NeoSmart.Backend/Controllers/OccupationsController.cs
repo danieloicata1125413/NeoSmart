@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.BackEnd.Intertfaces;
@@ -13,19 +14,30 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TrainingsController : GenericController<Training>
+    public class OccupationsController : GenericController<Occupation>
     {
         private readonly DataContext _context;
 
-        public TrainingsController(IGenericUnitOfWork<Training> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public OccupationsController(IGenericUnitOfWork<Occupation> unitOfWork, DataContext context) : base(unitOfWork, context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("combo/{proccessId:int}")]
+        public async Task<ActionResult> GetComboAsync(int proccessId)
+        {
+            return Ok(await _context.Occupations
+                .Where(s => s.ProcessId == proccessId)
+                .OrderBy(s => s.Description)
+                .ToListAsync());
         }
 
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Trainings.AsQueryable();
+            var queryable = _context.Occupations
+                                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -41,7 +53,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Trainings.AsQueryable();
+            var queryable = _context.Occupations.AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -50,6 +62,20 @@ namespace NeoSmart.BackEnd.Controllers
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
+        }
+
+
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(int id)
+        {
+            var state = await _context.Occupations
+                .Include(s => s.Process)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (state == null)
+            {
+                return NotFound();
+            }
+            return Ok(state);
         }
     }
 }

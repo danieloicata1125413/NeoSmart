@@ -1,20 +1,17 @@
 ﻿@page "/trainings"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Administrador")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Capacitaciones</h3>
-
 <div class="row mb-3">
     <div class="col-7">
-        <a class="btn btn-primary" href="/trainings/create">Nuevo</a>
+        <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
+        <h3>Capacitaciones</h3>
     </div>
-    <div class="col-3">
-        <input style="max-width: 300px;" type="text" class="form-control" id="titulo" placeholder="Buscar tema..." @bind-value="Filter" />
-    </div>
-    <div class="col-2">
-        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
-        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
+    <div class="col-5">
+        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar capacitación..." @bind-value="Filter" />
+        <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+        <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
     </div>
 </div>
 
@@ -22,23 +19,23 @@
     <div class="card-body">
         <GenericList MyList="trainings">
             <NoRecords>
-                <p>Aun no hay temas registrados.</p>
+                <p>Aun no hay Capacitaciones registradas.</p>
             </NoRecords>
             <Body>
                 <table class="table table-responsive">
                     <thead>
                         <tr>
                             <th>Capacitaciones</th>
-                            <th style="width:140px"></th>
+                            <th style="width:170px"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var training in trainings!)
                         {
                             <tr>
-                                <td>@training.Name</td>
+                                <td>@training.Description</td>
                                 <td>
-                                    <a class="btn btn-warning btn-sm" href="/trainings/edit/@training.Id">Editar</a>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
                                 </td>
                             </tr>
@@ -60,6 +57,9 @@
     private int currentPage = 1;
     private int totalPages;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string Page { get; set; } = string.Empty;
@@ -71,6 +71,26 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+    }
+
+    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (!isEdit)
+        {
+            modalReference = Modal.Show<TrainingCreate>(string.Empty);
+        }
+        else
+        {
+            modalReference = Modal.Show<TrainingEdit>(string.Empty, new ModalParameters().Add("TrainingId", id));
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
     }
 
     private async Task SelectedPageAsync(int page)
@@ -158,7 +178,7 @@
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el capacitación: {training.Name}?",
+                Text = $"¿Esta seguro que quieres borrar el capacitación: {training.Description}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });

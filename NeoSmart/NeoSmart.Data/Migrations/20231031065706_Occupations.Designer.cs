@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NeoSmart.Data.Entities;
 
@@ -11,9 +12,11 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231031065706_Occupations")]
+    partial class Occupations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,24 +390,15 @@ namespace NeoSmart.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Cod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("OccupationId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("Cod")
+                    b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("OccupationId");
 
                     b.ToTable("Trainings");
                 });
@@ -578,7 +572,7 @@ namespace NeoSmart.Data.Migrations
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
-                        .WithMany("Occupations")
+                        .WithMany()
                         .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -595,17 +589,6 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Country");
-                });
-
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
-                {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Occupation", "Occupation")
-                        .WithMany("Trainings")
-                        .HasForeignKey("OccupationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Occupation");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.User", b =>
@@ -630,16 +613,6 @@ namespace NeoSmart.Data.Migrations
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Country", b =>
                 {
                     b.Navigation("States");
-                });
-
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
-                {
-                    b.Navigation("Trainings");
-                });
-
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Process", b =>
-                {
-                    b.Navigation("Occupations");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.State", b =>

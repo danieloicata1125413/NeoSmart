@@ -1,15 +1,16 @@
-﻿@page "/topics"
+﻿@page "/occupations"
 @attribute [Authorize(Roles = "Administrador")]
 @inject IRepository repository
+@inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
 <div class="row mb-3">
     <div class="col-7">
         <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
-        <h3>Temas</h3>
+        <h3>Cargos</h3>
     </div>
     <div class="col-5">
-        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar tema..." @bind-value="Filter" />
+        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar cargo..." @bind-value="Filter" />
         <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
         <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
     </div>
@@ -17,26 +18,27 @@
 
 <div class="card widget-inline">
     <div class="card-body">
-        <GenericList MyList="topics">
-            <NoRecords>
-                <p>Aun no hay temas registrados.</p>
-            </NoRecords>
+        <GenericList MyList="occupations!">
             <Body>
-                <table class="table table-responsive">
+                <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Temas</th>
+                            <th>Código</th>
+                            <th>Cargo</th>
+                            <th style="width:90px">Entrenamientos</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var topic in topics!)
+                        @foreach (var occupation in occupations!)
                         {
                             <tr>
-                                <td>@topic.Name</td>
+                                <td>@occupation.Cod</td>
+                                <td>@occupation.Description</td>
+                                <td>@occupation.TrainingsNumber</td>
                                 <td>
-                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(topic.Id, true))><i class="oi oi-pencil" /> Editar</button>
-                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(topic))><i class="oi oi-trash" /> Borrar</button>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(occupation.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(occupation))><i class="oi oi-trash" /> Borrar</button>
                                 </td>
                             </tr>
                         }
@@ -47,13 +49,12 @@
                             SelectedPage="SelectedPageAsync" />
             </Body>
         </GenericList>
-
     </div>
 </div>
 
 
 @code {
-    private List<Topic>? topics;
+    private List<Occupation>? occupations;
     private int currentPage = 1;
     private int totalPages;
 
@@ -77,13 +78,13 @@
     {
         IModalReference modalReference;
 
-        if (!isEdit)
+        if (isEdit)
         {
-            modalReference = Modal.Show<TopicCreate>(string.Empty);
+            modalReference = Modal.Show<OccupationEdit>(string.Empty, new ModalParameters().Add("OccupationId", id));
         }
         else
         {
-            modalReference = Modal.Show<TopicEdit>(string.Empty, new ModalParameters().Add("TopicId", id));
+            modalReference = Modal.Show<OccupationCreate>(string.Empty, new ModalParameters());
         }
 
         var result = await modalReference.Result;
@@ -105,8 +106,7 @@
         {
             page = Convert.ToInt32(Page);
         }
-
-        var ok = await LoadListAsync(page);
+        bool ok = await LoadOccupationsAsync(page);
         if (ok)
         {
             await LoadPagesAsync();
@@ -118,11 +118,11 @@
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/topics/totalPages";
+            url = $"api/occupations/totalPages";
         }
         else
         {
-            url = $"api/topics/totalPages?filter={Filter}";
+            url = $"api/occupations/totalPages?filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -136,27 +136,26 @@
         return true;
     }
 
-    private async Task<bool> LoadListAsync(int page)
+    private async Task<bool> LoadOccupationsAsync(int page)
     {
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/topics?page={page}";
+            url = $"api/occupations?page={page}";
         }
         else
         {
-            url = $"api/topics?page={page}&filter={Filter}";
+            url = $"api/occupations?page={page}&filter={Filter}";
         }
 
-        var response = await repository.GetAsync<List<Topic>>(url);
+        var response = await repository.GetAsync<List<Occupation>>(url);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return false;
         }
-
-        topics = response.Response;
+        occupations = response.Response;
         return true;
     }
 
@@ -173,14 +172,16 @@
         await SelectedPageAsync(page);
     }
 
-    private async Task DeleteAsync(Topic topic)
+    private async Task DeleteAsync(Occupation occupation)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el tema: {topic.Name}?",
+                Text = $"¿Realmente deseas eliminar el cargo? {occupation.Description}",
                 Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
             });
 
         var confirm = string.IsNullOrEmpty(result.Value);
@@ -189,16 +190,18 @@
             return;
         }
 
-        var response = await repository.DeleteAsync($"api/topics/{topic.Id}");
-        if (response.Error)
+        var responseHttp = await repository.DeleteAsync($"/api/occupations/{occupation.Id}");
+        if (responseHttp.Error)
         {
-            var message = await response.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
         }
 
         await LoadAsync();
-
         var toast = sweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,

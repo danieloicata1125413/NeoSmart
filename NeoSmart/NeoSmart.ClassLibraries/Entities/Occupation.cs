@@ -1,8 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NeoSmart.ClassLibraries.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Training
+    public class Occupation : ISoftDetete
     {
         public int Id { get; set; }
 
@@ -15,9 +21,13 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
 
-        [Display(Name = "Cargo")]
+        [Display(Name = "Proceso")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int OccupationId { get; set; }
-        public Occupation? Occupation { get; set; }
+        public int ProcessId { get; set; }
+        public Process? Process { get; set; }
+        public ICollection<Training>? Trainings { get; set; }
+
+        [Display(Name = "Capacitaciones")]
+        public int TrainingsNumber => Trainings == null ? 0 : Trainings.Count;
     }
 }

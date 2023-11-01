@@ -1,5 +1,5 @@
 ﻿@page "/states/details/{StateId:int}"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Administrador")]
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -10,20 +10,20 @@
 }
 else
 {
-    <h3>@state.Name</h3>
+
     <div class="row mb-3">
         <div class="col-7">
-            <a class="btn btn-sm btn-primary float-end mx-1" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar Ciudad</a>
-            <a class="btn btn-sm btn-success float-end" href="/countries/details/@state.CountryId"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+            <a class="btn btn-outline-success float-start me-1" href="/countries/details/@state.CountryId"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+            <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
+            <h3>@state.Name</h3>
         </div>
-        <div class="col-3">
-            <input style="width: 300px;" type="text" class="form-control" id="titulo" placeholder="Buscar ciudad..." @bind-value="Filter" />
-        </div>
-        <div class="col-2">
-            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
+        <div class="col-5">
+            <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar ciudad..." @bind-value="Filter" />
+            <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+            <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
         </div>
     </div>
+
     <div class="card widget-inline">
         <div class="card-body">
             <GenericList MyList="cities!">
@@ -32,7 +32,7 @@ else
                         <thead>
                             <tr>
                                 <th>Ciudad</th>
-                                <th style="width:140px"></th>
+                                <th style="width:170px"></th>
                             </tr>
                         </thead>
                         <tbody>

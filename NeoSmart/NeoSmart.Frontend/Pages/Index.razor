@@ -1,12 +1,23 @@
 ﻿@page "/"
 
+<style type="text/css">
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid lightgray;
+        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
+        border-radius: 15px;
+        font-family: sans-serif;
+        margin: 5px;
+    }
+</style>
+
 <PageTitle>NeoSmart</PageTitle>
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView Roles="Administrador">
     <Authorized>
         <p>Estas autenticado y autorizado, @context.User.Identity?.Name</p>
-    </Authorized>
-    <NotAuthorized>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6">
@@ -39,6 +50,9 @@
                 </div>
             </div>
         </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>No Estas autenticado y autorizado</p>
     </NotAuthorized>
 </AuthorizeView>
 

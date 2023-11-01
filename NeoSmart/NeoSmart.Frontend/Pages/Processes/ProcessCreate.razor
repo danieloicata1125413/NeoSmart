@@ -1,27 +1,26 @@
-﻿@page "/states/create/{CountryId:int}"
+﻿@page "/processes/create"
 @attribute [Authorize(Roles = "Administrador")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo Estado/Departamento</h3>
+<h3>Nuevo Proceso</h3>
 
-<StateForm @ref="stateForm" State="state" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<ProcessForm @ref="processForm" Process="process" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
 
 @code {
-    private State state = new();
-    private StateForm? stateForm;
+    private Process process = new() { 
+            Status = true
+        };
+    private ProcessForm? processForm;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    [Parameter]
-    public int CountryId { get; set; }
-
     private async Task CreateAsync()
     {
-        state.CountryId = CountryId;
-        var response = await repository.PostAsync("/api/states", state);
+        var response = await repository.PostAsync("/api/processes", process);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -44,7 +43,7 @@
 
     private void Return()
     {
-        stateForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/countries/details/{CountryId}");
+        processForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/processes");
     }
 }

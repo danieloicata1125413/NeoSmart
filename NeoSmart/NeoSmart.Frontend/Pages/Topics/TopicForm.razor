@@ -2,7 +2,7 @@
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
 
-<div class="col-md-4">
+@* <div class="col-md-4"> *@
     <div class="card widget-inline">
         <div class="card-body">
             <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
@@ -15,13 +15,13 @@
                     </div>
                 </div>
                 <div class="form-group mt-2">
-                    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+                    <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
                     <button class="btn btn-primary" type="submit">Guardar</button>
                 </div>
             </EditForm>
         </div>
     </div>
-</div>
+@* </div> *@
 
 @code {
     private EditContext editContext = null!;

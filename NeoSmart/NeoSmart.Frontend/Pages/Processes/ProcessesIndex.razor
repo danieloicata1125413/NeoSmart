@@ -1,4 +1,4 @@
-﻿@page "/topics"
+﻿@page "/processes"
 @attribute [Authorize(Roles = "Administrador")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -6,10 +6,10 @@
 <div class="row mb-3">
     <div class="col-7">
         <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
-        <h3>Temas</h3>
+        <h3>Procesos</h3>
     </div>
     <div class="col-5">
-        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar tema..." @bind-value="Filter" />
+        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar proceso..." @bind-value="Filter" />
         <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
         <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
     </div>
@@ -17,26 +17,28 @@
 
 <div class="card widget-inline">
     <div class="card-body">
-        <GenericList MyList="topics">
+        <GenericList MyList="processes">
             <NoRecords>
-                <p>Aun no hay temas registrados.</p>
+                <p>Aun no hay procesos registrados.</p>
             </NoRecords>
             <Body>
                 <table class="table table-responsive">
                     <thead>
                         <tr>
-                            <th>Temas</th>
+                            <th>País</th>
+                            <th style="width:210px">Cargos</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var topic in topics!)
+                        @foreach (var process in processes!)
                         {
                             <tr>
-                                <td>@topic.Name</td>
+                                <td>@process.Description</td>
+                                <td>@process.OccupationsNumber</td>
                                 <td>
-                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(topic.Id, true))><i class="oi oi-pencil" /> Editar</button>
-                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(topic))><i class="oi oi-trash" /> Borrar</button>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(process.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(process))><i class="oi oi-trash" /> Borrar</button>
                                 </td>
                             </tr>
                         }
@@ -51,9 +53,8 @@
     </div>
 </div>
 
-
 @code {
-    private List<Topic>? topics;
+    private List<Process>? processes;
     private int currentPage = 1;
     private int totalPages;
 
@@ -77,13 +78,13 @@
     {
         IModalReference modalReference;
 
-        if (!isEdit)
+        if (isEdit)
         {
-            modalReference = Modal.Show<TopicCreate>(string.Empty);
+            modalReference = Modal.Show<ProcessEdit>(string.Empty, new ModalParameters().Add("ProcessId", id));
         }
         else
         {
-            modalReference = Modal.Show<TopicEdit>(string.Empty, new ModalParameters().Add("TopicId", id));
+            modalReference = Modal.Show<ProcessCreate>();
         }
 
         var result = await modalReference.Result;
@@ -118,11 +119,11 @@
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/topics/totalPages";
+            url = $"api/processes/totalPages";
         }
         else
         {
-            url = $"api/topics/totalPages?filter={Filter}";
+            url = $"api/processes/totalPages?filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -141,14 +142,14 @@
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/topics?page={page}";
+            url = $"api/processes?page={page}";
         }
         else
         {
-            url = $"api/topics?page={page}&filter={Filter}";
+            url = $"api/processes?page={page}&filter={Filter}";
         }
 
-        var response = await repository.GetAsync<List<Topic>>(url);
+        var response = await repository.GetAsync<List<Process>>(url);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -156,7 +157,7 @@
             return false;
         }
 
-        topics = response.Response;
+        processes = response.Response;
         return true;
     }
 
@@ -173,12 +174,12 @@
         await SelectedPageAsync(page);
     }
 
-    private async Task DeleteAsync(Topic topic)
+    private async Task DeleteAsync(Process process)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el tema: {topic.Name}?",
+                Text = $"¿Esta seguro que quieres borrar el proceso: {process.Description}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
@@ -189,7 +190,7 @@
             return;
         }
 
-        var response = await repository.DeleteAsync($"api/topics/{topic.Id}");
+        var response = await repository.DeleteAsync($"api/processes/{process.Id}");
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();

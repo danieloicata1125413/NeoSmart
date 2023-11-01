@@ -1,15 +1,5 @@
 ﻿<AuthorizeView>
     <Authorized>
-
-        
-        @* @if (!string.IsNullOrEmpty(photoUser))
-        {
-            <div class="mx-2">
-                <img src="@photoUser" width="50" height="50" style="border-radius:50%" />
-            </div>
-        } *@
-        
-
         <div class="dropdown">
             <label class="h6 text-center">Hola, @context.User.Identity!.Name </label>
             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

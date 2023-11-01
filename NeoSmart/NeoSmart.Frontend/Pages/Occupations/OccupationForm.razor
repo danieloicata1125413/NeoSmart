@@ -1,0 +1,140 @@
+﻿@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    @* <div class="col-md-4"> *@
+    <div class="card widget-inline">
+        <div class="card-body">
+            <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <div class="form-group mb-2">
+                        <label>Proceso:</label>
+                        <select class="form-select" @bind="Occupation.ProcessId">
+                            <option value="0">-- Seleccione un proceso --</option>
+                            @if (processes is not null)
+                            {
+                                @foreach (var process in processes)
+                                {
+                                    if (Occupation.ProcessId != 0)
+                                    {
+                                        <option value="@process.Id" selected="@(process.Id == Occupation.Process!.Id)">@process.Description</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@process.Id">@process.Description</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => Occupation.ProcessId)" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="control-label">Código:</label>
+                        <InputText class="form-control" @bind-Value="@Occupation.Cod" />
+                        <ValidationMessage For="@(() => Occupation.Cod)" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="control-label">Descripción:</label>
+                        <InputText class="form-control" @bind-Value="@Occupation.Description" />
+                        <ValidationMessage For="@(() => Occupation.Description)" />
+                    </div>
+                    <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado:</label>
+                    
+                </div>
+                <div class="form-group mt-2">
+                    <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+    @* </div> *@
+}
+
+@code {
+    private EditContext editContext = null!;
+    private List<Process>? processes;
+    private bool loading;
+
+    bool StatusValue
+    {
+        get => Convert.ToBoolean(Occupation.Status);
+        set => Occupation.Status = value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProcessesAsync();
+        editContext = new(Occupation);
+    }
+
+    private async Task LoadProcessesAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<List<Process>>("/api/processes/combo");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        processes = responseHttp.Response;
+        loading = false;
+    }
+
+    [EditorRequired]
+    [Parameter]
+    public Occupation Occupation { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+    private async Task OnBeforeInternalNavigationAsync(LocationChangingContext context)
+    {
+        var formWasEdited = editContext.IsModified();
+
+        if (!formWasEdited)
+        {
+            return;
+        }
+
+        if (FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+}

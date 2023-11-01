@@ -11,6 +11,8 @@ namespace NeoSmart.Data.Entities
         {
 
         }
+        public DbSet<Occupation> Occupations { get; set; }
+        public DbSet<Process> Processes { get; set; }
         public DbSet<Training> Trainings { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<City> Cities { get; set; }
@@ -21,7 +23,9 @@ namespace NeoSmart.Data.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Training>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
+            modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
+            modelBuilder.Entity<Training>().HasIndex(s => new { s.OccupationId, s.Cod }).IsUnique();
             modelBuilder.Entity<Topic>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();
