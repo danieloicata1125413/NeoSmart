@@ -5,31 +5,63 @@
 @inject SweetAlertService sweetAlertService
 
 <h3>Nuevo Capacitación</h3>
-
-<TrainingForm @ref="trainingForm" Training="training" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <TrainingForm @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+}
 
 @code {
-    private Training training = new()
-    {
+    private TrainingDTO trainingDTO = new()
+        {
             OccupationId = 0,
+            TrainingTopicIds = new List<int>(),
             Status = true
-    };
+        };
     private TrainingForm? trainingForm;
+    private List<Topic> selectedTopics = new();
+    private List<Topic> nonSelectedTopics = new();
+    private bool loading = true;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadTopicsAsync();
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<List<Topic>>("/api/topics");
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        nonSelectedTopics = httpResponse.Response!;
+        loading = false;
+    }
+
     private async Task CreateAsync()
     {
-        var response = await repository.PostAsync("/api/trainings", training);
+        var response = await repository.PostAsync("/api/trainings/full", trainingDTO);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+
         await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
+
         var toast = sweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,

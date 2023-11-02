@@ -6,18 +6,25 @@
 
 <h3>Editar Capacitación</h3>
 
-@if (training is null)
+@if (loading)
 {
     <Loading />
 }
 else
 {
-    <TrainingForm @ref="trainingForm" Training="training" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <TrainingForm @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
 }
 
 @code {
     private Training? training;
+    private TrainingDTO? trainingDTO = new TrainingDTO()
+        {
+            TrainingTopicIds = new List<int>()
+        };
     private TrainingForm? trainingForm;
+    private List<Topic> selectedTopics = new();
+    private List<Topic> nonSelectedTopics = new();
+    private bool loading = true;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
@@ -25,26 +32,93 @@ else
     [Parameter]
     public int TrainingId { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var response = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
-        if (response.Error)
+        await LoadTrainingAsync();
+        await LoadTopicsAsync();
+    }
+
+    private async Task LoadTrainingAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
+        if (httpResponse.Error)
         {
-            if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-            {
-                Return();
-            }
-            var message = await response.GetErrorMessageAsync();
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        training = response.Response;
+
+        training = httpResponse.Response!;
+        trainingDTO = ToTrainingDTO(training);
+        loading = false;
     }
+
+    private TrainingDTO ToTrainingDTO(Training training)
+    {
+        return new TrainingDTO
+            {
+                Id = training.Id,
+                Cod = training.Cod,
+                Description = training.Description,
+                OccupationId = training.OccupationId,
+                Occupation = training.Occupation,
+                Status = training.Status,
+                Created = training.Created,
+                Updated = training.Updated,
+                TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
+            };
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<List<Topic>>("/api/topics");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var topics = httpResponse.Response!;
+        foreach (var topic in topics!)
+        {
+            var found = training!.TrainingTopics!.FirstOrDefault(x => x.TopicId == topic.Id);
+            if (found == null)
+            {
+                nonSelectedTopics.Add(topic);
+            } else
+            {
+                selectedTopics.Add(topic);
+            }
+        }
+        loading = false;
+    }
+
+    // protected override async Task OnParametersSetAsync()
+    // {
+    //     var response = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
+    //     if (response.Error)
+    //     {
+    //         if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+    //         {
+    //             Return();
+    //         }
+    //         var message = await response.GetErrorMessageAsync();
+    //         await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+    //         return;
+    //     }
+    //     training = response.Response;
+    // }
 
     private async Task SaveAsync()
     {
-        training!.Occupation = null;
-        var response = await repository.PutAsync($"/api/trainings", training);
+        trainingDTO!.Occupation = null;
+        var response = await repository.PutAsync($"/api/trainings/full", trainingDTO);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();

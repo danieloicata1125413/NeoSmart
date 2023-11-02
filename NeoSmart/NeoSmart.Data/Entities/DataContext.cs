@@ -26,7 +26,7 @@ namespace NeoSmart.Data.Entities
             modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
             modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
             modelBuilder.Entity<Training>().HasIndex(s => new { s.OccupationId, s.Cod }).IsUnique();
-            modelBuilder.Entity<Topic>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Topic>().HasIndex(c => c.Description).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();
             modelBuilder.Entity<City>().HasIndex(c => new { c.StateId, c.Name }).IsUnique();

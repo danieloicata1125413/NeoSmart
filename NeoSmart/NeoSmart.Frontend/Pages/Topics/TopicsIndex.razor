@@ -26,6 +26,8 @@
                     <thead>
                         <tr>
                             <th>Temas</th>
+                            <th>Capacitaciones</th>
+                            <th>Habilitado</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
@@ -33,7 +35,9 @@
                         @foreach (var topic in topics!)
                         {
                             <tr>
-                                <td>@topic.Name</td>
+                                <td>@topic.Description</td>
+                                <td>@topic.TrainingTopicsNumber</td>
+                                <td><InputCheckbox @bind-Value=topic.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(topic.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(topic))><i class="oi oi-trash" /> Borrar</button>
@@ -178,7 +182,7 @@
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el tema: {topic.Name}?",
+                Text = $"¿Esta seguro que quieres borrar el tema: {topic.Description}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });

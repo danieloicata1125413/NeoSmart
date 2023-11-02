@@ -25,14 +25,16 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Topics.AsQueryable();
+            var queryable = _context.Topics
+                                .Include(t => t.TrainingTopics)
+                                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
 
             return Ok(await queryable
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Description)
                 .Paginate(pagination)
                 .ToListAsync());
         }
@@ -41,15 +43,29 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Topics.AsQueryable();
+            var queryable = _context.Topics
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+                queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
 
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
+        }
+
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(int id)
+        {
+            var state = await _context.Topics
+                .Include(t => t.TrainingTopics)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (state == null)
+            {
+                return NotFound();
+            }
+            return Ok(state);
         }
     }
 }

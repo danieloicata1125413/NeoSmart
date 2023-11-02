@@ -1368,16 +1368,16 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Topics.Any())
             {
-                _context.Topics.Add(new Topic { Name = "Agilidad" });
-                _context.Topics.Add(new Topic { Name = "Comunicación" });
-                _context.Topics.Add(new Topic { Name = "Fomento de la confianza" });
-                _context.Topics.Add(new Topic { Name = "Gestión del cambio" });
-                _context.Topics.Add(new Topic { Name = "Liderando a través de las culturas" });
-                _context.Topics.Add(new Topic { Name = "Liderazgo" });
-                _context.Topics.Add(new Topic { Name = "Manejo del tiempo" });
-                _context.Topics.Add(new Topic { Name = "Manejo del estrés" });
-                _context.Topics.Add(new Topic { Name = "Organización" });
-                _context.Topics.Add(new Topic { Name = "Seguridad en el trabajo" });
+                _context.Topics.Add(new Topic { Description = "Agilidad" });
+                _context.Topics.Add(new Topic { Description = "Comunicación" });
+                _context.Topics.Add(new Topic { Description = "Fomento de la confianza" });
+                _context.Topics.Add(new Topic { Description = "Gestión del cambio" });
+                _context.Topics.Add(new Topic { Description = "Liderando a través de las culturas" });
+                _context.Topics.Add(new Topic { Description = "Liderazgo" });
+                _context.Topics.Add(new Topic { Description = "Manejo del tiempo" });
+                _context.Topics.Add(new Topic { Description = "Manejo del estrés" });
+                _context.Topics.Add(new Topic { Description = "Organización" });
+                _context.Topics.Add(new Topic { Description = "Seguridad en el trabajo" });
                 await _context.SaveChangesAsync();
             }
         }

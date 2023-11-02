@@ -9,7 +9,10 @@
 <TopicForm @ref="topicForm" Topic="topic" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
-    private Topic topic = new();
+    private Topic topic = new()
+        {
+            Status = true
+        };
     private TopicForm? topicForm;
 
     [CascadingParameter]

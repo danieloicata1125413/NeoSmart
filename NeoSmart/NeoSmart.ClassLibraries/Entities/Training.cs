@@ -12,6 +12,7 @@ namespace NeoSmart.ClassLibraries.Entities
         public string Cod { get; set; }
 
         [Display(Name = "Descripción")]
+        [DataType(DataType.MultilineText)]
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
@@ -20,5 +21,10 @@ namespace NeoSmart.ClassLibraries.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int OccupationId { get; set; }
         public Occupation? Occupation { get; set; }
+
+        public ICollection<TrainingTopic>? TrainingTopics { get; set; }
+
+        [Display(Name = "Temas")]
+        public int TrainingTopicsNumber => TrainingTopics == null ? 0 : TrainingTopics.Count;
     }
 }
