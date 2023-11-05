@@ -1,0 +1,92 @@
+﻿@page "/training/details/{TrainingId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">@training!.Description</h4>
+                    <a class="btn btn-danger float-end me-1" href="/"><i class="oi oi-ban" /> Cerrar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <CarouselView Images="images" />
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <div>
+                            <b>@training.Process!.Description</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Duración:</label>
+                        <div>
+                            <b>@training.Duration</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label>Temas:</label>
+                            @foreach (var topic in topics!)
+                            {
+                                <b>@topic</b>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+}
+
+@code {
+    private List<string>? topics;
+    private List<string>? images;
+    private bool loading = true;
+    private Training? training;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int TrainingId { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadTrainingAsync();
+    }
+
+    private async Task LoadTrainingAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        training = httpResponse.Response!;
+        topics = training.TrainingTopics!.Select(x => x.Topic.Description).ToList();
+        images = training.TrainingImages!.Select(x => x.Image).ToList();
+        if (images.Count() == 0)
+        {
+            images!.Add(training.MainImage);
+        }
+        loading = false;
+    }
+}

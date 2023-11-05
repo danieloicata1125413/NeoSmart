@@ -43,6 +43,8 @@ else
 
     private async Task SaveAsync()
     {
+        topic!.FormationTopics = null;
+        topic!.TrainingTopics = null;
         var response = await repository.PutAsync($"/api/topics", topic);
         if (response.Error)
         {

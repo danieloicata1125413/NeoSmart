@@ -105,10 +105,10 @@ a, .btn-link {
 }
 
 .selectable-ul {
-    height: 200px;
+    height: 280px;
     overflow-y: auto;
     list-style-type: none;
-    width: 170px;
+    width: 350px;
     padding: 0;
     border-radius: 3px;
     border: 1px solid #ccc;
@@ -135,3 +135,14 @@ a, .btn-link {
     .multiple-selector-botones button {
         margin: 5px;
     }
+
+
+.blazored-modal {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    margin 0 !important;
+}

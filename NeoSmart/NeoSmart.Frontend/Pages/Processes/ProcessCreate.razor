@@ -4,9 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo Proceso</h3>
-
-<ProcessForm @ref="processForm" Process="process" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<ProcessForm Titulo="Nuevo Proceso" @ref="processForm" Process="process" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 
 @code {

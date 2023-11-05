@@ -1,28 +1,27 @@
-﻿@page "/trainings/create"
+﻿@page "/formations/create"
 @attribute [Authorize(Roles = "Administrador")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
+<h3>Nuevo Entrenamiento</h3>
 @if (loading)
 {
     <Loading />
 }
 else
 {
-    <TrainingForm Titulo="Nueva Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+    <FormationForm @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
 }
 
 @code {
-    private TrainingDTO trainingDTO = new()
+    private FormationDTO formationDTO = new()
         {
-            ProcessId = 0,
-            Type = true,
-            Duration = 60,
-            TrainingTopicIds = new List<int>(),
+            OccupationId = 0,
+            FormationTopicIds = new List<int>(),
             Status = true
         };
-    private TrainingForm? trainingForm;
+    private FormationForm? formationForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
     private bool loading = true;
@@ -52,7 +51,7 @@ else
 
     private async Task CreateAsync()
     {
-        var response = await repository.PostAsync("/api/trainings/full", trainingDTO);
+        var response = await repository.PostAsync("/api/formations/full", formationDTO);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -75,7 +74,7 @@ else
 
     private void Return()
     {
-        trainingForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/trainings");
+        formationForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/formations");
     }
 }

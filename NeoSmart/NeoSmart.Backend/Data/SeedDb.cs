@@ -6,6 +6,7 @@ using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
+using NeoSmart.Data.Migrations;
 
 namespace NeoSmart.BackEnd.Data
 {
@@ -28,10 +29,11 @@ namespace NeoSmart.BackEnd.Data
             await CheckDocumentTypesAsync();
             await CheckProcessesAsync();
             await CheckOccupationsAsync();
+            await CheckFormationsAsync();
             await CheckTopicsAsync();
-            //await CheckTrainingsAsync();
+            await CheckTrainingsAsync();
             await CheckRolesAsycn();
-            await CheckUserAsync("1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "DUITAMA", UserType.Administrador, "Inicio123*");
+            await CheckUserAsync("1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "DUITAMA", UserType.Administrador, "1090jeep$");
             await CheckUserAsync("43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "MEDELLÍN", UserType.Administrador, "Inicio123*");
             await CheckUserAsync("15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "MEDELLÍN", UserType.Administrador, "Inicio123*");
         }
@@ -1368,29 +1370,48 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Topics.Any())
             {
-                _context.Topics.Add(new Topic { Description = "Agilidad" });
-                _context.Topics.Add(new Topic { Description = "Comunicación" });
-                _context.Topics.Add(new Topic { Description = "Fomento de la confianza" });
-                _context.Topics.Add(new Topic { Description = "Gestión del cambio" });
-                _context.Topics.Add(new Topic { Description = "Liderando a través de las culturas" });
-                _context.Topics.Add(new Topic { Description = "Liderazgo" });
-                _context.Topics.Add(new Topic { Description = "Manejo del tiempo" });
-                _context.Topics.Add(new Topic { Description = "Manejo del estrés" });
-                _context.Topics.Add(new Topic { Description = "Organización" });
-                _context.Topics.Add(new Topic { Description = "Seguridad en el trabajo" });
+                _context.Topics.Add(new Topic { Description = "Agilidad", Status = true });
+                _context.Topics.Add(new Topic { Description = "Comunicación", Status = true });
+                _context.Topics.Add(new Topic { Description = "Fomento de la confianza", Status = true });
+                _context.Topics.Add(new Topic { Description = "Gestión del cambio", Status = true });
+                _context.Topics.Add(new Topic { Description = "Liderando a través de las culturas", Status = true });
+                _context.Topics.Add(new Topic { Description = "Liderazgo", Status = true });
+                _context.Topics.Add(new Topic { Description = "Manejo del tiempo", Status = true });
+                _context.Topics.Add(new Topic { Description = "Manejo del estrés", Status = true });
+                _context.Topics.Add(new Topic { Description = "Organización", Status = true });
+                _context.Topics.Add(new Topic { Description = "Seguridad en el trabajo", Status = true });
                 await _context.SaveChangesAsync();
+            }
+        }
+        private async Task CheckFormationsAsync()
+        {
+            if (!_context.Formations.Any())
+            {
+                var occupation = await _context.Occupations.FirstOrDefaultAsync(o => o.Cod.Equals("CA001"));
+                if (occupation != null) {
+                    _context.Formations.Add(new Formation { Cod = "E001", Description = "Excel", OccupationId = occupation.Id, Occupation = occupation, Status = true }); ;
+                    _context.Formations.Add(new Formation { Cod = "E002", Description = "Seguridad informatica", OccupationId = occupation.Id, Occupation = occupation, Status = true });
+                    _context.Formations.Add(new Formation { Cod = "E003", Description = "Office", OccupationId = occupation.Id, Occupation = occupation, Status = true });
+                    _context.Formations.Add(new Formation { Cod = "E004", Description = "Hseq", OccupationId = occupation.Id, Occupation = occupation, Status = true });
+                    _context.Formations.Add(new Formation { Cod = "E005", Description = "Riesgo locativo", OccupationId = occupation.Id, Occupation = occupation, Status = true });
+                    await _context.SaveChangesAsync();
+                }
             }
         }
         private async Task CheckTrainingsAsync()
         {
-            if (!_context.Topics.Any())
+            if (!_context.Trainings.Any())
             {
-                _context.Trainings.Add(new Training { Description = "Excel" });
-                _context.Trainings.Add(new Training { Description = "Seguridad informatica" });
-                _context.Trainings.Add(new Training { Description = "Office" });
-                _context.Trainings.Add(new Training { Description = "Hseq" });
-                _context.Trainings.Add(new Training { Description = "Riesgo locativo" });
-                await _context.SaveChangesAsync();
+                var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("P001"));
+                if (process != null)
+                {
+                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Excel", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA002", Description = "Seguridad informatica", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA003", Description = "Office", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA004", Description = "Hseq", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA005", Description = "Riesgo locativo", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    await _context.SaveChangesAsync();
+                }
             }
         }
     }

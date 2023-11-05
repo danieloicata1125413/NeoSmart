@@ -2,11 +2,19 @@
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
 
-@* <div class="col-md-4"> *@
-<div class="card widget-inline">
-    <div class="card-body">
-        <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">@Titulo</h4>
+                    <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body m-2">
             <div class="mb-3">
                 <div class="form-group mb-2">
                     <label class="control-label">Código:</label>
@@ -15,19 +23,18 @@
                 </div>
                 <div class="form-group mb-2">
                     <label class="control-label">Descripción:</label>
-                    <InputText class="form-control" @bind-Value="@Process.Description" />
+                    <InputTextArea class="form-control" @bind-Value="@Process.Description" />
                     <ValidationMessage For="@(() => Process.Description)" />
                 </div>
                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado:</label>
             </div>
-            <div class="form-group mt-2">
-                <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
-                <button class="btn btn-primary" type="submit">Guardar</button>
-            </div>
-        </EditForm>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
     </div>
-</div>
-@* </div> *@
+</EditForm>
+
 @code {
 
     private EditContext editContext = null!;
@@ -36,6 +43,10 @@
     {
         editContext = new(Process);
     }
+
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

@@ -15,5 +15,10 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Capacitaciones")]
         public int TrainingTopicsNumber => TrainingTopics == null ? 0 : TrainingTopics.Count;
+
+        public ICollection<FormationTopic>? FormationTopics { get; set; }
+
+        [Display(Name = "Formaciones")]
+        public int FormationTopicsNumber => FormationTopics == null ? 0 : FormationTopics.Count;
     }
 }

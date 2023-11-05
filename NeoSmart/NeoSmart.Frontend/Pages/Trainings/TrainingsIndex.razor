@@ -27,7 +27,8 @@
                         <tr>
                             <th>Código</th>
                             <th>Capacitación</th>
-                            <th>Cargo</th>
+                            <th>Duración</th>
+                            <th>Interna</th>
                             <th>Temas</th>
                             <th>Habilitado</th>
                             <th style="width:170px"></th>
@@ -39,11 +40,11 @@
                             <tr>
                                 <td>@training.Cod</td>
                                 <td>@training.Description</td>
-                                <td>@training.Occupation!.Description</td>
+                                <td>@training.Duration</td>
+                                <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
                                 <td>@training.TrainingTopicsNumber</td>
                                 <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                 <td>
-                                    @* <a href="/trainings/edit/@training.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a> *@
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
                                 </td>

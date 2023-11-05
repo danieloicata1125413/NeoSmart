@@ -1,8 +1,10 @@
-﻿@page "/trainings/edit/{TrainingId:int}"
+﻿@page "/formations/edit/{formationId:int}"
 @attribute [Authorize(Roles = "Administrador")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
+
+<h3>Editar Entrenamiento</h3>
 
 @if (loading)
 {
@@ -10,16 +12,16 @@
 }
 else
 {
-    <TrainingForm Titulo="Editar Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
+    <FormationForm @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
 }
 
 @code {
-    private Training? training;
-    private TrainingDTO? trainingDTO = new TrainingDTO()
+    private Formation? formation;
+    private FormationDTO? formationDTO = new FormationDTO()
         {
-            TrainingTopicIds = new List<int>()
+            FormationTopicIds = new List<int>()
         };
-    private TrainingForm? trainingForm;
+    private FormationForm? formationForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
     private bool loading = true;
@@ -28,18 +30,18 @@ else
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
-    public int TrainingId { get; set; }
+    public int formationId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadTrainingAsync();
+        await LoadFormationAsync();
         await LoadTopicsAsync();
     }
 
-    private async Task LoadTrainingAsync()
+    private async Task LoadFormationAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
+        var httpResponse = await repository.GetAsync<Formation>($"/api/formations/{formationId}");
         if (httpResponse.Error)
         {
             loading = false;
@@ -48,28 +50,24 @@ else
             return;
         }
 
-        training = httpResponse.Response!;
-        trainingDTO = ToTrainingDTO(training);
+        formation = httpResponse.Response!;
+        formationDTO = ToFormationDTO(formation);
         loading = false;
     }
 
-    private TrainingDTO ToTrainingDTO(Training training)
+    private FormationDTO ToFormationDTO(Formation formation)
     {
-        return new TrainingDTO
+        return new FormationDTO
             {
-                Id = training.Id,
-                Cod = training.Cod,
-                Description = training.Description,
-                Type = training.Type,
-                Duration = training.Duration,
-                ProcessId = training.ProcessId,
-                Process = training.Process,
-                TrainingImages = training.TrainingImages,
-                NewTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
-                Status = training.Status,
-                Created = training.Created,
-                Updated = training.Updated,
-                TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
+                Id = formation.Id,
+                Cod = formation.Cod,
+                Description = formation.Description,
+                OccupationId = formation.OccupationId,
+                Occupation = formation.Occupation,
+                Status = formation.Status,
+                Created = formation.Created,
+                Updated = formation.Updated,
+                FormationTopicIds = formation.FormationTopics!.Select(x => x.TopicId).ToList(),
             };
     }
 
@@ -89,12 +87,11 @@ else
         var topics = httpResponse.Response!;
         foreach (var topic in topics!)
         {
-            var found = training!.TrainingTopics!.FirstOrDefault(x => x.TopicId == topic.Id);
+            var found = formation!.FormationTopics!.FirstOrDefault(x => x.TopicId == topic.Id);
             if (found == null)
             {
                 nonSelectedTopics.Add(topic);
-            } 
-            else
+            } else
             {
                 selectedTopics.Add(topic);
             }
@@ -104,7 +101,8 @@ else
 
     private async Task SaveAsync()
     {
-        var response = await repository.PutAsync($"/api/trainings/full", trainingDTO);
+        formationDTO!.Occupation = null;
+        var response = await repository.PutAsync($"/api/formations/full", formationDTO);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -127,7 +125,7 @@ else
 
     private void Return()
     {
-        trainingForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/trainings");
+        formationForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/formations");
     }
 }

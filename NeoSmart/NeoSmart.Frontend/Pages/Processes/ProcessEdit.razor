@@ -4,15 +4,13 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar Proceso</h3>
-
 @if (process is null)
 {
     <Loading/>
 }
 else
 {
-    <ProcessForm @ref="processForm" Process="process" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <ProcessForm Titulo="Editar Proceso" @ref="processForm" Process="process" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {

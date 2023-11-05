@@ -26,6 +26,7 @@
                     <thead>
                         <tr>
                             <th>Temas</th>
+                            <th>Entrenamientos</th>
                             <th>Capacitaciones</th>
                             <th>Habilitado</th>
                             <th style="width:170px"></th>
@@ -36,6 +37,7 @@
                         {
                             <tr>
                                 <td>@topic.Description</td>
+                                <td>@topic.FormationTopicsNumber</td>
                                 <td>@topic.TrainingTopicsNumber</td>
                                 <td><InputCheckbox @bind-Value=topic.Status disabled="true"></InputCheckbox></td>
                                 <td>

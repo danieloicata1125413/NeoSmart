@@ -14,7 +14,11 @@ namespace NeoSmart.Data.Entities
         public DbSet<Occupation> Occupations { get; set; }
         public DbSet<Process> Processes { get; set; }
         public DbSet<Training> Trainings { get; set; }
+        public DbSet<TrainingTopic> TrainingTopics { get; set; }
+        public DbSet<TrainingImage> TrainingImages { get; set; }
         public DbSet<Topic> Topics { get; set; }
+        public DbSet<Formation> Formations { get; set; }
+        public DbSet<FormationTopic> FormationTopics { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Country> Countries { get; set; }
@@ -25,7 +29,8 @@ namespace NeoSmart.Data.Entities
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
             modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
-            modelBuilder.Entity<Training>().HasIndex(s => new { s.OccupationId, s.Cod }).IsUnique();
+            modelBuilder.Entity<Formation>().HasIndex(s => new { s.OccupationId, s.Cod }).IsUnique();
+            modelBuilder.Entity<Training>().HasIndex(s => new { s.Cod }).IsUnique();
             modelBuilder.Entity<Topic>().HasIndex(c => c.Description).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();

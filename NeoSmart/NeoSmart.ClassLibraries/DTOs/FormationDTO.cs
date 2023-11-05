@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.DTOs
 {
-    public class TrainingDTO : ISoftDetete
+    public class FormationDTO : ISoftDetete
     {
         public int Id { get; set; }
 
@@ -18,19 +18,11 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
 
-        [Display(Name = "Duración")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public int Duration { get; set; }
+        [Display(Name = "Cargo")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int OccupationId { get; set; }
+        public Occupation? Occupation { get; set; }
 
-        [Display(Name = "Externa")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public bool Type { get; set; }
-
-        [Display(Name = "Proceso")]
-        public int ProcessId { get; set; }
-        public Process? Process { get; set; }
-        public List<int>? TrainingTopicIds { get; set; }
-        public List<string>? NewTrainingImages { get; set; }
-        public ICollection<TrainingImage>? TrainingImages { get; set; }
+        public List<int>? FormationTopicIds { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var queryable = _context.Occupations
                                 .Include(o => o.Process)
-                                .Include(o => o.Trainings)
+                                .Include(o => o.Formations)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -72,7 +72,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var state = await _context.Occupations
                 .Include(s => s.Process)
-                .Include(o => o.Trainings)
+                .Include(o => o.Formations)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
             {

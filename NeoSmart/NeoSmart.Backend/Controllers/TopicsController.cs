@@ -26,6 +26,7 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Topics
+                                .Include(t => t.FormationTopics)
                                 .Include(t => t.TrainingTopics)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -59,6 +60,7 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var state = await _context.Topics
+                .Include(t => t.FormationTopics)
                 .Include(t => t.TrainingTopics)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)

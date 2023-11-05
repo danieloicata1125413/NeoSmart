@@ -249,6 +249,69 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("DocumentTypes");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Formation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("OccupationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OccupationId", "Cod")
+                        .IsUnique();
+
+                    b.ToTable("Formations");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.FormationTopic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FormationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FormationId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("FormationTopics");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.Property<int>("Id")
@@ -412,10 +475,16 @@ namespace NeoSmart.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("OccupationId")
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Type")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Updated")
@@ -423,10 +492,34 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OccupationId", "Cod")
+                    b.HasIndex("Cod")
                         .IsUnique();
 
+                    b.HasIndex("ProcessId");
+
                     b.ToTable("Trainings");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingId");
+
+                    b.ToTable("TrainingImages");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopic", b =>
@@ -449,7 +542,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasIndex("TrainingId");
 
-                    b.ToTable("TrainingTopic");
+                    b.ToTable("TrainingTopics");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.User", b =>
@@ -618,6 +711,36 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("State");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Formation", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Occupation", "Occupation")
+                        .WithMany("Formations")
+                        .HasForeignKey("OccupationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Occupation");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.FormationTopic", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Formation", "Formation")
+                        .WithMany("FormationTopics")
+                        .HasForeignKey("FormationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Topic", "Topic")
+                        .WithMany("FormationTopics")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Formation");
+
+                    b.Navigation("Topic");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
@@ -642,13 +765,24 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Occupation", "Occupation")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
                         .WithMany("Trainings")
-                        .HasForeignKey("OccupationId")
+                        .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Occupation");
+                    b.Navigation("Process");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                        .WithMany("TrainingImages")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Training");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopic", b =>
@@ -694,14 +828,21 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("States");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Formation", b =>
+                {
+                    b.Navigation("FormationTopics");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
-                    b.Navigation("Trainings");
+                    b.Navigation("Formations");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Process", b =>
                 {
                     b.Navigation("Occupations");
+
+                    b.Navigation("Trainings");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.State", b =>
@@ -711,11 +852,15 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Topic", b =>
                 {
+                    b.Navigation("FormationTopics");
+
                     b.Navigation("TrainingTopics");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
                 {
+                    b.Navigation("TrainingImages");
+
                     b.Navigation("TrainingTopics");
                 });
 #pragma warning restore 612, 618

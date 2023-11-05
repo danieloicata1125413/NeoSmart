@@ -1,26 +1,11 @@
 ﻿@page "/"
 
-<style type="text/css">
-    .card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid lightgray;
-        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
-        border-radius: 15px;
-        font-family: sans-serif;
-        margin: 5px;
-    }
-</style>
-
 <PageTitle>NeoSmart</PageTitle>
-
+<TrainingGrid></TrainingGrid>
 <AuthorizeView Roles="Administrador">
     <Authorized>
-        <p>Estas autenticado y autorizado, @context.User.Identity?.Name</p>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-6">
+        <div class="row mb-3">
+                <div class="col-12">
                     <div class="card widget-inline">
                         <div class="card-body">
                             <PartialPanelBuscar></PartialPanelBuscar>
@@ -29,7 +14,7 @@
                 </div>
                 <!-- end col-->
 
-                <div class="col-3">
+                @* <div class="col-3">
                     <PartialUsuarios></PartialUsuarios>
                 </div>
 
@@ -39,21 +24,18 @@
                             <PartialMensajes></PartialMensajes>
                         </div>
                     </div>
-                </div>
+                </div> *@
 
             </div>
-            <div class="row">
+            @* <div class="row">
                 <div class="card widget-inline">
                     <div class="card-body">
                         <PartialCalendar></PartialCalendar>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> *@
     </Authorized>
     <NotAuthorized>
-        <p>No Estas autenticado y autorizado</p>
+        @* <p>No Estas autenticado y autorizado</p> *@
     </NotAuthorized>
 </AuthorizeView>
-
-

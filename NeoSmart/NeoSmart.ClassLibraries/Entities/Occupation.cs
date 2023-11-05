@@ -26,9 +26,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
-        public ICollection<Training>? Trainings { get; set; }
+        public ICollection<Formation>? Formations { get; set; }
 
-        [Display(Name = "Capacitaciones")]
-        public int TrainingsNumber => Trainings == null ? 0 : Trainings.Count;
+        [Display(Name = "Formaciones")]
+        public int FormationsNumber => Formations == null ? 0 : Formations.Count;
     }
 }

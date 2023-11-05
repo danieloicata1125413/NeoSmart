@@ -3,73 +3,136 @@
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
 
-@* <div class="col-md-4"> *@
-<div class="card widget-inline">
-    <div class="card-body">
-        <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnDataAnnotationsValidatedAsync">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
             <div class="row">
-                <div class="col-6 mb-3">
-                    <div class="form-group mb-2">
-                        <label>Cargo:</label>
-                        <select class="form-select" @bind="TrainingDTO.OccupationId">
-                            <option value="0">-- Seleccione un cargo --</option>
-                            @if (occupations is not null)
-                            {
-                                @foreach (var occupation in occupations)
+                <div class="col">
+                    <h4 class="float-start">@Titulo</h4>
+                    <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="Training-tab" data-bs-toggle="tab" data-bs-target="#Training" type="button" role="tab" aria-controls="Training" aria-selected="true">Capacitación</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
+                </li>
+            </ul>
+      
+        </div>
+        <div class="card-body">
+            
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="Training" role="tabpanel" aria-labelledby="Training-tab">
+                <div class="row">
+                    <div class="col-6 p-2">
+                        <div class="form-group mb-2">
+                            <label class="control-label">Código:</label>
+                            <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
+                            <ValidationMessage For="@(() => TrainingDTO.Cod)" />
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="control-label">Descripción:</label>
+                            <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
+                            <ValidationMessage For="@(() => TrainingDTO.Description)" />
+
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
+                        </div>
+                    </div>
+                    <div class="col-6 p-2">
+                        <div class="form-group mb-2">
+                            <label class="control-label">Duración:</label>
+                            <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
+                            <ValidationMessage For="@(() => TrainingDTO.Duration)" />
+                        </div>
+                        <div class="form-group mb-2">
+                            <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
+                        </div>
+                        <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
+                            <label>Proceso:</label>
+                            <select class="form-select" @bind="TrainingDTO.ProcessId">
+                                <option value="0">-- Seleccione un proceso --</option>
+                                @if (processes is not null)
                                 {
-                                    if (TrainingDTO.OccupationId != 0)
+                                    @foreach (var process in processes)
                                     {
-                                        <option value="@occupation.Id" selected="@(occupation.Id == TrainingDTO.Occupation!.Id)">@occupation.Description</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@occupation.Id">@occupation.Description</option>
+                                        if (TrainingDTO.ProcessId != 0)
+                                        {
+                                            <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@process.Id">@process.Description</option>
+                                        }
                                     }
                                 }
-                            }
-                        </select>
-                        <ValidationMessage For="@(() => TrainingDTO.OccupationId)" />
+                            </select>
+                            <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                        </div>
                     </div>
-                    <div class="form-group mb-2">
-                        <label class="control-label">Código:</label>
-                        <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
-                        <ValidationMessage For="@(() => TrainingDTO.Cod)" />
-                    </div>
-                    <div class="form-group mb-2">
-                        <label class="control-label">Descripción:</label>
-                        <InputText class="form-control" @bind-Value="@TrainingDTO.Description" />
-                        <ValidationMessage For="@(() => TrainingDTO.Description)" />
-                        <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado:</label>
-                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="TrainingTopics" role="tabpanel" aria-labelledby="TrainingTopics-tab">
+                <div class="col-12 p-2">
+                    <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                </div>
+            </div>
+            <div class="tab-pane fade" id="TrainingImages" role="tabpanel" aria-labelledby="TrainingImages-tab">
+                <div class="col-12 mb-3">
+                    @if (TrainingDTO.TrainingImages is not null)
+                    {
+                        foreach (var trainingImage in TrainingDTO.TrainingImages)
+                        {
+                            <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
+                        }
+                    }
                 </div>
                 <div class="col-6 mb-3">
-                    <div class="form-group mb-2">
-                        <label>Temas:</label>
-                        <MultipleSelector NonSelected="nonSelected" Selected="selected" />
-                </div>
+                    <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
                 </div>
             </div>
-            <div class="form-group mt-2">
-                <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
-                <button class="btn btn-primary" type="submit">Guardar</button>
-            </div>
-        </EditForm>
+        </div>
+        </div>
+        <div class="card-footer">
+            @* <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button> *@
+            <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
     </div>
-</div>
+</EditForm>
+
 @* </div> *@
 
 @code {
     private EditContext editContext = null!;
-    private List<Occupation>? occupations;
+    private List<Process>? processes;
     private List<MultipleSelectorModel> selected { get; set; } = new();
     private List<MultipleSelectorModel> nonSelected { get; set; } = new();
     private bool loading;
+    private string? imageUrl;
+    bool TypeValue
+    {
+        get => Convert.ToBoolean(TrainingDTO.Type);
+        set => TrainingDTO.Type = value;
+    }
     bool StatusValue
     {
         get => Convert.ToBoolean(TrainingDTO.Status);
         set => TrainingDTO.Status = value;
     }
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = null!;
 
     [Parameter]
     public bool IsEdit { get; set; } = false;
@@ -98,16 +161,15 @@
     protected override async Task OnInitializedAsync()
     {
         editContext = new(TrainingDTO);
-        await LoadOccupationsAsync();
-
+        await LoadProcessesAsync();
         selected = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         nonSelected = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
     }
 
-    private async Task LoadOccupationsAsync()
+    private async Task LoadProcessesAsync()
     {
         loading = true;
-        var responseHttp = await repository.GetAsync<List<Occupation>>("/api/occupations/combo");
+        var responseHttp = await repository.GetAsync<List<Process>>("/api/processes/combo");
         if (responseHttp.Error)
         {
             loading = false;
@@ -115,7 +177,8 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        occupations = responseHttp.Response;
+
+        processes = responseHttp.Response;
         loading = false;
     }
 
@@ -123,6 +186,16 @@
     {
         TrainingDTO.TrainingTopicIds = selected.Select(x => int.Parse(x.Key)).ToList();
         await OnValidSubmit.InvokeAsync();
+    }
+
+    private void ImageSelected(string imagenBase64)
+    {
+        if (TrainingDTO.NewTrainingImages is null)
+        {
+            TrainingDTO.NewTrainingImages = new List<string>();
+        }
+        TrainingDTO.NewTrainingImages!.Add(imagenBase64);
+        imageUrl = null;
     }
 
     private async Task OnBeforeInternalNavigationAsync(LocationChangingContext context)
