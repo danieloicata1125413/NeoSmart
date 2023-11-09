@@ -1,6 +1,6 @@
 ﻿namespace NeoSmart.ClassLibraries.DTOs
 {
-    public class TemporalOrderDTO
+    public class TemporalInscriptionDTO
     {
         public int Id { get; set; }
 

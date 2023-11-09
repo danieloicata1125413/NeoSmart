@@ -4,9 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo Tema</h3>
-
-<TopicForm @ref="topicForm" Topic="topic" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<TopicForm Titulo="Nuevo Tema" @ref="topicForm" Topic="topic" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
     private Topic topic = new()

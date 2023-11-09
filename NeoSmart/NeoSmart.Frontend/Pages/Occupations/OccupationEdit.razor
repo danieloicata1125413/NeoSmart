@@ -4,15 +4,13 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar Cargo</h3>
-
 @if (occupation is null)
 {
     <Loading />
 }
 else
 {
-    <OccupationForm @ref="occupationForm" Occupation="occupation" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <OccupationForm Titulo="Editar Cargo" @ref="occupationForm" Occupation="occupation" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {

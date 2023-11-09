@@ -4,15 +4,13 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar País</h3>
-
 @if(country is null)
 {
     <Loading/>
 }
 else
 {
-    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <CountryForm Titulo="Editar País" @ref="countryForm" Country="country" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {

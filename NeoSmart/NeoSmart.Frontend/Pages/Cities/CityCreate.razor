@@ -4,9 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nueva Ciudad</h3>
-
-<CityForm @ref="cityForm" City="city" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<CityForm Titulo="Nueva Ciudad" @ref="cityForm" City="city" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
     private City city = new();

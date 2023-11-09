@@ -10,7 +10,7 @@
 }
 else
 {
-    <TrainingForm Titulo="Editar Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
+    <TrainingForm Titulo="Editar Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true AddImageAction="AddImageAsync" RemoveImageAction="RemoveImageAsyc" />
 }
 
 @code {
@@ -65,12 +65,76 @@ else
                 ProcessId = training.ProcessId,
                 Process = training.Process,
                 TrainingImages = training.TrainingImages,
-                NewTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
+                ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
                 Status = training.Status,
                 Created = training.Created,
                 Updated = training.Updated,
                 TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
             };
+    }
+
+    private async Task AddImageAsync()
+    {
+        if (trainingDTO.NewTrainingImages is null || trainingDTO.NewTrainingImages.Count == 0)
+        {
+            return;
+        }
+
+        var imageDTO = new ImageDTO
+            {
+                Id = TrainingId,
+                Images = trainingDTO.NewTrainingImages!
+            };
+
+        var httpResponse = await repository.PostAsync<ImageDTO, List<TrainingImage>>("/api/trainings/addImages", imageDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        trainingDTO.TrainingImages = httpResponse.Response!;
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Imagenes agregadas con éxito.");
+    }
+
+    private async Task RemoveImageAsyc()
+    {
+        if (trainingDTO.TrainingImages is null || trainingDTO.TrainingImages.Count == 0)
+        {
+            return;
+        }
+
+        // var imageDTO = new ImageDTO
+        //     {
+        //         ProductId = ProductId,
+        //         Images = productDTO.ProductImages!
+        //     };
+
+        // var httpResponse = await repository.PostAsync<ImageDTO, ImageDTO>("/api/products/removeLastImage", imageDTO);
+        // if (httpResponse.Error)
+        // {
+        //     var message = await httpResponse.GetErrorMessageAsync();
+        //     await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        //     return;
+        // }
+
+        // productDTO.ProductImages = httpResponse.Response!.Images;
+        // var toast = sweetAlertService.Mixin(new SweetAlertOptions
+        //     {
+        //         Toast = true,
+        //         Position = SweetAlertPosition.BottomEnd,
+        //         ShowConfirmButton = true,
+        //         Timer = 3000
+        //     });
+        // await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Imagén eliminada con éxito.");
     }
 
     private async Task LoadTopicsAsync()
@@ -104,6 +168,7 @@ else
 
     private async Task SaveAsync()
     {
+        trainingDTO.TrainingImages = null;
         var response = await repository.PutAsync($"/api/trainings/full", trainingDTO);
         if (response.Error)
         {

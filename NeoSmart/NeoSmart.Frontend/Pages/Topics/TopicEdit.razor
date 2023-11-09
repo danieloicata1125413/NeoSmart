@@ -4,15 +4,13 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar Tema</h3>
-
 @if (topic is null)
 {
     <Loading />
 }
 else
 {
-    <TopicForm @ref="topicForm" Topic="topic" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <TopicForm Titulo="Editar Tema" @ref="topicForm" Topic="topic" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {

@@ -4,14 +4,13 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo Entrenamiento</h3>
 @if (loading)
 {
     <Loading />
 }
 else
 {
-    <FormationForm @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+    <FormationForm Titulo="Nuevo Entrenamiento" @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
 }
 
 @code {

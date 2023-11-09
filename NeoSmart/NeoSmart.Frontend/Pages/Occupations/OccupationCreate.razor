@@ -4,9 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo Cargo</h3>
-
-<OccupationForm @ref="occupationForm" Occupation="occupation" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<OccupationForm Titulo="Nuevo Cargo" @ref="occupationForm" Occupation="occupation" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
     private Occupation occupation = new Occupation()

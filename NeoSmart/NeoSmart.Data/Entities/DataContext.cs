@@ -17,6 +17,8 @@ namespace NeoSmart.Data.Entities
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
         public DbSet<TrainingImage> TrainingImages { get; set; }
         public DbSet<Topic> Topics { get; set; }
+        public DbSet<Inscription> Inscriptions { get; set; }
+        public DbSet<TemporalInscription> TemporalInscriptions { get; set; }
         public DbSet<Formation> Formations { get; set; }
         public DbSet<FormationTopic> FormationTopics { get; set; }
         public DbSet<City> Cities { get; set; }

@@ -31,6 +31,7 @@ namespace NeoSmart.ClassLibraries.DTOs
         public Process? Process { get; set; }
         public List<int>? TrainingTopicIds { get; set; }
         public List<string>? NewTrainingImages { get; set; }
+        public List<string>? ListTrainingImages { get; set; }
         public ICollection<TrainingImage>? TrainingImages { get; set; }
     }
 }

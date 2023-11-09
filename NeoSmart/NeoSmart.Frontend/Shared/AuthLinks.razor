@@ -1,7 +1,7 @@
 ﻿<AuthorizeView>
     <Authorized>
         <div class="dropdown">
-            <label class="h6 text-center">Hola, @context.User.Identity!.Name </label>
+            <label class="h6 text-center">@context.User.Identity!.Name</label>
             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                 @if (!string.IsNullOrEmpty(photoUser))
                 {
@@ -12,11 +12,14 @@
                     <img src="./img/ic_user.png" width="40" height="40" style="border-radius:50%" />
                 }
             </button>
-            <ul class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton1" style="margin:0 auto">        
-                <a href="EditUser" class="btn btn-primary">Mi Cuenta</a>
-                <a href="Logout" class="btn btn-danger">Cerrar Sesión</a>
+            <ul class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton1" style="margin:0 auto">    
+                <li><a class="dropdown-item" href="EditUser">Mi Cuenta</a></li>
+                <li><a class="dropdown-item" href="/Inscriptions">Mis Capacitaciones</a></li>
+                <li><a class="dropdown-item" href="/Inscriptions/ShowCart">Mi Cesta</a></li>
+                <li><a class="dropdown-item" href="Logout">Cerrar Sesión</a></li>
             </ul>
         </div>
+        
     </Authorized>
     <NotAuthorized>
         <a @onclick=@(() => ShowModal(true)) class="nav-link btn btn-link">Registro</a>

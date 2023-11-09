@@ -44,5 +44,8 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Imagenes")]
         public List<string> MainImages => TrainingImages == null || TrainingImages.Count == 0 ? new List<string>() { "/img/NoImage.png" } : TrainingImages!.Select(x => x.Image).ToList();
+    
+        public ICollection<TemporalInscription>? TemporalInscriptions { get; set; }
+        public ICollection<Inscription>? Inscriptions { get; set; }
     }
 }

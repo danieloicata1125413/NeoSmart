@@ -9,11 +9,18 @@
 }
 else
 {
-    @* <div class="col-md-4"> *@
-    <div class="card widget-inline">
-        <div class="card-body">
-            <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
+    <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <h4 class="float-start">@Titulo</h4>
+                        <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body m-2">
                 <div class="row">
                     <div class="col-6 p-2">
                         <div class="form-group mb-2">
@@ -52,14 +59,12 @@ else
                         </div>
                     </div>
                 </div>
-                <div class="form-group mt-2">
-                    <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
-                    <button class="btn btn-primary" type="submit">Guardar</button>
-                </div>
-            </EditForm>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+            </div>
         </div>
-    </div>
-    @* </div> *@
+    </EditForm>
 }
 
 @code {
@@ -97,14 +102,16 @@ else
 
     [EditorRequired]
     [Parameter]
+    public string Titulo { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Occupation Occupation { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]
     public EventCallback OnValidSubmit { get; set; }
 
-    [EditorRequired]
-    [Parameter]
     public EventCallback ReturnAction { get; set; }
 
     public bool FormPostedSuccessfully { get; set; }

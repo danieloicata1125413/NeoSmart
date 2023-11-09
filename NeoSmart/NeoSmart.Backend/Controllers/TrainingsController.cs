@@ -99,7 +99,7 @@ namespace NeoSmart.BackEnd.Controllers
                 foreach (var trainingImage in trainingDTO.NewTrainingImages!)
                 {
                     var photoTraining = Convert.FromBase64String(trainingImage);
-                    newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "Trainings") });
+                    newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
                 }
 
                 foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
@@ -145,10 +145,12 @@ namespace NeoSmart.BackEnd.Controllers
                 training.Type = trainingDTO.Type;
                 training.Duration = trainingDTO.Duration;
                 training.ProcessId = trainingDTO.ProcessId;
+
                 if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
                 {
                     training.TrainingTopics = trainingDTO.TrainingTopicIds!.Select(x => new TrainingTopic { TopicId = x }).ToList();
                 }
+
                 training.Status = trainingDTO.Status;
                 _context.Update(training);
                 await _context.SaveChangesAsync();
@@ -162,6 +164,72 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 return BadRequest(exception.Message);
             }
+        }
+
+        [HttpPost("addImages")]
+        public async Task<ActionResult> PostAddImagesAsync(ImageDTO imageDTO)
+        {
+            var training = await _context.Trainings
+                .Include(x => x.TrainingImages)
+                .FirstOrDefaultAsync(x => x.Id == imageDTO.Id);
+            if (training == null)
+            {
+                return NotFound();
+            }
+
+            for (int i = 0; i < imageDTO.Images.Count; i++)
+            {
+                if (!imageDTO.Images[i].StartsWith("https://"))
+                {
+                    var photoTraining = Convert.FromBase64String(imageDTO.Images[i]);
+                    imageDTO.Images[i] = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings");
+                    training.TrainingImages!.Add(new TrainingImage { Image = imageDTO.Images[i] });
+                }
+            }
+
+            _context.Update(training);
+            await _context.SaveChangesAsync();
+            return Ok(training!.TrainingImages!.Select(x=>x.Image).ToList());
+        }
+
+        [HttpPost("removeImages")]
+        public async Task<ActionResult> PostDeleteImagesAsync(ImageDTO imageDTO)
+        {
+            var trainingImage = await _context.TrainingImages
+                .FirstOrDefaultAsync(x => x.Id == imageDTO.Id);
+            if (trainingImage == null)
+            {
+                return NotFound();
+            }
+
+            _context.Remove(trainingImage);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("removeLastImage")]
+        public async Task<ActionResult> PostRemoveLastImageAsync(ImageDTO imageDTO)
+        {
+            var training = await _context.Trainings
+                .Include(x => x.TrainingImages)
+                .FirstOrDefaultAsync(x => x.Id == imageDTO.Id);
+            if (training == null)
+            {
+                return NotFound();
+            }
+
+            if (training.TrainingImages is null || training.TrainingImages.Count == 0)
+            {
+                return Ok();
+            }
+
+            var lastImage = training.TrainingImages.LastOrDefault();
+            await _fileStorage.RemoveFileAsync(lastImage!.Image, "trainings");
+            training.TrainingImages.Remove(lastImage);
+            _context.Update(training);
+            await _context.SaveChangesAsync();
+            imageDTO.Images = training.TrainingImages.Select(x => x.Image).ToList();
+            return Ok(imageDTO);
         }
     }
 }

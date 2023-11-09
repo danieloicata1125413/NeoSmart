@@ -1,0 +1,188 @@
+﻿@page "/Inscriptions/Details/{InscriptionId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Administrador,Gerente,Lider,Capacitador,Empleado")]
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">Detalle de inscripción</h4>
+                    <a class="btn btn-danger float-end me-1" href="/Inscriptions"><i class="oi oi-ban" /> Cerrar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body m-2">
+            <div class="row mx-2 my-2">
+                <div class="col-6">
+                    <h5><strong>Trabajador</strong></h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Nombre</p>
+                            <p>Documento</p>
+                            <p>Teléfono</p>
+                            <p>Email</p>
+                            <p>Dirección</p>
+                        </div>
+                        <div class="col-8">
+                            <p><strong>@inscription.User.FullName</strong></p>
+                            <p><strong>@inscription.User.Document</strong></p>
+                            <p><strong>@inscription.User.PhoneNumber</strong></p>
+                            <p><strong>@inscription.User.UserName</strong></p>
+                            <p><strong>@inscription.User.Address, @inscription.User.City!.Name, @inscription.User.City.State!.Name, @inscription.User.City.State.Country!.Name</strong></p>
+                        </div>
+                    </div>
+                    <h5><strong>Capacitador</strong></h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Nombre</p>
+                            <p>Documento</p>
+                            <p>Teléfono</p>
+                            <p>Email</p>
+                        </div>
+                        <div class="col-8">
+                            <p><strong>@inscription.User.FullName</strong></p>
+                            <p><strong>@inscription.User.Document</strong></p>
+                            <p><strong>@inscription.User.PhoneNumber</strong></p>
+                            <p><strong>@inscription.User.UserName</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <CarouselView Images="@inscription.Training!.MainImages" />
+                    <div class="row">
+                        <div class="col-4">
+                            @* <p>Imagen</p> *@
+                            <p>Capacitación</p>
+                            <p>Fecha</p>
+                            <p>Estado</p>
+                            <p>Comentarios</p>
+                        </div>
+                        <div class="col-8">
+                            @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
+                            <p>@inscription.Training!.Description</p>
+                            <p><strong>@($"{inscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
+                            <p><strong>@EnumHelper.GetEnumDescription(inscription.InscriptionStatus)</strong></p>
+                            <p><strong>@(string.IsNullOrEmpty(inscription.Remarks) ? "NA" : inscription.Remarks)</strong></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label>Temas:</label>
+                        @foreach (var trainingTopic in inscription.Training!.TrainingTopics!)
+                        {
+                            <b>@trainingTopic.Topic!.Description</b>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+        <div class="card-footer">
+            @if (inscription!.InscriptionStatus == InscriptionStatus.Registered)
+            {
+                <button class="btn btn-sm btn-danger float-end mx-2" @onclick=@(() => CancelInscriptionAsync())><i class="oi oi-trash" /> Cancelar</button>
+                <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
+                <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
+                <AuthorizeView Roles="Administrador,Gerente,Lider">
+                    <Authorized>
+                        <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
+                        <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
+                    </Authorized>
+                </AuthorizeView>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private Inscription? inscription;
+    private bool loading = true;
+
+    [Parameter]
+    public int InscriptionId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<Inscription>($"api/Inscriptions/{InscriptionId}");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/Inscriptions");
+                return;
+            }
+            var messageError = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
+        }
+        inscription = responseHttp.Response;
+        loading = false;
+    }
+
+    private async Task CancelInscriptionAsync()
+    {
+        await ModifyTemporalOrder("Cancelar", InscriptionStatus.Cancelled);
+    }
+
+    private async Task RefusedInscriptionAsync()
+    {
+        await ModifyTemporalOrder("Rechazar", InscriptionStatus.Refused);
+    }
+
+    private async Task ConfirmedOrderAsync()
+    {
+        await ModifyTemporalOrder("Confirmar", InscriptionStatus.Confirmed);
+    }
+
+    private async Task ModifyTemporalOrder(string message, InscriptionStatus status)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Esta seguro que quieres {message} la solicitud?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var inscriptionDTO = new InscriptionDTO
+            {
+                Id = InscriptionId,
+                InscriptionStatus = status
+            };
+
+        var responseHTTP = await repository.PutAsync("api/Inscriptions", inscriptionDTO);
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        navigationManager.NavigateTo("/Inscriptions");
+    }
+}

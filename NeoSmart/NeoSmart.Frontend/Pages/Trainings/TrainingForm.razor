@@ -2,8 +2,6 @@
 @inject IRepository repository
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
-
-
 <EditForm EditContext="editContext" OnValidSubmit="OnDataAnnotationsValidatedAsync">
     <DataAnnotationsValidator />
     <div class="card">
@@ -14,7 +12,6 @@
                     <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
                 </div>
             </div>
-
             <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="Training-tab" data-bs-toggle="tab" data-bs-target="#Training" type="button" role="tab" aria-controls="Training" aria-selected="true">Capacitación</button>
@@ -26,92 +23,89 @@
                     <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
                 </li>
             </ul>
-      
         </div>
-        <div class="card-body">
-            
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="Training" role="tabpanel" aria-labelledby="Training-tab">
-                <div class="row">
-                    <div class="col-6 p-2">
-                        <div class="form-group mb-2">
-                            <label class="control-label">Código:</label>
-                            <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
-                            <ValidationMessage For="@(() => TrainingDTO.Cod)" />
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="control-label">Descripción:</label>
-                            <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
-                            <ValidationMessage For="@(() => TrainingDTO.Description)" />
+        <div class="card-body m-2">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="Training" role="tabpanel" aria-labelledby="Training-tab">
+                    <div class="row">
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <label class="control-label">Código:</label>
+                                <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
+                                <ValidationMessage For="@(() => TrainingDTO.Cod)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Descripción:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
+                                <ValidationMessage For="@(() => TrainingDTO.Description)" />
 
-                        </div>
+                            </div>
 
-                        <div class="form-group mb-2">
-                            <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
+                            <div class="form-group mb-2">
+                                <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6 p-2">
-                        <div class="form-group mb-2">
-                            <label class="control-label">Duración:</label>
-                            <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
-                            <ValidationMessage For="@(() => TrainingDTO.Duration)" />
-                        </div>
-                        <div class="form-group mb-2">
-                            <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
-                        </div>
-                        <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
-                            <label>Proceso:</label>
-                            <select class="form-select" @bind="TrainingDTO.ProcessId">
-                                <option value="0">-- Seleccione un proceso --</option>
-                                @if (processes is not null)
-                                {
-                                    @foreach (var process in processes)
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <label class="control-label">Duración:</label>
+                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
+                                <ValidationMessage For="@(() => TrainingDTO.Duration)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
+                            </div>
+                            <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
+                                <label>Proceso:</label>
+                                <select class="form-select" @bind="TrainingDTO.ProcessId">
+                                    <option value="0">-- Seleccione un proceso --</option>
+                                    @if (processes is not null)
                                     {
-                                        if (TrainingDTO.ProcessId != 0)
+                                        @foreach (var process in processes)
                                         {
-                                            <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@process.Id">@process.Description</option>
+                                            if (TrainingDTO.ProcessId != 0)
+                                            {
+                                                <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@process.Id">@process.Description</option>
+                                            }
                                         }
                                     }
-                                }
-                            </select>
-                            <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                                </select>
+                                <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane fade" id="TrainingTopics" role="tabpanel" aria-labelledby="TrainingTopics-tab">
-                <div class="col-12 p-2">
-                    <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                <div class="tab-pane fade" id="TrainingTopics" role="tabpanel" aria-labelledby="TrainingTopics-tab">
+                    <div class="col-12 p-2">
+                        <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                    </div>
                 </div>
-            </div>
-            <div class="tab-pane fade" id="TrainingImages" role="tabpanel" aria-labelledby="TrainingImages-tab">
-                <div class="col-12 mb-3">
-                    @if (TrainingDTO.TrainingImages is not null)
-                    {
-                        foreach (var trainingImage in TrainingDTO.TrainingImages)
+                <div class="tab-pane fade" id="TrainingImages" role="tabpanel" aria-labelledby="TrainingImages-tab">
+                    <div class="col-12 mb-3">
+                        @if (TrainingDTO.TrainingImages is not null)
                         {
-                            <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
+                            foreach (TrainingImage trainingImage in TrainingDTO.TrainingImages)
+                            {
+                                    <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
+                                    @* <button type="button" class="btn btn-outline-danger" @onclick="DeleteImageAction"><i class="oi oi-plus" /> eliminar Imágen</button> *@
+                            }
                         }
-                    }
-                </div>
-                <div class="col-6 mb-3">
-                    <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
+                    </div>
+                    <div class="col-6 mb-3">
+                        <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
+                        <button type="button" class="btn btn-outline-primary" @onclick="AddImageAction"><i class="oi oi-plus" /> Agregar Imágen</button>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
         <div class="card-footer">
-            @* <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button> *@
             <button class="btn btn-primary" type="submit">Guardar</button>
         </div>
     </div>
 </EditForm>
-
-@* </div> *@
 
 @code {
     private EditContext editContext = null!;
@@ -148,6 +142,17 @@
     [EditorRequired]
     [Parameter]
     public EventCallback ReturnAction { get; set; }
+
+    [Parameter]
+    public EventCallback AddImageAction { get; set; }
+
+    [Parameter]
+    public EventCallback DeleteImageAction { get; set; }
+    [Parameter]
+    public int IdDeleteImageAction { get; set; }
+
+    [Parameter]
+    public EventCallback RemoveImageAction { get; set; }
 
     [Parameter]
     public List<Topic> SelectedTopics { get; set; } = new();
@@ -195,7 +200,7 @@
             TrainingDTO.NewTrainingImages = new List<string>();
         }
         TrainingDTO.NewTrainingImages!.Add(imagenBase64);
-        imageUrl = null;
+        imageUrl = string.Empty;
     }
 
     private async Task OnBeforeInternalNavigationAsync(LocationChangingContext context)

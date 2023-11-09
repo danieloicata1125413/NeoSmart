@@ -2,26 +2,29 @@
 
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
 
-@* <div class="col-md-4"> *@
-    <div class="card widget-inline">
-        <div class="card-body">
-            <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
-                <div class="mb-3">
-                    <div class="form-group">
-                        <label class="control-label">Ciudad:</label>
-                        <InputText class="form-control" @bind-Value="@City.Name" />
-                        <ValidationMessage For="@(() => City.Name)" />
-                    </div>
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">@Titulo</h4>
+                    <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
                 </div>
-                <div class="form-group mt-2">
-                <button class="btn btn-outline-success" @onclick="ReturnAction">Regresar</button>
-                    <button class="btn btn-primary" type="submit">Guardar</button>
-                </div>
-            </EditForm>
+            </div>
+        </div>
+        <div class="card-body m-2">
+            <div class="form-group">
+                <label class="control-label">Ciudad:</label>
+                <InputText class="form-control" @bind-Value="@City.Name" />
+                <ValidationMessage For="@(() => City.Name)" />
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar</button>
         </div>
     </div>
-@* </div> *@
+</EditForm>
 
 @code {
     private EditContext editContext = null!;
@@ -30,6 +33,10 @@
     {
         editContext = new(City);
     }
+
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

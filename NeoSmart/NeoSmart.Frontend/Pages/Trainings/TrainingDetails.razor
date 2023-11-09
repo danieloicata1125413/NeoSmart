@@ -43,9 +43,7 @@ else
                         </div>
                     </div>
                 </div>
-
             </div>
-            
         </div>
     </div>
 }
@@ -55,12 +53,15 @@ else
     private List<string>? images;
     private bool loading = true;
     private Training? training;
+    private bool isAuthenticated;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
     public int TrainingId { get; set; }
+
+    public TemporalInscriptionDTO TemporalInscriptionDTO { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {

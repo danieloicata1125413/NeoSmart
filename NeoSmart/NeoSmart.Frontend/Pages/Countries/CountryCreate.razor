@@ -4,9 +4,7 @@
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<h3>Nuevo País</h3>
-
-<CountryForm @ref="countryForm" Country="country" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<CountryForm Titulo="Nuevo País" @ref="countryForm" Country="country" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 
 @code {

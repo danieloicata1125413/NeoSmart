@@ -28,7 +28,7 @@ else
                 <Authorized>
                     @if (counter > 0)
                     {
-                        <a href="/Orders/ShowCart" class="btn btn-primary">Ver solicitud: (@counter)</a>
+                        <button class="btn btn-sm btn-outline-primary" @onclick=@(() => ShowCartAsync())> Ver solicitud: (@counter)</button>
                     }
                 </Authorized>
             </AuthorizeView>
@@ -94,7 +94,7 @@ else
     protected async override Task OnParametersSetAsync()
     {
         await CheckIsAuthenticatedAsync();
-        // await LoadCounterAsync();
+        await LoadTemporalInscriptionCounterAsync();
     }
 
     private async Task CheckIsAuthenticatedAsync()
@@ -103,14 +103,14 @@ else
         isAuthenticated = authenticationState.User.Identity!.IsAuthenticated;
     }
 
-    private async Task LoadCounterAsync()
+    private async Task LoadTemporalInscriptionCounterAsync()
     {
         if (!isAuthenticated)
         {
             return;
         }
 
-        var responseHttp = await repository.GetAsync<int>("/api/temporalOrders/count");
+        var responseHttp = await repository.GetAsync<int>("/api/TemporalInscriptions/count");
         if (responseHttp.Error)
         {
             return;
@@ -199,12 +199,12 @@ else
             return;
         }
 
-        var temporalOrderDTO = new TemporalOrderDTO
+        var temporalInscriptionDTO = new TemporalInscriptionDTO
             {
                 TrainingId = trainingId
             };
 
-        var httpResponse = await repository.PostAsync("/api/temporalOrders/full", temporalOrderDTO);
+        var httpResponse = await repository.PostAsync("/api/TemporalInscriptions/full", temporalInscriptionDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -212,7 +212,7 @@ else
             return;
         }
 
-        await LoadCounterAsync();
+        await LoadTemporalInscriptionCounterAsync();
         var toast2 = sweetAlertService.Mixin(new SweetAlertOptions
             {
                 Toast = true,
@@ -221,5 +221,12 @@ else
                 Timer = 3000
             });
         await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Capacitación agregada al tus solicitudes.");
+    }
+
+    private async Task ShowCartAsync()
+    {
+        IModalReference modalReference;
+        modalReference = Modal.Show<ShowCart>(string.Empty);
+        await modalReference.Result;
     }
 }
