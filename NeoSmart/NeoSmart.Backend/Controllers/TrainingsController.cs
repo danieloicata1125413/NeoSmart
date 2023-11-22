@@ -34,7 +34,8 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Process!)
                                 .Include(o => o.TrainingTopics!)
                                 .ThenInclude(x => x.Topic)
-                                .Include(o => o.TrainingImages)
+                                .Include(o => o.TrainingImages!)
+                                .Include(o=> o.TrainingCalendars!)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

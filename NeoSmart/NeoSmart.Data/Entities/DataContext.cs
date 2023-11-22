@@ -14,6 +14,7 @@ namespace NeoSmart.Data.Entities
         public DbSet<Occupation> Occupations { get; set; }
         public DbSet<Process> Processes { get; set; }
         public DbSet<Training> Trainings { get; set; }
+        public DbSet<TrainingCalendar> TrainingCalendars { get; set; }
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
         public DbSet<TrainingImage> TrainingImages { get; set; }
         public DbSet<Topic> Topics { get; set; }

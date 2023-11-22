@@ -1,12 +1,13 @@
-﻿@page "/trainings"
-@attribute [Authorize(Roles = "Admin")]
+﻿@page "/TrainingCalendars/details/{TrainingId:int}"
+@attribute [Authorize(Roles = "Admin,Manager,Leader,Trainer")]
+@inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
 <div class="row mb-3">
     <div class="col-7">
         <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
-        <h3>Capacitaciones</h3>
+        <h3>Agenda</h3>
     </div>
     <div class="col-5">
         <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar capacitación..." @bind-value="Filter" />
@@ -17,39 +18,40 @@
 
 <div class="card widget-inline">
     <div class="card-body">
-        <GenericList MyList="trainings">
+        <GenericList MyList="trainingCalendars">
             <NoRecords>
-                <p>Aun no hay Capacitaciones registradas.</p>
+                <p>Aun no hay Calendarios registrados.</p>
             </NoRecords>
             <Body>
                 <table class="table table-responsive">
                     <thead>
                         <tr>
-                            <th>Código</th>
                             <th>Capacitación</th>
                             <th>Duración</th>
-                            <th>Interna</th>
-                            <th>Temas</th>
-                            <th>Programación</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Capacitador</th>
+                            <th>Ciudad</th>
+                            <th>Virtual</th>
                             <th>Habilitado</th>
-                            <th style="width:220px"></th>
+                            <th style="width:170px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var training in trainings!)
+                        @foreach (var trainingCalendar in trainingCalendars!)
                         {
                             <tr>
-                                <td>@training.Cod</td>
-                                <td>@training.Description</td>
-                                <td>@training.Duration</td>
-                                <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
-                                <td>@training.TrainingTopicsNumber</td>
-                                <td>@training.TrainingCalendarNumber</td>
-                                <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
+                                <td>@trainingCalendar.Training!.Description</td>
+                                <td>@trainingCalendar.Training!.Duration</td>
+                                <td>@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                                <td>@trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                                <td>@trainingCalendar.ExistUser</td>
+                                <td>@trainingCalendar.City!.Name</td>
+                                <td><InputCheckbox @bind-Value=trainingCalendar.Type disabled="true"></InputCheckbox></td>
+                                <td><InputCheckbox @bind-Value=trainingCalendar.Status disabled="true"></InputCheckbox></td>
                                 <td>
-                                    <a class="btn btn-info btn-sm" href="/TrainingCalendars/details/@training.Id">Agenda</a>
-                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
-                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingCalendar.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingCalendar))>Borrar</button>
                                 </td>
                             </tr>
                         }
@@ -66,12 +68,16 @@
 
 
 @code {
-    private List<Training>? trainings;
+    private Training? training;
+    private List<TrainingCalendar>? trainingCalendars;
     private int currentPage = 1;
     private int totalPages;
 
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
+
+    [Parameter]
+    public int TrainingId { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -92,11 +98,11 @@
 
         if (!isEdit)
         {
-            modalReference = Modal.Show<TrainingCreate>(string.Empty);
+            modalReference = Modal.Show<TrainingCalendarCreate>(string.Empty, new ModalParameters().Add("TrainingId", TrainingId));
         }
         else
         {
-            modalReference = Modal.Show<TrainingEdit>(string.Empty, new ModalParameters().Add("TrainingId", id));
+            modalReference = Modal.Show<TrainingCalendarEdit>(string.Empty, new ModalParameters().Add("TrainingCalendarId", id));
         }
 
         var result = await modalReference.Result;
@@ -119,23 +125,27 @@
             page = Convert.ToInt32(Page);
         }
 
-        var ok = await LoadListAsync(page);
+        var ok = await LoadTrainingAsync();
         if (ok)
         {
-            await LoadPagesAsync();
+            ok = await LoadTrainingCalendarsAsync(page);
+            if (ok)
+            {
+                await LoadPagesAsync();
+            }
         }
     }
 
-    private async Task<bool> LoadPagesAsync()
+    private async Task LoadPagesAsync()
     {
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings/totalPages";
+            url = $"api/TrainingCalendars/totalPages?id={TrainingId}";
         }
         else
         {
-            url = $"api/trainings/totalPages?filter={Filter}";
+            url = $"api/TrainingCalendars/totalPages?id={TrainingId}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -143,33 +153,50 @@
         {
             var message = await response.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return false;
+            return;
         }
         totalPages = response.Response;
-        return true;
     }
 
-    private async Task<bool> LoadListAsync(int page)
+    private async Task<bool> LoadTrainingCalendarsAsync(int page)
     {
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings?page={page}";
+            url = $"api/TrainingCalendars?id={TrainingId}&page={page}";
         }
         else
         {
-            url = $"api/trainings?page={page}&filter={Filter}";
+            url = $"api/TrainingCalendars?id={TrainingId}&page={page}&filter={Filter}";
         }
 
-        var response = await repository.GetAsync<List<Training>>(url);
+        var response = await repository.GetAsync<List<TrainingCalendar>>(url);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return false;
         }
+        trainingCalendars = response.Response;
+        return true;
+    }
 
-        trainings = response.Response;
+    private async Task<bool> LoadTrainingAsync()
+    {
+        var response = await repository.GetAsync<Training>($"/api/Trainings/{TrainingId}");
+        if (response.Error)
+        {
+            if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/Trainings");
+                return false;
+            }
+
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return false;
+        }
+        training = response.Response;
         return true;
     }
 
@@ -186,12 +213,12 @@
         await SelectedPageAsync(page);
     }
 
-    private async Task DeleteAsync(Training training)
+    private async Task DeleteAsync(TrainingCalendar trainingCalendar)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el capacitación: {training.Description}?",
+                Text = $"¿Esta seguro que quieres borrar el calendario: {trainingCalendar.Training!.Description}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
@@ -202,7 +229,7 @@
             return;
         }
 
-        var response = await repository.DeleteAsync($"api/trainings/{training.Id}");
+        var response = await repository.DeleteAsync($"api/TrainingCalendars/{trainingCalendar.Id}");
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -221,4 +248,5 @@
             });
         await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
     }
+
 }
