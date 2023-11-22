@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
@@ -103,7 +103,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var state = new State { Id = 1, Name = "test", Cod = 1, Status = true };
+            var state = new State { Id = 1, Name = "test" };
             _unitOfWorkMock.Setup(x => x.GetStateAsync(state.Id)).ReturnsAsync(state);
             var controller = new StatesController(_unitOfWorkMock.Object, context);
 

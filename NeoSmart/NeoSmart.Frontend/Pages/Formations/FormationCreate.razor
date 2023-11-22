@@ -1,5 +1,5 @@
 ﻿@page "/formations/create"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -10,19 +10,30 @@
 }
 else
 {
-    <FormationForm Titulo="Nuevo Entrenamiento" @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+    <FormationForm Titulo="Nuevo Entrenamiento" @ref="formationForm"
+                   FormationDTO="formationDTO"
+                   SelectedTopics="selectedTopics"
+                   NonSelectedTopics="nonSelectedTopics"
+                   SelectedOccupations="selectedOccupations"
+                   NonSelectedOccupations="nonSelectedOccupations"
+                   OnValidSubmit="CreateAsync"
+                   ReturnAction="Return"
+                   IsEdit=false />
 }
 
 @code {
+
     private FormationDTO formationDTO = new()
         {
-            OccupationId = 0,
             FormationTopicIds = new List<int>(),
+            FormationOccupationIds = new List<int>(),
             Status = true
         };
     private FormationForm? formationForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
+    private List<Occupation> selectedOccupations = new();
+    private List<Occupation> nonSelectedOccupations = new();
     private bool loading = true;
 
     [CascadingParameter]
@@ -31,6 +42,7 @@ else
     protected async override Task OnInitializedAsync()
     {
         await LoadTopicsAsync();
+        await LoadOccupationsAsync();
     }
 
     private async Task LoadTopicsAsync()
@@ -45,6 +57,21 @@ else
             return;
         }
         nonSelectedTopics = httpResponse.Response!;
+        loading = false;
+    }
+
+    private async Task LoadOccupationsAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<List<Occupation>>($"/api/Occupations");
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        nonSelectedOccupations = httpResponse.Response!;
         loading = false;
     }
 

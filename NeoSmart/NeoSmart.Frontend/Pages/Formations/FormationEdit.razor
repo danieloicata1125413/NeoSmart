@@ -1,5 +1,5 @@
 ﻿@page "/formations/edit/{formationId:int}"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -10,7 +10,13 @@
 }
 else
 {
-    <FormationForm Titulo="Editar Entrenamiento" @ref="formationForm" FormationDTO="formationDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
+    <FormationForm Titulo="Editar Entrenamiento" @ref="formationForm"
+                   FormationDTO="formationDTO"
+                   SelectedTopics="selectedTopics"
+                   NonSelectedTopics="nonSelectedTopics"
+                   SelectedOccupations="selectedOccupations"
+                   NonSelectedOccupations="nonSelectedOccupations"
+                   OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
 }
 
 @code {
@@ -22,6 +28,8 @@ else
     private FormationForm? formationForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
+    private List<Occupation> selectedOccupations = new();
+    private List<Occupation> nonSelectedOccupations = new();
     private bool loading = true;
 
     [CascadingParameter]
@@ -34,6 +42,7 @@ else
     {
         await LoadFormationAsync();
         await LoadTopicsAsync();
+        await LoadOccupationsAsync();
     }
 
     private async Task LoadFormationAsync()
@@ -53,6 +62,34 @@ else
         loading = false;
     }
 
+    private async Task LoadOccupationsAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<List<Occupation>>($"/api/Occupations");
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var occupations = httpResponse.Response!;
+        foreach (var occupation in occupations!)
+        {
+            var found = formation!.FormationOccupations!.FirstOrDefault(x => x.OccupationId == occupation.Id);
+            if (found == null)
+            {
+                nonSelectedOccupations.Add(occupation);
+            }
+            else
+            {
+                selectedOccupations.Add(occupation);
+            }
+        }
+        loading = false;
+    }
+
     private FormationDTO ToFormationDTO(Formation formation)
     {
         return new FormationDTO
@@ -60,12 +97,9 @@ else
                 Id = formation.Id,
                 Cod = formation.Cod,
                 Description = formation.Description,
-                OccupationId = formation.OccupationId,
-                Occupation = formation.Occupation,
                 Status = formation.Status,
-                Created = formation.Created,
-                Updated = formation.Updated,
                 FormationTopicIds = formation.FormationTopics!.Select(x => x.TopicId).ToList(),
+                FormationOccupationIds = formation.FormationOccupations!.Select(x => x.OccupationId).ToList(),
             };
     }
 
@@ -89,7 +123,8 @@ else
             if (found == null)
             {
                 nonSelectedTopics.Add(topic);
-            } else
+            }
+            else
             {
                 selectedTopics.Add(topic);
             }
@@ -99,7 +134,6 @@ else
 
     private async Task SaveAsync()
     {
-        formationDTO!.Occupation = null;
         var response = await repository.PutAsync($"/api/formations/full", formationDTO);
         if (response.Error)
         {

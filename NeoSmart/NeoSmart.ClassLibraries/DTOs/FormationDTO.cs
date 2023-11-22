@@ -18,11 +18,8 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
 
-        [Display(Name = "Cargo")]
-        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int OccupationId { get; set; }
-        public Occupation? Occupation { get; set; }
-
         public List<int>? FormationTopicIds { get; set; }
+
+        public List<int>? FormationOccupationIds { get; set; }
     }
 }

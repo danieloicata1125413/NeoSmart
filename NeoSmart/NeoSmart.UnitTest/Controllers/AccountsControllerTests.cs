@@ -433,7 +433,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Empleado,
+                UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -444,7 +444,7 @@ namespace NeoSmart.UnitTest.Controllers
             var currentUser = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Empleado,
+                UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -556,7 +556,7 @@ namespace NeoSmart.UnitTest.Controllers
             {
                 UserName = "test",
                 Password = "123456",
-                UserType = UserType.Empleado
+                UserType = UserType.Employee
             };
 
             _mockUserHelper.Setup(x => x.AddUserAsync(userModel, userModel.Password))
@@ -673,7 +673,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Empleado,
+                UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",

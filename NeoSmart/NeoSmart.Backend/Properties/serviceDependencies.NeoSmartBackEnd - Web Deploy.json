@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "storage1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/NeoSmartBackEnd/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsAzureStorage_8A9009616C, /subscriptions/c9baf874-a3c2-4f18-ba1f-9d2edfeeecc4/resourcegroups/NEOSMART/providers/Microsoft.Web/sites/NeoSmartBackEnd/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsAzureStorage_E4F581B561",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/neosmartstorage",
+      "type": "storage.azure",
+      "connectionId": "ConnectionStrings:AzureStorage",
+      "dynamicId": null
+    },
+    "mssql1": {
+      "serviceConnectorResourceId": "",
+      "secretStore": "AzureAppSettings",
+      "type": "mssql.onprem",
+      "connectionId": "ConnectionStrings:DefaultConnection",
+      "dynamicId": null
+    }
+  }
+}

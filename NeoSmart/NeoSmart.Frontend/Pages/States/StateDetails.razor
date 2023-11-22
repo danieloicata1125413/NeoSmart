@@ -1,5 +1,5 @@
 ﻿@page "/states/details/{StateId:int}"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -131,9 +131,10 @@ else
     private async Task LoadPagesAsync()
     {
         var url = string.Empty;
+        string predicate = "x => x.Name.ToLower().Contains('cucu')";
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/cities/totalPages?id={StateId}";
+            url = $"api/cities/totalPages?id={StateId}&predicate={predicate}";
         }
         else
         {
@@ -149,7 +150,6 @@ else
         }
         totalPages = response.Response;
     }
-
 
     private async Task<bool> LoadCitiesAsync(int page)
     {

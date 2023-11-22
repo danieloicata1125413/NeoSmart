@@ -2,7 +2,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-@attribute [Authorize(Roles = "Administrador,Gerente,Lider,Capacitador,Empleado")]
+@attribute [Authorize(Roles = "Admin,Manager,Leader,Capacitador,Empleado")]
 
 @if (loading)
 {
@@ -88,15 +88,21 @@ else
         <div class="card-footer">
             @if (inscription!.InscriptionStatus == InscriptionStatus.Registered)
             {
-                <button class="btn btn-sm btn-danger float-end mx-2" @onclick=@(() => CancelInscriptionAsync())><i class="oi oi-trash" /> Cancelar</button>
-                <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
-                <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
-                <AuthorizeView Roles="Administrador,Gerente,Lider">
-                    <Authorized>
-                        <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
-                        <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
-                    </Authorized>
-                </AuthorizeView>
+                <CascadingAuthenticationState>
+                    <AuthorizeView Roles="Employee">
+                        <Authorized>
+                            <button class="btn btn-sm btn-danger float-end mx-2" @onclick=@(() => CancelInscriptionAsync())><i class="oi oi-trash" /> Cancelar</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </CascadingAuthenticationState>
+                <CascadingAuthenticationState>
+                    <AuthorizeView Roles="Admin">
+                        <Authorized>
+                            <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
+                            <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </CascadingAuthenticationState>
             }
         </div>
     </div>
@@ -108,6 +114,9 @@ else
 
     [Parameter]
     public int InscriptionId { get; set; }
+
+    [CascadingParameter]
+    CascadingAuthenticationState CascadingAuthenticationState { get; set; } = default!;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;

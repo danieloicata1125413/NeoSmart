@@ -19,6 +19,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="FormationTopics-tab" data-bs-toggle="tab" data-bs-target="#FormationTopics" type="button" role="tab" aria-controls="FormationTopics" aria-selected="false">Temas</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="FormationOccupations-tab" data-bs-toggle="tab" data-bs-target="#FormationOccupations" type="button" role="tab" aria-controls="FormationOccupations" aria-selected="false">Cargos</button>
+                </li>
             </ul>
         </div>
         <div class="card-body m-2">
@@ -38,34 +41,16 @@
                                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado:</label>
                             </div>
                         </div>
-                        <div class="col-6 p-2">
-                            <div class="form-group mb-2">
-                                <label>Cargo:</label>
-                                <select class="form-select" @bind="FormationDTO.OccupationId">
-                                    <option value="0">-- Seleccione un cargo --</option>
-                                    @if (occupations is not null)
-                                    {
-                                        @foreach (var occupation in occupations)
-                                        {
-                                            if (FormationDTO.OccupationId != 0)
-                                            {
-                                                <option value="@occupation.Id" selected="@(occupation.Id == FormationDTO.Occupation!.Id)">@occupation.Description</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@occupation.Id">@occupation.Description</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-                                <ValidationMessage For="@(() => FormationDTO.OccupationId)" />
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="FormationTopics" role="tabpanel" aria-labelledby="FormationTopics-tab">
                     <div class="col-12 p-2">
-                        <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                        <MultipleSelector NonSelected="selectedTopics" Selected="nonSelectedTopics" />
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="FormationOccupations" role="tabpanel" aria-labelledby="FormationOccupations-tab">
+                    <div class="col-12 p-2">
+                        <MultipleSelector NonSelected="nonSelectedOccupations" Selected="selectedOccupations" />
                     </div>
                 </div>
             </div>
@@ -79,8 +64,10 @@
 @code {
     private EditContext editContext = null!;
     private List<Occupation>? occupations;
-    private List<MultipleSelectorModel> selected { get; set; } = new();
-    private List<MultipleSelectorModel> nonSelected { get; set; } = new();
+    private List<MultipleSelectorModel> selectedTopics { get; set; } = new();
+    private List<MultipleSelectorModel> nonSelectedTopics { get; set; } = new();
+    private List<MultipleSelectorModel> selectedOccupations { get; set; } = new();
+    private List<MultipleSelectorModel> nonSelectedOccupations { get; set; } = new();
     private bool loading;
     bool StatusValue
     {
@@ -113,35 +100,29 @@
     [EditorRequired]
     public List<Topic> NonSelectedTopics { get; set; } = new();
 
+    [Parameter]
+    public List<Occupation> SelectedOccupations { get; set; } = new();
+
+    [Parameter]
+    [EditorRequired]
+    public List<Occupation> NonSelectedOccupations { get; set; } = new();
+
     public bool FormPostedSuccessfully { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         editContext = new(FormationDTO);
-        await LoadOccupationsAsync();
 
-        selected = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
-        nonSelected = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
-    }
-
-    private async Task LoadOccupationsAsync()
-    {
-        loading = true;
-        var responseHttp = await repository.GetAsync<List<Occupation>>("/api/occupations/combo");
-        if (responseHttp.Error)
-        {
-            loading = false;
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
-        occupations = responseHttp.Response;
-        loading = false;
+        selectedTopics = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+        nonSelectedTopics = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+        selectedOccupations = SelectedOccupations.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+        nonSelectedOccupations = NonSelectedOccupations.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
     }
 
     private async Task OnDataAnnotationsValidatedAsync()
     {
-        FormationDTO.FormationTopicIds = selected.Select(x => int.Parse(x.Key)).ToList();
+        FormationDTO.FormationTopicIds = selectedTopics.Select(x => int.Parse(x.Key)).ToList();
+        FormationDTO.FormationOccupationIds = selectedOccupations.Select(x => int.Parse(x.Key)).ToList();
         await OnValidSubmit.InvokeAsync();
     }
 
@@ -176,4 +157,5 @@
 
         context.PreventNavigation();
     }
+
 }

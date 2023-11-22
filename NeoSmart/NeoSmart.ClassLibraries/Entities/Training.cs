@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Training : ISoftDetete
+    public class Training
     {
         public int Id { get; set; }
 
@@ -29,6 +29,8 @@ namespace NeoSmart.ClassLibraries.Entities
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
+        [Display(Name = "Habilitado")]
+        public bool Status { get; set; }
         public ICollection<TrainingTopic>? TrainingTopics { get; set; }
 
         [Display(Name = "Temas")]

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
@@ -26,8 +26,8 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Formations
-                                .Include(o => o.Occupation)
                                 .Include(o => o.FormationTopics)
+                                .Include(o => o.FormationOccupations)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -60,9 +60,10 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var formation = await _context.Formations
-                .Include(o => o.Occupation)
                 .Include(o => o.FormationTopics!)
                 .ThenInclude(x => x.Topic)
+                .Include(o => o.FormationOccupations!)
+                .ThenInclude(x => x.Occupation)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (formation == null)
             {
@@ -80,17 +81,25 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     Cod = formationDTO.Cod,
                     Description = formationDTO.Description,
-                    OccupationId = formationDTO.OccupationId,
                     FormationTopics = new List<FormationTopic>(),
+                    FormationOccupations = new List<FormationOccupation>(),
                     Status = formationDTO.Status,
                 };
-
                 foreach (var FormationTopicId in formationDTO.FormationTopicIds!)
                 {
                     var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == FormationTopicId);
                     if (topic != null)
                     {
                         newFormation.FormationTopics.Add(new FormationTopic { Topic = topic });
+                    }
+                }
+
+                foreach (var FormationOccupationId in formationDTO.FormationOccupationIds!)
+                {
+                    var occupation = await _context.Occupations.FirstOrDefaultAsync(x => x.Id == FormationOccupationId);
+                    if (occupation != null)
+                    {
+                        newFormation.FormationOccupations.Add(new FormationOccupation { Occupation = occupation });
                     }
                 }
 
@@ -120,13 +129,15 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     return NotFound();
                 }
-
                 formation.Cod = formationDTO.Cod;
                 formation.Description = formationDTO.Description;
-                formation.OccupationId = formationDTO.OccupationId;
                 if (formationDTO.FormationTopicIds != null && formationDTO.FormationTopicIds.Count > 0)
                 {
                     formation.FormationTopics = formationDTO.FormationTopicIds!.Select(x => new FormationTopic { TopicId = x }).ToList();
+                }
+                if (formationDTO.FormationOccupationIds != null && formationDTO.FormationOccupationIds.Count > 0)
+                {
+                    formation.FormationOccupations = formationDTO.FormationOccupationIds!.Select(x => new FormationOccupation { OccupationId = x }).ToList();
                 }
                 formation.Status = formationDTO.Status;
                 _context.Update(formation);

@@ -7,7 +7,6 @@ using NeoSmart.BackEnd.Data;
 using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Helpers;
 using NeoSmart.BackEnd.Interfaces;
-using NeoSmart.BackEnd.Intertfaces;
 using NeoSmart.BackEnd.Repositories;
 using NeoSmart.BackEnd.Services;
 using NeoSmart.BackEnd.UnitsOfWork;
@@ -16,6 +15,7 @@ using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.Data.Entities;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 IConfiguration configuration = new ConfigurationBuilder()
@@ -117,7 +117,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddDbContext<DataContext>(x =>
+builder.Services
+    .AddDbContext<DataContext>(x =>
 {
     x.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
 });
@@ -131,6 +132,11 @@ builder.Services.AddScoped<IInscriptionsHelper, InscriptionsHelper>();
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddScoped<IMailHelper, MailHelper>();
 builder.Services.AddTransient<SeedDb>();
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["ConnectionStrings:AzureStorage:blob"], preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["ConnectionStrings:AzureStorage:queue"], preferMsi: true);
+});
 
 var app = builder.Build();
 SeedData(app);
@@ -165,7 +171,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
 
 app.Run();

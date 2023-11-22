@@ -2,7 +2,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-@attribute [Authorize(Roles = "Administrador,Gerente,Lider,Capacitador,Empleado")]
+@attribute [Authorize(Roles = "Admin,Manager,Leader,Trainer,Employee")]
 
 @if (loading)
 {

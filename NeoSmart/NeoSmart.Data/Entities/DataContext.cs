@@ -21,17 +21,19 @@ namespace NeoSmart.Data.Entities
         public DbSet<TemporalInscription> TemporalInscriptions { get; set; }
         public DbSet<Formation> Formations { get; set; }
         public DbSet<FormationTopic> FormationTopics { get; set; }
+        public DbSet<FormationOccupation> FormationOccupations { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Slider> Sliders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
             modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
-            modelBuilder.Entity<Formation>().HasIndex(s => new { s.OccupationId, s.Cod }).IsUnique();
+            modelBuilder.Entity<Formation>().HasIndex(s => new { s.Cod }).IsUnique();
             modelBuilder.Entity<Training>().HasIndex(s => new { s.Cod }).IsUnique();
             modelBuilder.Entity<Topic>().HasIndex(c => c.Description).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
@@ -51,6 +53,7 @@ namespace NeoSmart.Data.Entities
             AddTimestamps();
             return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
+
         private void AddTimestamps()
         {
             var entities = ChangeTracker.Entries().Where(x => x.Entity is ISoftDetete && (x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted));

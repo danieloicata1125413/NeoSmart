@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Formation : ISoftDetete
+    public class Formation
     {
         public int Id { get; set; }
 
@@ -17,14 +17,17 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
 
-        [Display(Name = "Cargo")]
-        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int OccupationId { get; set; }
-        public Occupation? Occupation { get; set; }
+        [Display(Name = "Habilitado")]
+        public bool Status { get; set; }
 
         public ICollection<FormationTopic>? FormationTopics { get; set; }
 
         [Display(Name = "Temas")]
         public int FormationTopicsNumber => FormationTopics == null ? 0 : FormationTopics.Count;
+
+        public ICollection<FormationOccupation>? FormationOccupations { get; set; }
+
+        [Display(Name = "Cargos")]
+        public int FormationOccupationsNumber => FormationOccupations == null ? 0 : FormationOccupations.Count;
     }
 }

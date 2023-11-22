@@ -1,5 +1,5 @@
 ﻿@page "/trainings/edit/{TrainingId:int}"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -67,8 +67,6 @@ else
                 TrainingImages = training.TrainingImages,
                 ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
                 Status = training.Status,
-                Created = training.Created,
-                Updated = training.Updated,
                 TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
             };
     }

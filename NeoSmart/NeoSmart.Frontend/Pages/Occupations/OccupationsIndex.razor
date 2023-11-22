@@ -1,5 +1,5 @@
 ﻿@page "/occupations"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -38,7 +38,7 @@
                                 <td>@occupation.Cod</td>
                                 <td>@occupation.Description</td>
                                 <td>@occupation.Process!.Description</td>
-                                <td>@occupation.FormationsNumber</td>
+                                <td>@occupation.FormationOccupationsNumber</td>
                                 <td><InputCheckbox @bind-Value=occupation.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(occupation.Id, true))><i class="oi oi-pencil" /> Editar</button>

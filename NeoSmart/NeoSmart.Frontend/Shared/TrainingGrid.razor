@@ -22,6 +22,9 @@
 else
 {
     <div class="row mb-3">
+        <CarouselView Images="@_source" />
+    </div>
+    <div class="row mb-3">
         <div class="col-7">
             <h3>Capacitaciones</h3>
             <AuthorizeView>
@@ -75,7 +78,11 @@ else
     private int counter = 0;
     private bool isAuthenticated;
 
+    private List<string>? _source;
+
     public List<Training>? Trainings { get; set; }
+
+    public List<Slider>? Sliders { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
@@ -121,6 +128,7 @@ else
     protected async override Task OnInitializedAsync()
     {
         await LoadAsync();
+        await LoadSlidersAsync();
     }
 
     private async Task SelectedPageAsync(int page)
@@ -161,6 +169,20 @@ else
         {
             await sweetAlertService.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
+    }
+
+    private async Task LoadSlidersAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Slider>>("/api/Sliders/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Sliders = responseHttp.Response;
+        _source = Sliders!.Select(x => x.Image).ToList();
     }
 
     private async Task CleanFilterAsync()

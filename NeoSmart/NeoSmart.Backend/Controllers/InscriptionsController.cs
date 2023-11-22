@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
+using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
@@ -18,12 +21,14 @@ namespace NeoSmart.BackEnd.Controllers
         private readonly IInscriptionsHelper _inscriptionsHelper;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IMailHelper _mailHelper;
 
-        public InscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper)
+        public InscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper, IMailHelper mailHelper)
         {
             _inscriptionsHelper = inscriptionsHelper;
             _context = context;
             _userHelper = userHelper;
+            _mailHelper = mailHelper;
         }
 
         [HttpGet("{id:int}")]
@@ -66,7 +71,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .ThenInclude(i => i!.TrainingImages)
                 .AsQueryable();
 
-            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Administrador.ToString());
+            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
             if (!isAdmin)
             {
                 queryable = queryable.Where(s => s.User!.Email == User.Identity!.Name);
@@ -89,7 +94,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             var queryable = _context.Inscriptions.AsQueryable();
 
-            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Administrador.ToString());
+            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
             if (!isAdmin)
             {
                 queryable = queryable.Where(s => s.User!.Email == User.Identity!.Name);
@@ -109,13 +114,14 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Administrador.ToString());
-            if (!isAdmin && inscriptionDTO.InscriptionStatus != InscriptionStatus.Refused)
+            var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
+            if (!isAdmin && inscriptionDTO.InscriptionStatus != InscriptionStatus.Cancelled)
             {
-                return BadRequest("Solo permitido para administradores.");
+                return BadRequest("Solo permitido para trabajadores.");
             }
 
             var inscription = await _context.Inscriptions
+                .Include(s => s.User)
                 .Include(s => s.Training)
                 .FirstOrDefaultAsync(s => s.Id == inscriptionDTO.Id);
 
@@ -126,12 +132,32 @@ namespace NeoSmart.BackEnd.Controllers
 
             if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Confirmed)
             {
-                //enviar email
+               //enviar email
+               var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+               $"NeoSmart - Confirmación de inscripción",
+               $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+               $"<p>Se ha confirmado tu inscripción a la capacitación: {inscription.Training!.Description}</p>"  +
+               $"<b>Muchas gracias!</b>");
             }
 
             if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Refused)
             {
                 //enviar email
+                var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+                $"NeoSmart - Rechazo de inscripción",
+               $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.Training!.Description}</p>" +
+               $"<b>Será en una nueva oportunidad!</b>");
+            }
+
+            if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Cancelled)
+            {
+                //enviar email
+                var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+                $"NeoSmart - Inscripción cancelada",
+                $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+                $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.Training!.Description}</p>" +
+                $"<b>Será en una nueva oportunidad!</b>");
             }
 
             inscription.InscriptionStatus = inscriptionDTO.InscriptionStatus;

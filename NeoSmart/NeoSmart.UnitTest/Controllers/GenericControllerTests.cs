@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Responses;

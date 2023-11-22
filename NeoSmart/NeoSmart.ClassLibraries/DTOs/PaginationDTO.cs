@@ -1,4 +1,6 @@
-﻿namespace NeoSmart.ClassLibraries.DTOs
+﻿using System.Linq.Expressions;
+
+namespace NeoSmart.ClassLibraries.DTOs
 {
     public class PaginationDTO
     {
@@ -9,5 +11,6 @@
         public int RecordsNumber { get; set; } = 10;
 
         public string? Filter { get; set; }
+
     }
 }

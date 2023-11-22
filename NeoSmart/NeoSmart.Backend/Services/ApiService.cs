@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using NeoSmart.ClassLibraries.Interfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
 
 namespace NeoSmart.BackEnd.Services

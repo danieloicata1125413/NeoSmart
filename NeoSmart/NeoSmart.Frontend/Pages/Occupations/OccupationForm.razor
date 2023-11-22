@@ -112,6 +112,8 @@ else
     [Parameter]
     public EventCallback OnValidSubmit { get; set; }
 
+    [EditorRequired]
+    [Parameter]
     public EventCallback ReturnAction { get; set; }
 
     public bool FormPostedSuccessfully { get; set; }

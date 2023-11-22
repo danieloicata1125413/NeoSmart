@@ -1,7 +1,7 @@
 ﻿using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Responses;
 
-namespace NeoSmart.BackEnd.Intertfaces
+namespace NeoSmart.BackEnd.Interfaces
 {
     public interface IGenericUnitOfWork<T> where T : class
     {

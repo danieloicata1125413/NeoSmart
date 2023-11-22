@@ -1,5 +1,5 @@
 ﻿@page "/trainings"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
@@ -45,6 +45,7 @@
                                 <td>@training.TrainingTopicsNumber</td>
                                 <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                 <td>
+                                    <button class="btn btn-info btn-sm"><i class="oi oi-clock" /> Programación</button>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
                                 </td>

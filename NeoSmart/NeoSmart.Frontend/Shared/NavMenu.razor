@@ -1,6 +1,7 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">NeoSmart</a>
+        <img src="img/NeoSmartHLogo.png" alt="" style="height: 40px;">
+        @* <a class="navbar-brand" href="">NeoSmart</a> *@
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,7 +15,7 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Inicio
             </NavLink>
         </div>
-        <AuthorizeView Roles="Administrador">
+        <AuthorizeView Roles="Admin">
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/processes">
@@ -42,6 +43,11 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Sliders">
+                        <span class="oi oi-book" aria-hidden="true"></span> Sliders
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/users">
                         <span class="oi oi-people" aria-hidden="true"></span> Usuarios
                     </NavLink>
@@ -53,13 +59,13 @@
                 </div>
             </Authorized>
         </AuthorizeView>
-        <AuthorizeView Roles="Administrador,Gerente,Lider,Capacitador,Empleado">
+        <AuthorizeView Roles="Admin,Manager,Leader,Trainer,Employee">
             <Authorized>
-                @* <div class="nav-item px-3">
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Inscriptions">
                         <span class="oi oi-book" aria-hidden="true"></span> Mis Capacitaciones
                     </NavLink>
-                </div> *@
+                </div>
             </Authorized>
         </AuthorizeView>
     </nav>

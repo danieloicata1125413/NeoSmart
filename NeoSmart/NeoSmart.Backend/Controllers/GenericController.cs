@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
+using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
 

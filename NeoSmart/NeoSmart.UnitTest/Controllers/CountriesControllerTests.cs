@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
 using NeoSmart.BackEnd.Interfaces;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
@@ -124,7 +124,7 @@ namespace NeoSmart.UnitTest.Controllers
             using var context = new DataContext(new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options);
-            var country = new Country { Id = 1, Name = "test", Cod = 1, Status = true  };
+            var country = new Country { Id = 1, Name = "test" };
             _unitOfWorkMock.Setup(x => x.GetCountryAsync(country.Id)).ReturnsAsync(country);
             var controller = new CountriesController(_unitOfWorkMock.Object, context);
             // Act

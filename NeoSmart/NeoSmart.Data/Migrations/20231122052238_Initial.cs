@@ -31,9 +31,7 @@ namespace NeoSmart.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Cod = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,6 +57,21 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Formations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Formations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Processes",
                 columns: table => new
                 {
@@ -77,16 +90,28 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sliders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sliders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Topics",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Details = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,10 +145,8 @@ namespace NeoSmart.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Cod = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CountryId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    CountryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -172,10 +195,7 @@ namespace NeoSmart.Data.Migrations
                     Duration = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<bool>(type: "bit", nullable: false),
                     ProcessId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Status = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,15 +209,39 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FormationTopics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FormationId = table.Column<int>(type: "int", nullable: false),
+                    TopicId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormationTopics", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FormationTopics_Formations_FormationId",
+                        column: x => x.FormationId,
+                        principalTable: "Formations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FormationTopics_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Cities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Cod = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    StateId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    StateId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,26 +255,47 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Formations",
+                name: "FormationOccupations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    OccupationId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    FormationId = table.Column<int>(type: "int", nullable: false),
+                    OccupationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Formations", x => x.Id);
+                    table.PrimaryKey("PK_FormationOccupations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Formations_Occupations_OccupationId",
+                        name: "FK_FormationOccupations_Formations_FormationId",
+                        column: x => x.FormationId,
+                        principalTable: "Formations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FormationOccupations_Occupations_OccupationId",
                         column: x => x.OccupationId,
                         principalTable: "Occupations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrainingImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingImages_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -303,32 +368,6 @@ namespace NeoSmart.Data.Migrations
                         name: "FK_AspNetUsers_DocumentTypes_DocumentTypeId",
                         column: x => x.DocumentTypeId,
                         principalTable: "DocumentTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FormationTopics",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FormationId = table.Column<int>(type: "int", nullable: false),
-                    TopicId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FormationTopics", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FormationTopics_Formations_FormationId",
-                        column: x => x.FormationId,
-                        principalTable: "Formations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FormationTopics_Topics_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -418,6 +457,60 @@ namespace NeoSmart.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Inscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InscriptionStatus = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Inscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Inscriptions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Inscriptions_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TemporalInscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TemporalInscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TemporalInscriptions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TemporalInscriptions_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -486,9 +579,19 @@ namespace NeoSmart.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Formations_OccupationId_Cod",
+                name: "IX_FormationOccupations_FormationId",
+                table: "FormationOccupations",
+                column: "FormationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormationOccupations_OccupationId",
+                table: "FormationOccupations",
+                column: "OccupationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Formations_Cod",
                 table: "Formations",
-                columns: new[] { "OccupationId", "Cod" },
+                column: "Cod",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -500,6 +603,16 @@ namespace NeoSmart.Data.Migrations
                 name: "IX_FormationTopics_TopicId",
                 table: "FormationTopics",
                 column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Inscriptions_TrainingId",
+                table: "Inscriptions",
+                column: "TrainingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Inscriptions_UserId",
+                table: "Inscriptions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Occupations_ProcessId_Cod",
@@ -520,10 +633,25 @@ namespace NeoSmart.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TemporalInscriptions_TrainingId",
+                table: "TemporalInscriptions",
+                column: "TrainingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemporalInscriptions_UserId",
+                table: "TemporalInscriptions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Topics_Description",
                 table: "Topics",
                 column: "Description",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingImages_TrainingId",
+                table: "TrainingImages",
+                column: "TrainingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trainings_Cod",
@@ -566,7 +694,22 @@ namespace NeoSmart.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "FormationOccupations");
+
+            migrationBuilder.DropTable(
                 name: "FormationTopics");
+
+            migrationBuilder.DropTable(
+                name: "Inscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Sliders");
+
+            migrationBuilder.DropTable(
+                name: "TemporalInscriptions");
+
+            migrationBuilder.DropTable(
+                name: "TrainingImages");
 
             migrationBuilder.DropTable(
                 name: "TrainingTopics");
@@ -575,10 +718,13 @@ namespace NeoSmart.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Occupations");
 
             migrationBuilder.DropTable(
                 name: "Formations");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Topics");
@@ -593,13 +739,10 @@ namespace NeoSmart.Data.Migrations
                 name: "DocumentTypes");
 
             migrationBuilder.DropTable(
-                name: "Occupations");
+                name: "Processes");
 
             migrationBuilder.DropTable(
                 name: "States");
-
-            migrationBuilder.DropTable(
-                name: "Processes");
 
             migrationBuilder.DropTable(
                 name: "Countries");

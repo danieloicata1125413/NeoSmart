@@ -1,5 +1,5 @@
 ﻿@page "/formations"
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Admin")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
@@ -27,8 +27,8 @@
                         <tr>
                             <th>Código</th>
                             <th>Formación</th>
-                            <th>Cargo</th>
                             <th>Temas</th>
+                            <th>Cargos</th>
                             <th>Habilitado</th>
                             <th style="width:170px"></th>
                         </tr>
@@ -39,8 +39,8 @@
                             <tr>
                                 <td>@formation.Cod</td>
                                 <td>@formation.Description</td>
-                                <td>@formation.Occupation!.Description</td>
                                 <td>@formation.FormationTopicsNumber</td>
+                                <td>@formation.FormationOccupationsNumber</td>
                                 <td><InputCheckbox @bind-Value=formation.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(formation.Id, true))><i class="oi oi-pencil" /> Editar</button>

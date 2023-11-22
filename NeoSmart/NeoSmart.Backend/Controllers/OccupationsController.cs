@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.BackEnd.Intertfaces;
+using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
@@ -37,7 +37,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var queryable = _context.Occupations
                                 .Include(o => o.Process)
-                                .Include(o => o.Formations)
+                                .Include(o => o.FormationOccupations)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -72,7 +72,6 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var state = await _context.Occupations
                 .Include(s => s.Process)
-                .Include(o => o.Formations)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
             {

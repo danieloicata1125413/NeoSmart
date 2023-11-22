@@ -1,5 +1,4 @@
-﻿
-using NeoSmart.BackEnd.Interfaces;
+﻿using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
 using Microsoft.AspNetCore.Identity;

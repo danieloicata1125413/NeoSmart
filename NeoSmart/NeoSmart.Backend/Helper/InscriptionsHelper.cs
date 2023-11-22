@@ -10,10 +10,12 @@ namespace NeoSmart.BackEnd.Helper
     public class InscriptionsHelper : IInscriptionsHelper
     {
         private readonly DataContext _context;
+        private readonly IMailHelper _mailHelper;
 
-        public InscriptionsHelper(DataContext context)
+        public InscriptionsHelper(DataContext context, IMailHelper mailHelper)
         {
             _context = context;
+            _mailHelper = mailHelper;
         }
         public async Task<Response<bool>> ProcessInscriptionAsync(string email)
         {
@@ -44,6 +46,11 @@ namespace NeoSmart.BackEnd.Helper
                 };
                 _context.Inscriptions.Add(inscription);
                 //Enviar email
+                var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                    $"NeoSmart - Nueva inscripción",
+                    $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+                    $"<p>Se ha realizado una inscripción a la capacitación: {inscription.Training!.Description}</p>" +
+                    $"<b>Muchas gracias!</b>");
                 _context.TemporalInscriptions.Remove(temporalInscription);
             }
 

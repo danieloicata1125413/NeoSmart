@@ -1,6 +1,6 @@
 ﻿using NeoSmart.ClassLibraries.Responses;
 
-namespace NeoSmart.ClassLibraries.Interfaces
+namespace NeoSmart.BackEnd.Interfaces
 {
     public interface IApiService
     {

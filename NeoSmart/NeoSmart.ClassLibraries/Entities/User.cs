@@ -24,7 +24,7 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Tipo de Identificación")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int DocumentTypeId { get; set; }
-        public DocumentType DocumentType { get; set; }
+        public DocumentType? DocumentType { get; set; }
 
         [Display(Name = "Dirección")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]

@@ -301,7 +301,5 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
         }
 
-
-
     }
 }
