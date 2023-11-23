@@ -108,7 +108,11 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user == null)
+            {
+                return BadRequest("User not valid.");
+            }
 
             var queryable = _context.Inscriptions.AsQueryable();
 
