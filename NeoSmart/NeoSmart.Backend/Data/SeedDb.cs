@@ -1368,20 +1368,7 @@ namespace NeoSmart.BackEnd.Data
         }
         private async Task CheckTopicsAsync()
         {
-            if (!_context.Topics.Any())
-            {
-                _context.Topics.Add(new Topic { Description = "Agilidad", Status = true });
-                _context.Topics.Add(new Topic { Description = "Comunicación", Status = true });
-                _context.Topics.Add(new Topic { Description = "Fomento de la confianza", Status = true });
-                _context.Topics.Add(new Topic { Description = "Gestión del cambio", Status = true });
-                _context.Topics.Add(new Topic { Description = "Leaderando a través de las culturas", Status = true });
-                _context.Topics.Add(new Topic { Description = "Leaderazgo", Status = true });
-                _context.Topics.Add(new Topic { Description = "Manejo del tiempo", Status = true });
-                _context.Topics.Add(new Topic { Description = "Manejo del estrés", Status = true });
-                _context.Topics.Add(new Topic { Description = "Organización", Status = true });
-                _context.Topics.Add(new Topic { Description = "Seguridad en el trabajo", Status = true });
-                await _context.SaveChangesAsync();
-            }
+ 
         }
         private async Task CheckFormationsAsync()
         {
