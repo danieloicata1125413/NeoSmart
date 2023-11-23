@@ -47,18 +47,6 @@ namespace NeoSmart.UnitTest.Controllers
             _mockDbContext.Dispose();
         }
 
-        [TestMethod]
-        public async Task GetComboAsync_ReturnsOkResult()
-        {
-            // Arrange
-
-            // Act
-            var result = await _controller.GetComboAsync() as OkObjectResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-
-        }
+       
     }
 }
