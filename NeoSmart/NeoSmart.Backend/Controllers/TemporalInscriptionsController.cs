@@ -26,11 +26,13 @@ namespace NeoSmart.BackEnd.Controllers
         {
             return Ok(await _context.TemporalInscriptions
                 .Include(ts => ts.User!)
-                .Include(ts => ts.Training!)
-                .ThenInclude(p => p.TrainingTopics!)
+                .Include(tc => tc.TrainingCalendar!)
+                .ThenInclude(t => t.Training!)
+                .ThenInclude(tt => tt.TrainingTopics!)
                 .ThenInclude(pc => pc.Topic)
-                .Include(ts => ts.Training!)
-                .ThenInclude(p => p.TrainingImages)
+                .Include(tc => tc.TrainingCalendar!)
+                .ThenInclude(t => t.Training!)
+                .ThenInclude(i => i.TrainingImages)
                 .FirstOrDefaultAsync(x => x.Id == id));
         }
 
@@ -53,8 +55,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpPost("full")]
         public async Task<IActionResult> PostAsync(TemporalInscriptionDTO temporalInscriptionDTO)
         {
-            var training = await _context.Trainings.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.TrainingId);
-            if (training == null)
+            var trainingCalendar = await _context.TrainingCalendars.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.trainingCalendarId);
+            if (trainingCalendar == null)
             {
                 return NotFound();
             }
@@ -67,7 +69,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             var temporalInscription = new TemporalInscription
             {
-                Training = training,
+                TrainingCalendarId = trainingCalendar.Id,
                 Remarks = temporalInscriptionDTO.Remarks,
                 User = user
             };
@@ -87,15 +89,14 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.TemporalInscriptions
-                .Include(ts => ts.User!)
-                .Include(ts => ts.Training!)
-                .ThenInclude(p => p.TrainingTopics!)
-                .ThenInclude(pc => pc.Topic)
-                .Include(ts => ts.Training!)
-                .ThenInclude(p => p.TrainingImages)
+            var result = await _context.TemporalInscriptions
+                .Include(x => x.TrainingCalendar!)
+                .ThenInclude(tc => tc.Training!)
+                .ThenInclude(i => i.TrainingImages!)
+                .Include(x => x.User!)
                 .Where(x => x.User!.Email == User.Identity!.Name)
-                .ToListAsync());
+                .ToListAsync();
+            return Ok(result);
         }
 
         [HttpGet("count")]

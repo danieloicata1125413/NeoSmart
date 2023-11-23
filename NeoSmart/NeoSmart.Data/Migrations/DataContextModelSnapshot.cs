@@ -328,7 +328,7 @@ namespace NeoSmart.Data.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrainingId")
+                    b.Property<int>("TrainingCalendarId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -336,7 +336,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingId");
+                    b.HasIndex("TrainingCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -477,7 +477,7 @@ namespace NeoSmart.Data.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrainingId")
+                    b.Property<int>("TrainingCalendarId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -485,7 +485,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingId");
+                    b.HasIndex("TrainingCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -856,9 +856,9 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Inscription", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
                         .WithMany("Inscriptions")
-                        .HasForeignKey("TrainingId")
+                        .HasForeignKey("TrainingCalendarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -866,7 +866,7 @@ namespace NeoSmart.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Training");
+                    b.Navigation("TrainingCalendar");
 
                     b.Navigation("User");
                 });
@@ -895,9 +895,9 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TemporalInscription", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
                         .WithMany("TemporalInscriptions")
-                        .HasForeignKey("TrainingId")
+                        .HasForeignKey("TrainingCalendarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -905,7 +905,7 @@ namespace NeoSmart.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Training");
+                    b.Navigation("TrainingCalendar");
 
                     b.Navigation("User");
                 });
@@ -1033,15 +1033,18 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
                 {
-                    b.Navigation("Inscriptions");
-
-                    b.Navigation("TemporalInscriptions");
-
                     b.Navigation("TrainingCalendars");
 
                     b.Navigation("TrainingImages");
 
                     b.Navigation("TrainingTopics");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+                {
+                    b.Navigation("Inscriptions");
+
+                    b.Navigation("TemporalInscriptions");
                 });
 #pragma warning restore 612, 618
         }

@@ -30,13 +30,16 @@ else
                                 <th>Fecha</th>
                                 <th>Usuario</th>
                                 <th>Capacitación</th>
+                                <th>Fecha inicio</th>
+                                <th>Fecha fin</th>
+                                <th>Capacitador</th>
                                 <th>Comentario</th>
                                 <th>Estado</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var inscription in Inscriptions)
+                            @foreach (var inscription in Inscriptions!)
                             {
                                 <tr>
                                     <td>
@@ -46,7 +49,19 @@ else
                                         @inscription.User!.FullName
                                     </td>
                                     <td>
-                                        @inscription.Training!.Description
+                                        @inscription.TrainingCalendar!.Training!.Description
+                                    </td>
+                                    <td>
+                                        @inscription.TrainingCalendar!.DateStart
+                                    </td>
+                                    <td>
+                                        @inscription.TrainingCalendar!.DateEnd
+                                    </td>
+                                    <td>
+                                        @if (@inscription.TrainingCalendar!.User != null)
+                                        {
+                                            @inscription.TrainingCalendar!.User!.FullName
+                                        }
                                     </td>
                                     <td>
                                         @inscription.Remarks

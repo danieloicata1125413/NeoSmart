@@ -73,7 +73,7 @@ else
 
     private async Task AddImageAsync()
     {
-        if (trainingDTO.NewTrainingImages is null || trainingDTO.NewTrainingImages.Count == 0)
+        if (trainingDTO!.NewTrainingImages is null || trainingDTO.NewTrainingImages.Count == 0)
         {
             return;
         }

@@ -11,9 +11,9 @@ namespace NeoSmart.ClassLibraries.Entities
 
         public string? UserId { get; set; }
 
-        public int TrainingId { get; set; }
+        public int TrainingCalendarId { get; set; }
 
-        public Training? Training { get; set; }
+        public TrainingCalendar? TrainingCalendar { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Comentarios")]

@@ -52,7 +52,5 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Calendarios")]
         public int TrainingCalendarNumber => TrainingCalendars == null ? 0 : TrainingCalendars.Count;
 
-        public ICollection<TemporalInscription>? TemporalInscriptions { get; set; }
-        public ICollection<Inscription>? Inscriptions { get; set; }
     }
 }

@@ -33,6 +33,7 @@ else
                             <b>@training.Duration</b>
                         </div>
                     </div>
+                    <MudRating SelectedValue="4" />
                     <div class="mb-3">
                         <div class="row">
                             <label>Temas:</label>
@@ -41,6 +42,22 @@ else
                                 <b>@topic</b>
                             }
                         </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group mb-2">
+                        <p>Agenda:</p>
+                        @foreach (var trainingCalendar in training!.TrainingCalendars!)
+                        {
+                            <div class="row">
+                                <p>@trainingCalendar.City!.Name</p>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p class="float-start">@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) - @trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

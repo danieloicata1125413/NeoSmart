@@ -21,9 +21,12 @@
 }
 else
 {
-    <div class="row mb-3">
-        <CarouselView Images="@_source" />
-    </div>
+    if (_source!.Count > 0)
+    {
+        <div class="row mb-3">
+            <CarouselView Images="@_source" />
+        </div>
+    }
     <div class="row mb-3">
         <div class="col-7">
             <h3>Capacitaciones</h3>
@@ -47,7 +50,7 @@ else
                 TotalPages="totalPages"
                 SelectedPage="SelectedPageAsync" />
 
-    <div class="row row-cols-1 row-cols-md-5 g-2 mt-1 mb-3">
+    <div class="row row-cols-1 row-cols-md-4 g-2 mt-1 mb-3">
         @foreach (var training in Trainings!)
         {
             <div class="col">
@@ -59,12 +62,30 @@ else
                     <div class="card-body">
                         <h6 class="card-title text-navy"> @training.Description</h6>
                         @* <p class="card-text smfnt">@training.Process!.Description</p> *@
-                        <p class="text-muted">@training.Duration min</p>
-                        <MudRating SelectedValue="4" />
+                        <div class="form-group mb-2">
+                            <p class="text-muted">@training.Duration min</p>
+                        </div>
+                        <div class="form-group mb-2">
+                            <MudRating SelectedValue="4" />
+                        </div>
+                        <div class="form-group mb-2">
+                            <p>Agenda:</p>
+                            @foreach (var trainingCalendar in training!.TrainingCalendars!)
+                            {
+                                <div class="row">
+                                    <p>@trainingCalendar.City!.Name</p>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="float-start">@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) - @trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+                                        <button class="btn btn-sm btn-outline-primary mb-2 float-end" @onclick=@(() => AddToCartAsync(trainingCalendar.Id))><i class="oi oi-plus" /> Add</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                     <div class="card-footer text-center">
                         <button class="btn btn-sm btn-outline-secondary" @onclick=@(() => ShowDetailsAsync(training.Id))><i class="oi oi-info" /> Detalles</button>
-                        <button class="btn btn-sm btn-outline-primary" @onclick=@(() => AddToCartAsync(training.Id))><i class="oi oi-plus" /> Añadir</button>
                     </div>
                 </div>
             </div>
@@ -205,7 +226,7 @@ else
         await modalReference.Result;
     }
 
-    private async Task AddToCartAsync(int trainingId)
+    private async Task AddToCartAsync(int trainingCalendarId)
     {
         if (!isAuthenticated)
         {
@@ -223,7 +244,7 @@ else
 
         var temporalInscriptionDTO = new TemporalInscriptionDTO
             {
-                TrainingId = trainingId
+                trainingCalendarId = trainingCalendarId
             };
 
         var httpResponse = await repository.PostAsync("/api/TemporalInscriptions/full", temporalInscriptionDTO);
@@ -242,7 +263,7 @@ else
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Capacitación agregada al tus solicitudes.");
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Capacitación programada agregada al tus solicitudes.");
     }
 
     private async Task ShowCartAsync()

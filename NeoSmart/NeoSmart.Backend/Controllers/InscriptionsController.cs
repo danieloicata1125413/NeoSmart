@@ -35,22 +35,32 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<ActionResult> GetAsync(int id)
         {
             var inscription = await _context.Inscriptions
-                .Include(s => s.User!)
-                .ThenInclude(u => u.City!)
-                .ThenInclude(c => c.State!)
-                .ThenInclude(s => s.Country)
-                .Include(s => s.Training!)
-                .ThenInclude(p => p.TrainingImages)
-                .Include(s => s.Training!)
-                .ThenInclude(p => p.TrainingTopics!)
-                .ThenInclude(p => p.Topic)
+                .Include(i => i.TrainingCalendar!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingImages!)
+                .Include(i => i.TrainingCalendar!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingTopics!)
+                    .ThenInclude(i => i.Topic!)
+                .Include(i => i.TrainingCalendar!)
+                  .ThenInclude(i => i.User!)
+                .Include(i => i.TrainingCalendar!)
+                     .ThenInclude(i => i.City!)
+                     .ThenInclude(i => i.State!)
+                     .ThenInclude(i => i.Country!)
+                .Include(i => i.User!)
+                    .ThenInclude(i => i.City!)
+                    .ThenInclude(i => i.State!)
+                    .ThenInclude(i => i.Country!)
                 .FirstOrDefaultAsync(s => s.Id == id);
+
+
+
 
             if (inscription == null)
             {
                 return NotFound();
             }
-
             return Ok(inscription);
         }
 
@@ -64,11 +74,23 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             var queryable = _context.Inscriptions
-                .Include(s => s.User)
-                .Include(s => s.Training)
-                .ThenInclude(sd => sd!.TrainingTopics)
-                .Include(s => s.Training)
-                .ThenInclude(i => i!.TrainingImages)
+                .Include(i => i.TrainingCalendar!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingImages!)
+                .Include(i => i.TrainingCalendar!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingTopics!)
+                    .ThenInclude(i => i.Topic!)
+                .Include(i => i.TrainingCalendar!)
+                  .ThenInclude(i => i.User!)
+                .Include(i => i.TrainingCalendar!)
+                     .ThenInclude(i => i.City!)
+                     .ThenInclude(i => i.State!)
+                     .ThenInclude(i => i.Country!)
+                .Include(i => i.User!)
+                    .ThenInclude(i => i.City!)
+                    .ThenInclude(i => i.State!)
+                    .ThenInclude(i => i.Country!)
                 .AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
@@ -122,7 +144,8 @@ namespace NeoSmart.BackEnd.Controllers
 
             var inscription = await _context.Inscriptions
                 .Include(s => s.User)
-                .Include(s => s.Training)
+                .Include(s => s.TrainingCalendar!)
+                .ThenInclude(s => s.Training)
                 .FirstOrDefaultAsync(s => s.Id == inscriptionDTO.Id);
 
             if (inscription == null)
@@ -132,12 +155,12 @@ namespace NeoSmart.BackEnd.Controllers
 
             if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Confirmed)
             {
-               //enviar email
-               var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
-               $"NeoSmart - Confirmación de inscripción",
-               $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-               $"<p>Se ha confirmado tu inscripción a la capacitación: {inscription.Training!.Description}</p>"  +
-               $"<b>Muchas gracias!</b>");
+                //enviar email
+                var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+                $"NeoSmart - Confirmación de inscripción",
+                $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+                $"<p>Se ha confirmado tu inscripción a la capacitación: {inscription.TrainingCalendar!.Training!.Description}</p>" +
+                $"<b>Muchas gracias!</b>");
             }
 
             if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Refused)
@@ -146,7 +169,7 @@ namespace NeoSmart.BackEnd.Controllers
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
                 $"NeoSmart - Rechazo de inscripción",
                $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.Training!.Description}</p>" +
+               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.TrainingCalendar!.Training!.Description}</p>" +
                $"<b>Será en una nueva oportunidad!</b>");
             }
 
@@ -156,7 +179,7 @@ namespace NeoSmart.BackEnd.Controllers
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
                 $"NeoSmart - Inscripción cancelada",
                 $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-                $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.Training!.Description}</p>" +
+                $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.TrainingCalendar!.Training!.Description}</p>" +
                 $"<b>Será en una nueva oportunidad!</b>");
             }
 

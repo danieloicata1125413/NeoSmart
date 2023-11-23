@@ -33,9 +33,10 @@ namespace NeoSmart.BackEnd.Controllers
             var queryable = _context.Trainings
                                 .Include(o => o.Process!)
                                 .Include(o => o.TrainingTopics!)
-                                .ThenInclude(x => x.Topic)
+                                    .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages!)
                                 .Include(o=> o.TrainingCalendars!)
+                                    .ThenInclude(o => o.City!)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -73,6 +74,8 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.TrainingTopics!)
                                 .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages)
+                                .Include(o => o.TrainingCalendars!)
+                                .ThenInclude(o => o.City!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)
             {
@@ -190,7 +193,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             _context.Update(training);
             await _context.SaveChangesAsync();
-            return Ok(training!.TrainingImages!.Select(x=>x.Image).ToList());
+            return Ok(training!.TrainingImages.ToList());
         }
 
         [HttpPost("removeImages")]

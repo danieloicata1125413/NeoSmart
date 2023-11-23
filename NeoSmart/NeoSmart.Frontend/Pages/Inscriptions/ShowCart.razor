@@ -32,14 +32,14 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var temporalInscription in temporalInscriptions)
+                            @foreach (var temporalInscription in temporalInscriptions!)
                             {
                                 <tr>
                                     <td>
-                                        <img src="@temporalInscription.Training!.MainImage" style="width:50px;" />
+                                        <img src="@temporalInscription.TrainingCalendar!.Training!.MainImage" style="width:50px;" />
                                     </td>
                                     <td>
-                                        @temporalInscription.Training!.Description
+                                        @temporalInscription.TrainingCalendar!.Training!.Description
                                     </td>
                                     <td>
                                         @temporalInscription.Remarks

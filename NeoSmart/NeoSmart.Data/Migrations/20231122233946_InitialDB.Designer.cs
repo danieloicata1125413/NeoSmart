@@ -12,8 +12,8 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231122052238_Initial")]
-    partial class Initial
+    [Migration("20231122233946_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -331,7 +331,7 @@ namespace NeoSmart.Data.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrainingId")
+                    b.Property<int>("TrainingCalendarId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -339,7 +339,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingId");
+                    b.HasIndex("TrainingCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -480,7 +480,7 @@ namespace NeoSmart.Data.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrainingId")
+                    b.Property<int>("TrainingCalendarId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -488,7 +488,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingId");
+                    b.HasIndex("TrainingCalendarId");
 
                     b.HasIndex("UserId");
 
@@ -560,6 +560,52 @@ namespace NeoSmart.Data.Migrations
                     b.HasIndex("ProcessId");
 
                     b.ToTable("Trainings");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("TimeEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("TimeStart")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Type")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TrainingId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainingCalendars");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
@@ -813,9 +859,9 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Inscription", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
                         .WithMany("Inscriptions")
-                        .HasForeignKey("TrainingId")
+                        .HasForeignKey("TrainingCalendarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -823,7 +869,7 @@ namespace NeoSmart.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Training");
+                    b.Navigation("TrainingCalendar");
 
                     b.Navigation("User");
                 });
@@ -852,9 +898,9 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TemporalInscription", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
                         .WithMany("TemporalInscriptions")
-                        .HasForeignKey("TrainingId")
+                        .HasForeignKey("TrainingCalendarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -862,7 +908,7 @@ namespace NeoSmart.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Training");
+                    b.Navigation("TrainingCalendar");
 
                     b.Navigation("User");
                 });
@@ -876,6 +922,31 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Process");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                        .WithMany("TrainingCalendars")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("City");
+
+                    b.Navigation("Training");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
@@ -965,13 +1036,18 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
                 {
-                    b.Navigation("Inscriptions");
-
-                    b.Navigation("TemporalInscriptions");
+                    b.Navigation("TrainingCalendars");
 
                     b.Navigation("TrainingImages");
 
                     b.Navigation("TrainingTopics");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+                {
+                    b.Navigation("Inscriptions");
+
+                    b.Navigation("TemporalInscriptions");
                 });
 #pragma warning restore 612, 618
         }

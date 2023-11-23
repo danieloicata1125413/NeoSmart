@@ -14,24 +14,24 @@ else
                 <div class="row">
                     <div class="col">
                     <a class="btn btn-outline-success float-start me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
-                    <h4 class="float-start">@training!.Description</h4>
+                    <h4 class="float-start">@trainingCalendar!.Training!.Description</h4>
                     </div>
                 </div>
             </div>
             <div class="card-body m-2">
-            <CarouselView Images="@training!.MainImages" />
+            <CarouselView Images="@trainingCalendar!.Training!.MainImages" />
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
                         <label>Nombre:</label>
                         <div>
-                            <b>@training.Description</b>
+                            <b>@trainingCalendar!.Training!.Description</b>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Descripción:</label>
                         <div>
-                            <b>@training.Description</b>
+                            <b>@trainingCalendar!.Training!.Description</b>
                         </div>
                     </div>
                     
@@ -51,7 +51,7 @@ else
                         <div class="mb-3">
                             <label>Comentarios:</label>
                             <div>
-                                <InputTextArea class="form-control" @bind-Value="@temporalInscriptionDTO.Remarks" />
+                                <InputTextArea class="form-control" @bind-Value="@temporalInscriptionDTO!.Remarks" />
                                 <ValidationMessage For="@(() => temporalInscriptionDTO.Remarks)" />
                             </div>
                         </div>
@@ -68,7 +68,7 @@ else
     private List<string>? topics;
     private List<string>? images;
     private bool loading = true;
-    private Training? training;
+    private TrainingCalendar? trainingCalendar;
     private bool isAuthenticated;
     private TemporalInscriptionDTO? temporalInscriptionDTO;
 
@@ -97,12 +97,12 @@ else
         temporalInscriptionDTO = new TemporalInscriptionDTO
             {
                 Id = temporalInscription.Id,
-                TrainingId = temporalInscription.TrainingId,
+                trainingCalendarId = temporalInscription.TrainingCalendarId,
                 Remarks = temporalInscription.Remarks!
             };
-        training = temporalInscription.Training;
-        topics = training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
-        images = training.TrainingImages!.Select(x => x.Image).ToList();
+        trainingCalendar = temporalInscription.TrainingCalendar;
+        topics = trainingCalendar!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
+        images = trainingCalendar!.Training!.TrainingImages!.Select(x => x.Image).ToList();
         loading = false;
     }
 

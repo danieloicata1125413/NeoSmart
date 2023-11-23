@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeoSmart.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -458,6 +458,44 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrainingCalendars",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TimeStart = table.Column<TimeSpan>(type: "time", nullable: true),
+                    TimeEnd = table.Column<TimeSpan>(type: "time", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingCalendars", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingCalendars_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TrainingCalendars_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TrainingCalendars_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Inscriptions",
                 columns: table => new
                 {
@@ -465,7 +503,7 @@ namespace NeoSmart.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    TrainingCalendarId = table.Column<int>(type: "int", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InscriptionStatus = table.Column<int>(type: "int", nullable: false)
                 },
@@ -478,9 +516,9 @@ namespace NeoSmart.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Inscriptions_Trainings_TrainingId",
-                        column: x => x.TrainingId,
-                        principalTable: "Trainings",
+                        name: "FK_Inscriptions_TrainingCalendars_TrainingCalendarId",
+                        column: x => x.TrainingCalendarId,
+                        principalTable: "TrainingCalendars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -492,7 +530,7 @@ namespace NeoSmart.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    TrainingCalendarId = table.Column<int>(type: "int", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -504,9 +542,9 @@ namespace NeoSmart.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TemporalInscriptions_Trainings_TrainingId",
-                        column: x => x.TrainingId,
-                        principalTable: "Trainings",
+                        name: "FK_TemporalInscriptions_TrainingCalendars_TrainingCalendarId",
+                        column: x => x.TrainingCalendarId,
+                        principalTable: "TrainingCalendars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -605,9 +643,9 @@ namespace NeoSmart.Data.Migrations
                 column: "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inscriptions_TrainingId",
+                name: "IX_Inscriptions_TrainingCalendarId",
                 table: "Inscriptions",
-                column: "TrainingId");
+                column: "TrainingCalendarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inscriptions_UserId",
@@ -633,9 +671,9 @@ namespace NeoSmart.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TemporalInscriptions_TrainingId",
+                name: "IX_TemporalInscriptions_TrainingCalendarId",
                 table: "TemporalInscriptions",
-                column: "TrainingId");
+                column: "TrainingCalendarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TemporalInscriptions_UserId",
@@ -647,6 +685,21 @@ namespace NeoSmart.Data.Migrations
                 table: "Topics",
                 column: "Description",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingCalendars_CityId",
+                table: "TrainingCalendars",
+                column: "CityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingCalendars_TrainingId",
+                table: "TrainingCalendars",
+                column: "TrainingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingCalendars_UserId",
+                table: "TrainingCalendars",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrainingImages_TrainingId",
@@ -724,10 +777,13 @@ namespace NeoSmart.Data.Migrations
                 name: "Formations");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "TrainingCalendars");
 
             migrationBuilder.DropTable(
                 name: "Topics");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Trainings");

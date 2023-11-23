@@ -32,31 +32,34 @@ else
                             <p>Dirección</p>
                         </div>
                         <div class="col-8">
-                            <p><strong>@inscription.User.FullName</strong></p>
-                            <p><strong>@inscription.User.Document</strong></p>
-                            <p><strong>@inscription.User.PhoneNumber</strong></p>
-                            <p><strong>@inscription.User.UserName</strong></p>
-                            <p><strong>@inscription.User.Address, @inscription.User.City!.Name, @inscription.User.City.State!.Name, @inscription.User.City.State.Country!.Name</strong></p>
+                            <p><strong>@inscription!.User!.FullName</strong></p>
+                            <p><strong>@inscription!.User!.Document</strong></p>
+                            <p><strong>@inscription!.User!.PhoneNumber</strong></p>
+                            <p><strong>@inscription!.User!.UserName</strong></p>
+                            <p><strong>@inscription!.User!.Address, @inscription!.User!.City!.Name, @inscription!.User!.City!.State!.Name, @inscription!.User!.City.State!.Country!.Name</strong></p>
                         </div>
                     </div>
-                    <h5><strong>Capacitador</strong></h5>
-                    <div class="row">
-                        <div class="col-4">
-                            <p>Nombre</p>
-                            <p>Documento</p>
-                            <p>Teléfono</p>
-                            <p>Email</p>
+                    @if (inscription!.TrainingCalendar!.User != null)
+                    {
+                        <h5><strong>Capacitador</strong></h5>
+                        <div class="row">
+                            <div class="col-4">
+                                <p>Nombre</p>
+                                <p>Documento</p>
+                                <p>Teléfono</p>
+                                <p>Email</p>
+                            </div>
+                            <div class="col-8">
+                                <p><strong>@inscription!.TrainingCalendar!.User!.FullName</strong></p>
+                                <p><strong>@inscription!.TrainingCalendar!.User!.Document</strong></p>
+                                <p><strong>@inscription!.TrainingCalendar!.User!.PhoneNumber</strong></p>
+                                <p><strong>@inscription!.TrainingCalendar!.User!.UserName</strong></p>
+                            </div>
                         </div>
-                        <div class="col-8">
-                            <p><strong>@inscription.User.FullName</strong></p>
-                            <p><strong>@inscription.User.Document</strong></p>
-                            <p><strong>@inscription.User.PhoneNumber</strong></p>
-                            <p><strong>@inscription.User.UserName</strong></p>
-                        </div>
-                    </div>
+                    }
                 </div>
                 <div class="col-6">
-                    <CarouselView Images="@inscription.Training!.MainImages" />
+                    <CarouselView Images="@inscription!.TrainingCalendar!.Training!.MainImages" />
                     <div class="row">
                         <div class="col-4">
                             @* <p>Imagen</p> *@
@@ -67,7 +70,7 @@ else
                         </div>
                         <div class="col-8">
                             @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
-                            <p>@inscription.Training!.Description</p>
+                            <p>@inscription.TrainingCalendar!.Training!.Description</p>
                             <p><strong>@($"{inscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
                             <p><strong>@EnumHelper.GetEnumDescription(inscription.InscriptionStatus)</strong></p>
                             <p><strong>@(string.IsNullOrEmpty(inscription.Remarks) ? "NA" : inscription.Remarks)</strong></p>
@@ -75,7 +78,7 @@ else
                     </div>
                     <div class="row">
                         <label>Temas:</label>
-                        @foreach (var trainingTopic in inscription.Training!.TrainingTopics!)
+                        @foreach (var trainingTopic in inscription.TrainingCalendar!.Training!.TrainingTopics!)
                         {
                             <b>@trainingTopic.Topic!.Description</b>
                         }
@@ -83,7 +86,7 @@ else
                 </div>
             </div>
 
-            
+
         </div>
         <div class="card-footer">
             @if (inscription!.InscriptionStatus == InscriptionStatus.Registered)
@@ -194,4 +197,5 @@ else
         await BlazoredModal.CloseAsync(ModalResult.Ok());
         navigationManager.NavigateTo("/Inscriptions");
     }
+
 }

@@ -46,5 +46,8 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Habilitado")]
         public bool Status { get; set; }
+
+        public ICollection<TemporalInscription>? TemporalInscriptions { get; set; }
+        public ICollection<Inscription>? Inscriptions { get; set; }
     }
 }
