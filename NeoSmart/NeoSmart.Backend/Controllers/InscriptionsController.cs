@@ -163,7 +163,15 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Muchas gracias!</b>");
             }
 
-
+            if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Refused)
+            {
+                //enviar email
+                var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+                $"NeoSmart - Rechazo de inscripción",
+               $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.TrainingCalendar!.Training!.Description}</p>" +
+               $"<b>Será en una nueva oportunidad!</b>");
+            }
 
             if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Cancelled)
             {
