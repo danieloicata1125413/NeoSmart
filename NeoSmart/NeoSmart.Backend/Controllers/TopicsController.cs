@@ -56,6 +56,7 @@ namespace NeoSmart.BackEnd.Controllers
             return Ok(totalPages);
         }
 
+
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
