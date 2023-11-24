@@ -30,23 +30,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
-        [HttpGet]
-        public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
-        {
-            var queryable = _context.Countries
-                .Include(c => c.States)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
-            {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-            }
-
-            return Ok(await queryable
-                .OrderBy(c => c.Name)
-                .Paginate(pagination)
-                .ToListAsync());
-        }
+ 
 
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
