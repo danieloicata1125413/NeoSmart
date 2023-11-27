@@ -67,5 +67,43 @@ namespace NeoSmart.UnitTest.Controllers
             context.Database.EnsureDeleted();
             context.Dispose();
         }
+        [TestMethod]
+        public async Task GetPagesAsync_ReturnsOkResult()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new ProcessesController(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
+
+            // Act
+            var result = await controller.GetPagesAsync(pagination) as OkObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
+        }
+
+        [TestMethod]
+        public async Task GetAsync_ReturnsNotFoundWhenEntityNotFound()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new ProcessesController(_unitOfWorkMock.Object, context);
+
+            // Act
+            var result = await controller.GetAsync(1) as NotFoundResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
+        }
     }
 }
