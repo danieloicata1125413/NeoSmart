@@ -71,6 +71,25 @@ namespace NeoSmart.UnitTest.Controllers
             context.Dispose();
         }
 
+        [TestMethod]
+        public async Task GetAsync_ReturnsNotFoundWhenEntityNotFound()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new TrainingCalendarsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+
+            // Act
+            var result = await controller.GetAsync(1) as NotFoundResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
+        }
+
 
     }
 }
