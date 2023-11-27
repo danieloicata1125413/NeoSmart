@@ -19,7 +19,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Helpers;
-
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace NeoSmart.UnitTest.Controllers
 {
@@ -92,6 +93,55 @@ namespace NeoSmart.UnitTest.Controllers
 
             // Clean up (if needed)
             context.Database.EnsureDeleted();
+        }
+
+        [TestMethod]
+        public async Task GetAsync_PaginationDTO_BadRequestObjectResult()
+        {
+            //Arrange
+            var context = new DataContext(_options);
+            var pagination = new PaginationDTO { Id = 1, Filter = "Excel" };
+            var userName = "testuser";
+            var mockUser = new User();
+
+            var controller = new InscriptionsController(
+                Mock.Of<IInscriptionsHelper>(),
+                context,
+                Mock.Of<IUserHelper>(),
+                Mock.Of<IMailHelper>()
+            );
+
+            controller.ControllerContext = GetControllerContext(userName);
+            _mockUserHelper.Setup(x => x.GetUserAsync(userName))
+                .ReturnsAsync(mockUser);
+
+            //Act
+            var result = await controller.GetAsync(pagination) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(400, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+        }
+
+        private ControllerContext GetControllerContext(string userName)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, userName)
+            };
+            var identity = new ClaimsIdentity(claims, "test");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+            var httpContext = new DefaultHttpContext
+            {
+                User = claimsPrincipal
+            };
+            return new ControllerContext
+            {
+                HttpContext = httpContext
+            };
         }
 
     }
