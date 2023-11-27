@@ -28,7 +28,6 @@ namespace NeoSmart.UnitTest.Controllers
     {
 
         private Mock<IInscriptionsHelper> _mockInscriptionsHelper = null!;
-        //private DataContext _context = null!;
         private readonly DbContextOptions<DataContext> _options;
         private Mock<IUserHelper> _mockUserHelper = null!;
         private Mock<IMailHelper> _mockMailHelper = null!;
@@ -43,6 +42,31 @@ namespace NeoSmart.UnitTest.Controllers
             _options = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
+        }
+
+        [TestMethod]
+        public async Task GetAsync_ReturnsOkResult()
+        {
+            //Arrange
+            using var context = new DataContext(_options);
+            var Id = 1;
+
+            var controller = new InscriptionsController(
+                Mock.Of<IInscriptionsHelper>(),
+                context,
+                Mock.Of<IUserHelper>(),
+                Mock.Of<IMailHelper>()
+            );
+
+            //Act
+            var result = await controller.GetAsync(Id) as OkObjectResult;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
         }
 
         [TestMethod]
@@ -69,7 +93,6 @@ namespace NeoSmart.UnitTest.Controllers
             // Clean up (if needed)
             context.Database.EnsureDeleted();
         }
-
 
     }
 }
