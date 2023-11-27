@@ -32,6 +32,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
         [HttpGet]
+
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Processes
@@ -63,6 +64,8 @@ namespace NeoSmart.BackEnd.Controllers
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
+
+        // Consult those of the companies by process id
 
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
