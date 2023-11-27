@@ -4,29 +4,34 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
 using NeoSmart.BackEnd.Interfaces;
-using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NeoSmart.UnitTest.Controllers
 {
     [TestClass]
-    public class CountriesControllerTests
+    public class OccupationsControllerTests
     {
-        private readonly Mock<IGenericUnitOfWork<Country>> _unitOfWorkMock;
+
+        private readonly Mock<IGenericUnitOfWork<Occupation>> _unitOfWorkMock;
         private readonly DbContextOptions<DataContext> _options;
         private DataContext _mockDbContext = null!;
-        private CountriesController _controller = null!;
+        private OccupationsController _controller = null!;
         private Mock<IUserHelper> _mockUserHelper = null!;
 
-        public CountriesControllerTests()
+        public OccupationsControllerTests()
         {
             _options = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(databaseName: "InMemoryDatabase")
                 .Options;
-            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Country>>();
+            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Occupation>>();
         }
 
         [TestInitialize]
@@ -35,7 +40,7 @@ namespace NeoSmart.UnitTest.Controllers
             _mockUserHelper = new Mock<IUserHelper>();
             // Setting up InMemory database
             _mockDbContext = new DataContext(_options);
-            _controller = new CountriesController(_unitOfWorkMock.Object, _mockDbContext);
+            _controller = new OccupationsController(_unitOfWorkMock.Object, _mockDbContext);
 
             // Mock user identity
             var claims = new List<Claim>
@@ -61,81 +66,96 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetComboAsync_ReturnsOkResult()
         {
             // Arrange
+            using var context = new DataContext(_options);
+            var controller = new OccupationsController(_unitOfWorkMock.Object, context);
 
             // Act
-            var result = await _controller.GetComboAsync() as OkObjectResult;
+            var result = await controller.GetComboAsync() as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
         }
 
         [TestMethod]
         public async Task GetAsync_ReturnsOkResult()
         {
             // Arrange
-
-            var pagination = new PaginationDTO { Filter = "some" };
+            using var context = new DataContext(_options);
+            var controller = new GenericController<Occupation>(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
 
             // Act
-            var result = await _controller.GetAsync(pagination) as OkObjectResult;
+            var result = await controller.GetAsync(pagination) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
         }
 
         [TestMethod]
         public async Task GetPagesAsync_ReturnsOkResult()
         {
             // Arrange
-            var pagination = new PaginationDTO { Filter = "some" };
+            using var context = new DataContext(_options);
+            var controller = new GenericController<Occupation>(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
 
             // Act
-            var result = await _controller.GetPagesAsync(pagination) as OkObjectResult;
+            var result = await controller.GetPagesAsync(pagination) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
-
-        }
-
-        [TestMethod]
-        public async Task GetAsync_ReturnsNotFoundWhenCountryNotFound()
-        {
-            // Arrange
-
-            // Act
-            var result = await _controller.GetAsync(1) as NotFoundResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(404, result.StatusCode);
 
             // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
         }
 
         [TestMethod]
-        public async Task GetAsync_ReturnsOkWhenCountryFound()
+        public async Task GetAsync_OccupationFound_ReturnsOk()
         {
             // Arrange
-            using var context = new DataContext(new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options);
-            Country country = new Country { Id = 1, Name = "test" };
-            _unitOfWorkMock.Setup(x => x.GetCountryAsync(country.Id)).ReturnsAsync(country);
-            var controller = new CountriesController(_unitOfWorkMock.Object, context);
+            _mockDbContext.Occupations.Add(new Occupation
+            {
+                Id = 1,
+                Cod = "O01",
+                Status = true,
+                Process = new Process
+                {
+                    Id = 1,
+                    Cod = "P01",
+                    Status = true,
+                    Description = "Some"
+                },
+                ProcessId = 1,
+                Description = "Some"
+            });
+            await _mockDbContext.SaveChangesAsync();
 
             // Act
-            var result = await controller.GetAsync(country.Id) as OkObjectResult;
+            var result = await _controller.GetAsync(1);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-            _unitOfWorkMock.Verify(x => x.GetCountryAsync(country.Id), Times.Once());
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
 
+        [TestMethod]
+        public async Task GetAsync_OccupationNotFound_ReturnsNotFound()
+        {
+            // Act
+            var result = await _controller.GetAsync(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }
 }

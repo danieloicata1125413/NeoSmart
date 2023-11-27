@@ -22,8 +22,8 @@ namespace NeoSmart.UnitTest.Controllers
         public TopicsControllerTests()
         {
             _options = new DbContextOptionsBuilder<DataContext>()
-     .UseInMemoryDatabase(Guid.NewGuid().ToString())
-     .Options;
+             .UseInMemoryDatabase(Guid.NewGuid().ToString())
+             .Options;
             _unitOfWorkMock = new Mock<IGenericUnitOfWork<Topic>>();
         }
 

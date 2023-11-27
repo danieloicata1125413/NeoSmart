@@ -67,13 +67,13 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var process = await _context.Sliders
+            var slider = await _context.Sliders
                 .FirstOrDefaultAsync(c => c.Id == id);
-            if (process == null)
+            if (slider == null)
             {
                 return NotFound();
             }
-            return Ok(process);
+            return Ok(slider);
         }
 
         [HttpPost("full")]

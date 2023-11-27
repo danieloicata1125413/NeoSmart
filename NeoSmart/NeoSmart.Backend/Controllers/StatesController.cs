@@ -52,9 +52,6 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
-
-
-
         /// <summary>
         /// Check department pagination
         /// </summary>

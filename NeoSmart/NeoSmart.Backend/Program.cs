@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
+
 IConfiguration configuration = new ConfigurationBuilder()
                             .AddJsonFile("appsettings.json")
                             .Build();

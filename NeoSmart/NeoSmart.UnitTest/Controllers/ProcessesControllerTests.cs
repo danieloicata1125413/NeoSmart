@@ -46,9 +46,7 @@ namespace NeoSmart.UnitTest.Controllers
 
         }
 
-
         [TestMethod]
-
         public async Task GetAsync_ReturnsOkResult()
         {
             // Arrange

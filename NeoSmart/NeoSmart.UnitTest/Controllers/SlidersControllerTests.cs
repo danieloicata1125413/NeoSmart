@@ -25,6 +25,24 @@ namespace NeoSmart.UnitTest.Controllers
         }
 
         [TestMethod]
+        public async Task GetComboAsync_ReturnsOkResult()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new SlidersController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+
+            // Act
+            var result = await controller.GetComboAsync() as OkObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+        }
+
+        [TestMethod]
         public async Task GetAsync_ReturnsOkResult()
         {
             // Arrange
@@ -62,6 +80,39 @@ namespace NeoSmart.UnitTest.Controllers
             // Clean up (if needed)
             context.Database.EnsureDeleted();
             context.Dispose();
+        }
+
+        [TestMethod]
+        public async Task GetAsync_SliderFound_ReturnsOk()
+        {
+            // Arrange
+            using var _context = new DataContext(_options);
+            _context.Sliders.Add(new Slider
+            {
+                Id = 1, 
+                Image = "Some", 
+                Description = "Some"
+            });
+            await _context.SaveChangesAsync();
+            var _controller = new SlidersController(_unitOfWorkMock.Object, _context, _mockFileStorage.Object);
+            // Act
+            var result = await _controller.GetAsync(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+
+        [TestMethod]
+        public async Task GetAsync_SliderNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            using var _context = new DataContext(_options);
+            var _controller = new SlidersController(_unitOfWorkMock.Object, _context, _mockFileStorage.Object);
+            // Act
+            var result = await _controller.GetAsync(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }
 }

@@ -103,7 +103,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var state = new State { Id = 1, Name = "test" };
+            State state = new State { Id = 1, Name = "test"};
             _unitOfWorkMock.Setup(x => x.GetStateAsync(state.Id)).ReturnsAsync(state);
             var controller = new StatesController(_unitOfWorkMock.Object, context);
 

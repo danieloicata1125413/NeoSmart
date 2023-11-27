@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
 using NeoSmart.BackEnd.Interfaces;
-using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
@@ -13,20 +12,20 @@ using System.Security.Claims;
 namespace NeoSmart.UnitTest.Controllers
 {
     [TestClass]
-    public class CountriesControllerTests
+    public class FormationsControllerTests
     {
-        private readonly Mock<IGenericUnitOfWork<Country>> _unitOfWorkMock;
+        private readonly Mock<IGenericUnitOfWork<Formation>> _unitOfWorkMock;
         private readonly DbContextOptions<DataContext> _options;
         private DataContext _mockDbContext = null!;
-        private CountriesController _controller = null!;
+        private FormationsController _controller = null!;
         private Mock<IUserHelper> _mockUserHelper = null!;
 
-        public CountriesControllerTests()
+        public FormationsControllerTests()
         {
             _options = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(databaseName: "InMemoryDatabase")
                 .Options;
-            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Country>>();
+            _unitOfWorkMock = new Mock<IGenericUnitOfWork<Formation>>();
         }
 
         [TestInitialize]
@@ -35,7 +34,7 @@ namespace NeoSmart.UnitTest.Controllers
             _mockUserHelper = new Mock<IUserHelper>();
             // Setting up InMemory database
             _mockDbContext = new DataContext(_options);
-            _controller = new CountriesController(_unitOfWorkMock.Object, _mockDbContext);
+            _controller = new FormationsController(_unitOfWorkMock.Object, _mockDbContext);
 
             // Mock user identity
             var claims = new List<Claim>
@@ -57,85 +56,75 @@ namespace NeoSmart.UnitTest.Controllers
             _mockDbContext.Dispose();
         }
 
-        [TestMethod]
-        public async Task GetComboAsync_ReturnsOkResult()
-        {
-            // Arrange
-
-            // Act
-            var result = await _controller.GetComboAsync() as OkObjectResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-
-        }
 
         [TestMethod]
         public async Task GetAsync_ReturnsOkResult()
         {
             // Arrange
-
-            var pagination = new PaginationDTO { Filter = "some" };
+            using var context = new DataContext(_options);
+            var controller = new GenericController<Formation>(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
 
             // Act
-            var result = await _controller.GetAsync(pagination) as OkObjectResult;
+            var result = await controller.GetAsync(pagination) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
 
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
         }
 
         [TestMethod]
         public async Task GetPagesAsync_ReturnsOkResult()
         {
             // Arrange
-            var pagination = new PaginationDTO { Filter = "some" };
+            using var context = new DataContext(_options);
+            var controller = new GenericController<Formation>(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
 
             // Act
-            var result = await _controller.GetPagesAsync(pagination) as OkObjectResult;
+            var result = await controller.GetPagesAsync(pagination) as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
-
-        }
-
-        [TestMethod]
-        public async Task GetAsync_ReturnsNotFoundWhenCountryNotFound()
-        {
-            // Arrange
-
-            // Act
-            var result = await _controller.GetAsync(1) as NotFoundResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(404, result.StatusCode);
 
             // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
         }
 
         [TestMethod]
-        public async Task GetAsync_ReturnsOkWhenCountryFound()
+        public async Task GetAsync_FormationFound_ReturnsOk()
         {
             // Arrange
-            using var context = new DataContext(new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options);
-            Country country = new Country { Id = 1, Name = "test" };
-            _unitOfWorkMock.Setup(x => x.GetCountryAsync(country.Id)).ReturnsAsync(country);
-            var controller = new CountriesController(_unitOfWorkMock.Object, context);
+            _mockDbContext.Formations.Add(new Formation
+            {
+                Id = 1,
+                Cod = "c01",
+                Status = true,
+                Description = "Some"
+            }) ;
+            await _mockDbContext.SaveChangesAsync();
 
             // Act
-            var result = await controller.GetAsync(country.Id) as OkObjectResult;
+            var result = await _controller.GetAsync(1);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-            _unitOfWorkMock.Verify(x => x.GetCountryAsync(country.Id), Times.Once());
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
 
+        [TestMethod]
+        public async Task GetAsync_FormationNotFound_ReturnsNotFound()
+        {
+            // Act
+            var result = await _controller.GetAsync(1);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }
 }
