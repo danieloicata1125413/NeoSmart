@@ -32,6 +32,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
         [HttpGet]
+
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Processes

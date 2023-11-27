@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
 using NeoSmart.BackEnd.Interfaces;
+using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.Data.Entities;
 using System;
@@ -45,5 +46,26 @@ namespace NeoSmart.UnitTest.Controllers
 
         }
 
+
+        [TestMethod]
+
+        public async Task GetAsync_ReturnsOkResult()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new ProcessesController(_unitOfWorkMock.Object, context);
+            var pagination = new PaginationDTO();
+
+            // Act
+            var result = await controller.GetAsync(pagination) as OkObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
+        }
     }
 }
