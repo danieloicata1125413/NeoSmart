@@ -50,8 +50,26 @@ namespace NeoSmart.UnitTest.Controllers
             context.Database.EnsureDeleted();
             context.Dispose();
         }
-  
 
+        [TestMethod]
+        public async Task GetPagesAsync_ReturnsOkResult()
+        {
+            // Arrange
+            using var context = new DataContext(_options);
+            var controller = new TrainingCalendarsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+            var pagination = new PaginationDTO();
+
+            // Act
+            var result = await controller.GetPagesAsync(pagination) as OkObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+            context.Dispose();
+        }
 
 
     }
