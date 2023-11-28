@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using NeoSmart.ClassLibraries.Responses;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,11 @@ using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Routing;
+using NeoSmart.ClassLibraries.Interfaces;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace NeoSmart.UnitTest.Controllers
 {
@@ -33,6 +39,8 @@ namespace NeoSmart.UnitTest.Controllers
         private Mock<IUserHelper> _mockUserHelper = null!;
         private Mock<IMailHelper> _mockMailHelper = null!;
         private InscriptionsController _controller = null!;
+        private DataContext _context = null!;
+        private DataContext _mockDbContext = null!;
 
         public InscriptionsControllerTests()
         {
@@ -42,25 +50,70 @@ namespace NeoSmart.UnitTest.Controllers
 
             _options = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
+            .Options;
+
+            _mockDbContext = new DataContext(_options);
+
+            _controller = new InscriptionsController(_mockInscriptionsHelper.Object, _mockDbContext, _mockUserHelper.Object, _mockMailHelper.Object);
+
         }
 
         [TestMethod]
         public async Task GetAsync_ReturnsOkResult()
         {
             //Arrange
-            using var context = new DataContext(_options);
+            var context = new DataContext(_options);
             var Id = 1;
 
-            var controller = new InscriptionsController(
-                Mock.Of<IInscriptionsHelper>(),
-                context,
-                Mock.Of<IUserHelper>(),
-                Mock.Of<IMailHelper>()
-            );
+            var userName = "test@example.com";
+            var user = new User { Document = "3435354", UserName = userName, UserType = UserType.Admin, CityId = 1 };
+             _mockUserHelper.Setup(x => x.GetUserAsync(userName))
+                  .ReturnsAsync(user);
+              _mockUserHelper.Setup(x => x.IsUserInRoleAsync(user, user.UserType.ToString()))
+                  .ReturnsAsync(true);
+
+             
+            _mockDbContext.Countries.Add(new Country
+            {
+                Name = "Colombia",
+                Id = 1,
+                States = new List<State>
+                  {
+                      new State
+                      {
+                          Name = "Antioquia",
+                          Id = 1,
+                          Cities = new List<City>
+                          {
+                              new City { Id = 1, Name = "Medellín" }
+                          }
+                      }
+                  }
+            });
+
+
+            _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo ="", UserName = userName, UserType = UserType.Admin, CityId = 1 }); ;
+
+            _mockDbContext.Trainings.Add(new Training { Id = 1, Cod="", Description="", Duration=1, Type=false });
+
+            _mockDbContext.TrainingImages.Add(new TrainingImage { Id = 1, TrainingId = 1, Image =""});
+
+            _mockDbContext.Topics.Add(new Topic { Id = 1,Description="prueba" });
+
+            _mockDbContext.TrainingTopics.Add(new TrainingTopic {Id=1, TrainingId = 1, TopicId = 1 });
+
+            var dat1 = new DateTime();
+            TimeSpan interval = new TimeSpan();
+            _mockDbContext.TrainingCalendars.Add(new TrainingCalendar { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
+
+            var datime1 = new DateTime();
+            _mockDbContext.Inscriptions.Add(new Inscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", TrainingCalendarId = 1, Remarks="Hola mundo" });
+
+            _mockDbContext.SaveChanges();
+
 
             //Act
-            var result = await controller.GetAsync(Id) as OkObjectResult;
+            var result = await _controller.GetAsync(Id) as OkObjectResult;
 
             //Assert
             Assert.IsNotNull(result);
@@ -125,6 +178,48 @@ namespace NeoSmart.UnitTest.Controllers
             // Clean up (if needed)
             context.Database.EnsureDeleted();
         }
+
+        [TestMethod]
+        public async Task GetPagesAsync_()
+        {
+            //Arrange
+            var context = new DataContext(_options);
+            var pagination = new PaginationDTO { Id = 1, Filter = "Excel" };
+            var userName = "testuser";
+            var mockUser = new User();
+
+            var controller = new InscriptionsController(
+                Mock.Of<IInscriptionsHelper>(),
+                context,
+                Mock.Of<IUserHelper>(),
+                Mock.Of<IMailHelper>()
+            );
+
+            //////////////////
+            var user = new User { Email = "test@example.com" };
+            _mockUserHelper.Setup(x => x.GetUserAsync(user.Email))
+                .ReturnsAsync(user);
+            _mockUserHelper.Setup(x => x.GeneratePasswordResetTokenAsync(user))
+                .ReturnsAsync("GeneratedToken");
+
+            var response = new Response<string> { IsSuccess = true };
+            _mockMailHelper.Setup(x => x.SendMail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(response);
+
+            ///////////////
+
+            //Act
+            //var result = await controller.GetPagesAsync(pagination) as BadRequestObjectResult;
+            var result = await controller.GetPagesAsync(pagination) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(400, result.StatusCode);
+
+            // Clean up (if needed)
+            context.Database.EnsureDeleted();
+        }
+
 
         private ControllerContext GetControllerContext(string userName)
         {
