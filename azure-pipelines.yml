@@ -11,7 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  proyecto: NeoSmart/NeoSmart.Backend/NeoSmart.Backend.csproj
+  proyecto: NeoSmart.Backend/NeoSmart.Backend.csproj
 steps:
 - task: UseDotNet@2
   displayName: 'ASP.NET Core 7'
