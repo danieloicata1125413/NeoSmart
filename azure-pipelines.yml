@@ -19,7 +19,7 @@ steps:
     packageType: 'sdk'
     version: '7.0.403'
     includePreviewVersions: true
-- script: dotnet build --configuration $(buildConfiguration) Market.API/Market.API.csproj
+- script: dotnet build --configuration $(buildConfiguration) NeoSmart.Backend/NeoSmart.Backend.csproj
   displayName: 'dotnet build $(buildConfiguration)'
 - task: CmdLine@2
   displayName: 'Installing EF Core CLI'
