@@ -11,7 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  proyecto: NeoSmart.Backend/NeoSmart.Backend.csproj
+  proyecto: NeoSmart/NeoSmart.Backend/NeoSmart.Backend.csproj
 steps:
 - task: UseDotNet@2
   displayName: 'ASP.NET Core 7'
@@ -19,7 +19,7 @@ steps:
     packageType: 'sdk'
     version: '7.0.403'
     includePreviewVersions: true
-- script: dotnet build --configuration $(buildConfiguration) NeoSmart.Backend/NeoSmart.Backend.csproj
+- script: dotnet build --configuration $(buildConfiguration) NeoSmart/NeoSmart.Backend/NeoSmart.Backend.csproj
   displayName: 'dotnet build $(buildConfiguration)'
 - task: CmdLine@2
   displayName: 'Installing EF Core CLI'
