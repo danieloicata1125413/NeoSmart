@@ -70,4 +70,7 @@ namespace NeoSmart.BackEnd.Controllers
             return Ok(state);
         }
     }
+
+    //LINEA PARA COMMIT DE CAMBIO ADICIONAL PARA PIPELINE
+
 }
