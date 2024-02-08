@@ -89,5 +89,8 @@ namespace NeoSmart.BackEnd.Controllers
         //    double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
         //    return Ok(totalPages);
         //}
+
+
+        //LINEA PARA COMMIT DE CAMBIO ADICIONAL PARA PIPELINE
     }
 }
