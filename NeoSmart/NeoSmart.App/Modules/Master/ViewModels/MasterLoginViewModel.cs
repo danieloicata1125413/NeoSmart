@@ -63,7 +63,7 @@
             //    this.Email = Settings.Email;
             //    this.Password = Settings.Password;
             //}
-            //_ = App.Current!.MainPage!.DisplayAlert(
+            //_ = Application.Current!.MainPage!.DisplayAlert(
             //    "Error",
             //    "El dispositivo y el sistema operativo No admite.",
             //    "Aceptar");
@@ -111,7 +111,7 @@
         {
             if (string.IsNullOrEmpty(this.Email))
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await Application.Current!.MainPage!.DisplayAlert(
                     "Error",
                     "Debe ingresar el nombre",
                     "Aceptar");
@@ -119,7 +119,7 @@
             }
             if (string.IsNullOrEmpty(this.Password))
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await Application.Current!.MainPage!.DisplayAlert(
                     "Error",
                     "Debe ingresar el Password",
                     "Aceptar");
@@ -132,7 +132,7 @@
             //Response connection = await this.apiService.CheckConnection();
             //if (!connection.IsSuccess)
             //{
-            //    await App.Current!.MainPage!.DisplayAlert(
+            //    await Application.Current!.MainPage!.DisplayAlert(
             //        "Error",
             //        connection.Message,
             //        "Aceptar");
@@ -157,14 +157,14 @@
             //{
             //    if (response.Message.Equals("NotFound"))
             //    {
-            //        await App.Current!.MainPage!.DisplayAlert(
+            //        await Application.Current!.MainPage!.DisplayAlert(
             //        "Error de acceso",
             //        "Los datos de acceso son incorrectos.",
             //        "Aceptar");
             //    }
             //    else
             //    {
-            //        await App.Current!.MainPage!.DisplayAlert(
+            //        await Application.Current!.MainPage!.DisplayAlert(
             //        "Error",
             //        response.Message,
             //        "Aceptar");
@@ -178,7 +178,7 @@
 
             //if (_User == null)
             //{
-            //    await App.Current!.MainPage!.DisplayAlert(
+            //    await Application.Current!.MainPage!.DisplayAlert(
             //    "Error de acceso",
             //    "Los datos de acceso son incorrectos.",
             //    "Aceptar");
@@ -228,13 +228,13 @@
         {
             this.IsRunning = true;
             bool respuesta = false;
-            respuesta = await Application.Current.MainPage.DisplayAlert("¿Desea continuar?", "Se abrirá un link para enviar una solicitud PQRS", "Si", "No");
+            respuesta = await Application.Current!.MainPage!.DisplayAlert("¿Desea continuar?", "Se abrirá un link para enviar una solicitud PQRS", "Si", "No");
             if (respuesta)
             {
                 string link = "https://ebsa.com.co/sitio/pagina/Registro-de-PQR";
                 //MainViewModel.GetInstance().MasterWeb = new MasterWebViewModel(link);
                 //MasterWebPage PQRS = new MasterWebPage();
-                //Application.Current.MainPage = PQRS;
+                //Application.Current!.MainPage! = PQRS;
             }
             this.IsRunning = false;
         }
@@ -242,13 +242,13 @@
         {
             this.IsRunning = true;
             bool respuesta = false;
-            respuesta = await App.Current.MainPage.DisplayAlert("¿Desea continuar?", "Se abrirá un link de preguntas frecuentes", "Si", "No");
+            respuesta = await App.Current!.MainPage!.DisplayAlert("¿Desea continuar?", "Se abrirá un link de preguntas frecuentes", "Si", "No");
             if (respuesta)
             {
                 string link = "https://ebsa.com.co/entidad/preguntas_frecuentes";
                 //MainViewModel.GetInstance().MasterWeb = new MasterWebViewModel(link);
                 //MasterWebPage HV = new MasterWebPage();
-                //Application.Current.MainPage = HV;
+                //Application.Current!.MainPage! = HV;
             }
             this.IsRunning = false;
         }

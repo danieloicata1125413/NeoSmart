@@ -9,7 +9,6 @@
 
         #region Properties
         public static NavigationPage? Navigator { get; internal set; }
-        public static FlyoutPage? Master { get; internal set; }
         public static string? Data { get; set; }
         #endregion
 

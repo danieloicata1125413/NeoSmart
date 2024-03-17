@@ -47,7 +47,7 @@
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 		<MauiImage Include="Resources\Images\*" />		
 		
-		<MauiSplashScreen Include="Resources\Splash\neosmartsplash.png" Color="#FFFFFF" BaseSize="256,256" />
+		<MauiSplashScreen Include="Resources\Splash\neosmartsplash.png" Color="#FFFFFF" BaseSize="1400,800" />
 		<!-- Splash Screen -->
 
 		<!-- Custom Fonts -->
@@ -55,6 +55,43 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\ic_account_box.png" />
+	  <None Remove="Resources\Images\ic_Advertisements.png" />
+	  <None Remove="Resources\Images\ic_carnet.png" />
+	  <None Remove="Resources\Images\ic_check.png" />
+	  <None Remove="Resources\Images\ic_check_app.png" />
+	  <None Remove="Resources\Images\ic_chevron_down.png" />
+	  <None Remove="Resources\Images\ic_chevron_left.png" />
+	  <None Remove="Resources\Images\ic_chevron_right.png" />
+	  <None Remove="Resources\Images\ic_chevron_up.png" />
+	  <None Remove="Resources\Images\ic_close.png" />
+	  <None Remove="Resources\Images\ic_close_app.png" />
+	  <None Remove="Resources\Images\ic_dashboard.png" />
+	  <None Remove="Resources\Images\ic_encuestas.png" />
+	  <None Remove="Resources\Images\ic_files.png" />
+	  <None Remove="Resources\Images\ic_hv.png" />
+	  <None Remove="Resources\Images\ic_imagen.png" />
+	  <None Remove="Resources\Images\ic_imagen_white.png" />
+	  <None Remove="Resources\Images\ic_lock_open.png" />
+	  <None Remove="Resources\Images\ic_notifications.png" />
+	  <None Remove="Resources\Images\ic_notifications_white.png" />
+	  <None Remove="Resources\Images\ic_pdf_color.png" />
+	  <None Remove="Resources\Images\ic_pin.png" />
+	  <None Remove="Resources\Images\ic_proceso.png" />
+	  <None Remove="Resources\Images\ic_proceso_white.png" />
+	  <None Remove="Resources\Images\ic_refresh.png" />
+	  <None Remove="Resources\Images\ic_search.png" />
+	  <None Remove="Resources\Images\ic_trash.png" />
+	  <None Remove="Resources\Images\ic_update_app.png" />
+	  <None Remove="Resources\Images\img_clientenofirma.png" />
+	  <None Remove="Resources\Images\img_neosmart_login.png" />
+	  <None Remove="Resources\Images\img_neosmart_logo.png" />
+	  <None Remove="Resources\Images\img_noimage.png" />
+	  <None Remove="Resources\Images\img_slider.png" />
+	  <None Remove="Resources\Images\img_worker.png" />
 	</ItemGroup>
 
 	<ItemGroup>

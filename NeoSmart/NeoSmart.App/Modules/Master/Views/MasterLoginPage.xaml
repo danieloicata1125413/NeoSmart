@@ -7,11 +7,12 @@
     <ContentPage.Content>
         <Grid
             BackgroundColor="White">
-            <!--<Image
+            <Image
                 Grid.Row="0"
                 Grid.Column="0"
                 Aspect="AspectFill"
-                Source="Login.png"/>-->
+                Opacity="0.9"
+                Source="img_neosmart_login.png"/>
             <ScrollView>
                 <Grid BindingContext="{Binding MasterLogin}">
                     <Grid.RowDefinitions>
@@ -22,19 +23,19 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <StackLayout
-                    Grid.Row="0">
-                        <Image Source="Logo.png" WidthRequest="200" Margin="10,100,10,10" VerticalOptions="CenterAndExpand"/>
+                        Grid.Row="0">
+                        <Image Source="img_neosmart_logo.png" WidthRequest="150" Margin="10,10,10,10" VerticalOptions="Start"/>
                     </StackLayout>
                     <StackLayout 
-                    Grid.Row="1" Padding="5">
+                        Grid.Row="1" Padding="5">
                         <Label
                         FontSize="Small"
                         TextColor="Black"
                         HorizontalTextAlignment="Center"
-                        Text="{Binding Mensaje}"/>
+                        Text="Bienvenido"/>
                     </StackLayout>
                     <StackLayout 
-                    Grid.Row="2" Padding="30,10,30,10">
+                        Grid.Row="2" Padding="30,5,30,5">
                         <Entry Placeholder="Email"
                                PlaceholderColor="Black"
                                TextColor="Black"
@@ -59,7 +60,7 @@
                             Command="{Binding LockCommand}"
                             HorizontalOptions="End"/>
                         </StackLayout>
-                        <StackLayout Orientation="Horizontal"  Padding="10,10">
+                        <StackLayout Orientation="Horizontal"  Padding="5,5">
                             <Label Text="Recordar mis datos"
                                    TextColor="Black"
                                    VerticalOptions="Center"
@@ -69,13 +70,23 @@
                                     HorizontalOptions="End"/>
                         </StackLayout>
                         <Button 
-                        Text="Inciar sesión"
-                        Margin="0,0,0,10"
-                        Padding="15"
-                        HorizontalOptions="FillAndExpand"
-                        IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
-                        Style = "{StaticResource PrimaryButton}"
-                        Command="{Binding LoginCommand}"/>
+                            Text="Inciar sesión"
+                            Margin="0,0,0,10"
+                            Padding="15"
+                            HorizontalOptions="FillAndExpand"
+                            IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                            Style = "{StaticResource PrimaryButton}"
+                            Command="{Binding LoginCommand}"/>
+                        <StackLayout Orientation="Horizontal"  Padding="5,5">
+                            <Label Text="Recodar contraseña"
+                               TextColor="Black"
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand"/>
+                            <Label Text="Activar mi cuenta"
+                                TextColor="Black"
+                                VerticalOptions="Center"
+                                HorizontalOptions="EndAndExpand"/>
+                        </StackLayout>
                     </StackLayout>
                     <StackLayout
                         Grid.Row="3"
@@ -86,6 +97,7 @@
                         BackgroundColor="WhiteSmoke"
                         Text="PQRS"
                         ContentLayout="left,10"
+                        Margin="0,0,5,0"
                         ImageSource="ic_pqrs.png"
                         BorderColor="#2E4A9E"
                         TextColor="Black"
@@ -93,15 +105,16 @@
                         HorizontalOptions="FillAndExpand"
                         Command="{Binding PqrsCommand}"/>
                         <Button
-                        BackgroundColor="WhiteSmoke"
-                        Text="Preguntas"
-                        ContentLayout="left,0"
-                        ImageSource="ic_preguntas_frecuentes.png"
-                        BorderColor="#2E4A9E"
-                        TextColor="Black"
-                        CornerRadius="5"
-                        HorizontalOptions="FillAndExpand"
-                        Command="{Binding PFCommand}"/>
+                            BackgroundColor="WhiteSmoke"
+                            Text="Preguntas"
+                            ContentLayout="left,0"
+                            Margin="5,0,0,0"
+                            ImageSource="ic_preguntas_frecuentes.png"
+                            BorderColor="#2E4A9E"
+                            TextColor="Black"
+                            CornerRadius="5"
+                            HorizontalOptions="FillAndExpand"
+                            Command="{Binding PFCommand}"/>
                     </StackLayout>
                     <StackLayout
                     Grid.Row="4">
