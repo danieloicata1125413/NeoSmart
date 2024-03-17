@@ -13,10 +13,10 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TemporalInscriptionsController : GenericController<TemporalInscription>
+    public class TemporalInscriptionsController : GenericController<TrainingSessionInscriptionTemporal>
     {
         private readonly DataContext _context;
-        public TemporalInscriptionsController(IGenericUnitOfWork<TemporalInscription> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public TemporalInscriptionsController(IGenericUnitOfWork<TrainingSessionInscriptionTemporal> unitOfWork, DataContext context) : base(unitOfWork, context)
         {
             _context = context;
         }
@@ -24,22 +24,22 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id:int}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            return Ok(await _context.TemporalInscriptions
+            return Ok(await _context.TrainingSessionInscriptionTemporals
                 .Include(ts => ts.User!)
-                .Include(tc => tc.TrainingCalendar!)
-                .ThenInclude(t => t.Training!)
-                .ThenInclude(tt => tt.TrainingTopics!)
-                .ThenInclude(pc => pc.Topic)
-                .Include(tc => tc.TrainingCalendar!)
-                .ThenInclude(t => t.Training!)
-                .ThenInclude(i => i.TrainingImages)
+                //.Include(tc => tc.TrainingCalendar!)
+                //.ThenInclude(t => t.Training!)
+                //.ThenInclude(tt => tt.TrainingTopics!)
+                //.ThenInclude(pc => pc.Topic)
+                //.Include(tc => tc.TrainingCalendar!)
+                //.ThenInclude(t => t.Training!)
+                //.ThenInclude(i => i.TrainingImages)
                 .FirstOrDefaultAsync(x => x.Id == id));
         }
 
         [HttpPut("full")]
         public async Task<IActionResult> PutAsync(TemporalInscriptionDTO temporalInscriptionDTO)
         {
-            var currentTemporalInscription = await _context.TemporalInscriptions.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.Id);
+            var currentTemporalInscription = await _context.TrainingSessionInscriptionTemporals.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.Id);
             if (currentTemporalInscription == null)
             {
                 return NotFound();
@@ -55,7 +55,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpPost("full")]
         public async Task<IActionResult> PostAsync(TemporalInscriptionDTO temporalInscriptionDTO)
         {
-            var trainingCalendar = await _context.TrainingCalendars.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.trainingCalendarId);
+            var trainingCalendar = await _context.TrainingSessions.FirstOrDefaultAsync(x => x.Id == temporalInscriptionDTO.trainingCalendarId);
             if (trainingCalendar == null)
             {
                 return NotFound();
@@ -67,9 +67,9 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            var temporalInscription = new TemporalInscription
+            var temporalInscription = new TrainingSessionInscriptionTemporal
             {
-                TrainingCalendarId = trainingCalendar.Id,
+                TrainingSessionId = trainingCalendar.Id,
                 Remarks = temporalInscriptionDTO.Remarks,
                 User = user
             };
@@ -89,8 +89,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetAsync()
         {
-            var result = await _context.TemporalInscriptions
-                .Include(x => x.TrainingCalendar!)
+            var result = await _context.TrainingSessionInscriptionTemporals
+                .Include(x => x.TrainingSession!)
                 .ThenInclude(tc => tc.Training!)
                 .ThenInclude(i => i.TrainingImages!)
                 .Include(x => x.User!)
@@ -102,7 +102,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("count")]
         public async Task<ActionResult> GetCountAsync()
         {
-            return Ok(await _context.TemporalInscriptions
+            return Ok(await _context.TrainingSessionInscriptionTemporals
                 .Where(x => x.User!.Email == User.Identity!.Name)
                 .CountAsync());
         }

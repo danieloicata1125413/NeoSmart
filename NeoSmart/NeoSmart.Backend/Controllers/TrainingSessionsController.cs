@@ -13,12 +13,12 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TrainingCalendarsController : GenericController<TrainingCalendar>
+    public class TrainingSessionsController : GenericController<TrainingSession>
     {
         private readonly DataContext _context;
         private readonly IFileStorage _fileStorage;
 
-        public TrainingCalendarsController(IGenericUnitOfWork<TrainingCalendar> unitOfWork, DataContext context, IFileStorage fileStorage) : base(unitOfWork, context)
+        public TrainingSessionsController(IGenericUnitOfWork<TrainingSession> unitOfWork, DataContext context, IFileStorage fileStorage) : base(unitOfWork, context)
         {
             _context = context;
             _fileStorage = fileStorage;
@@ -28,7 +28,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingCalendars
+            var queryable = _context.TrainingSessions
                                 .Include(o => o.User!)
                                 .Include(o => o.Training!)
                                 .Include(u => u.City)
@@ -48,7 +48,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingCalendars
+            var queryable = _context.TrainingSessions
                 .Where(x => x.Training!.Id == pagination.Id)
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -64,7 +64,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var trainingCalendar = await _context.TrainingCalendars
+            var trainingCalendar = await _context.TrainingSessions
                 .Include(o => o.User!)
                 .Include(o => o.Training!)
                 .Include(u => u.City!)

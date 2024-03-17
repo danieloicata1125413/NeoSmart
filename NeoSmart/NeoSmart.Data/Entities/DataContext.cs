@@ -11,23 +11,40 @@ namespace NeoSmart.Data.Entities
         {
 
         }
-        public DbSet<Occupation> Occupations { get; set; }
-        public DbSet<Process> Processes { get; set; }
-        public DbSet<Training> Trainings { get; set; }
-        public DbSet<TrainingCalendar> TrainingCalendars { get; set; }
-        public DbSet<TrainingTopic> TrainingTopics { get; set; }
-        public DbSet<TrainingImage> TrainingImages { get; set; }
-        public DbSet<Topic> Topics { get; set; }
-        public DbSet<Inscription> Inscriptions { get; set; }
-        public DbSet<TemporalInscription> TemporalInscriptions { get; set; }
-        public DbSet<Formation> Formations { get; set; }
-        public DbSet<FormationTopic> FormationTopics { get; set; }
-        public DbSet<FormationOccupation> FormationOccupations { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<State> States { get; set; }
+        public DbSet<Company> Companies { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Formation> Formations { get; set; }
+        public DbSet<FormationOccupation> FormationOccupations { get; set; }
+        public DbSet<FormationTopic> FormationTopics { get; set; }
+
+        public DbSet<Occupation> Occupations { get; set; }
+        public DbSet<Process> Processes { get; set; }
+        public DbSet<QuestionType> QuestionTypes { get; set; }
+        public DbSet<ResourceType> ResourceTypes { get; set; }
         public DbSet<Slider> Sliders { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<Topic> Topics { get; set; }
+        public DbSet<TopicExam> TopicExams { get; set; }
+        public DbSet<TopicExamQuestion> TopicExamQuestions { get; set; }
+        public DbSet<Training> Trainings { get; set; }
+        public DbSet<TrainingImage> TrainingImages { get; set; }
+        public DbSet<TrainingResource> TrainingResources { get; set; }
+        public DbSet<TrainingSession> TrainingSessions { get; set; }
+        public DbSet<TrainingSessionAttend> TrainingSessionAttends { get; set; }
+        public DbSet<TrainingSessionInscription> TrainingSessionInscriptions { get; set; }
+        public DbSet<TrainingSessionInscriptionTemporal> TrainingSessionInscriptionTemporals { get; set; }
+        public DbSet<TrainingTopic> TrainingTopics { get; set; }
+        public DbSet<TrainingTopicExam> TrainingTopicExams { get; set; }
+        public DbSet<UserTopicExam> UserTopicExams { get; set; }
+        public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
+
+        
+        
+        
+        
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

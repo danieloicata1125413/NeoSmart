@@ -29,30 +29,30 @@ namespace NeoSmart.BackEnd.Helper
                 };
             }
 
-            var temporalInscriptions = await _context.TemporalInscriptions
-                .Include(x => x.TrainingCalendar)
+            var temporalInscriptions = await _context.TrainingSessionInscriptionTemporals
+                .Include(x => x.TrainingSession)
                 .ThenInclude(x => x.Training)
                 .Where(x => x.User!.Email == email)
                 .ToListAsync();
 
             foreach (var temporalInscription in temporalInscriptions)
             {
-                Inscription inscription = new()
+                TrainingSessionInscription inscription = new()
                 {
                     Date = DateTime.UtcNow,
                     User = user,
                     Remarks = temporalInscription.Remarks,
-                    TrainingCalendar = temporalInscription.TrainingCalendar,
+                    TrainingSessionId = temporalInscription.TrainingSessionId,
                     InscriptionStatus = InscriptionStatus.Registered
                 };
-                _context.Inscriptions.Add(inscription);
+                _context.TrainingSessionInscriptions.Add(inscription);
                 //Enviar email
                 var response = _mailHelper.SendMail(user.FullName, user.Email!,
                     $"NeoSmart - Nueva inscripción",
                     $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-                    $"<p>Se ha realizado una inscripción a la capacitación: {inscription.TrainingCalendar!.Training!.Description}</p>" +
+                    $"<p>Se ha realizado una inscripción a la capacitación: {inscription.TrainingSession!.Training!.Description}</p>" +
                     $"<b>Muchas gracias!</b>");
-                _context.TemporalInscriptions.Remove(temporalInscription);
+                _context.TrainingSessionInscriptionTemporals.Remove(temporalInscription);
             }
 
             await _context.SaveChangesAsync();

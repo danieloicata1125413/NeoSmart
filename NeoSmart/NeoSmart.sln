@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.FrontEnd", "NeoSma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeoSmart.UnitTest", "NeoSmart.UnitTest\NeoSmart.UnitTest.csproj", "{30628DB2-3730-42D2-BB21-E397500D8FEE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoSmart.App", "NeoSmart.App\NeoSmart.App.csproj", "{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,12 @@ Global
 		{30628DB2-3730-42D2-BB21-E397500D8FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30628DB2-3730-42D2-BB21-E397500D8FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30628DB2-3730-42D2-BB21-E397500D8FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D3D5E5-3A85-4658-B03D-0F7CBAE5CC75}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

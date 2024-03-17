@@ -7,6 +7,11 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
+        [Display(Name = "Empresa")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int CompanyId { get; set; }
+        public Company? Company { get; set; }
+
         [Display(Name = "Código")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Cod { get; set; }

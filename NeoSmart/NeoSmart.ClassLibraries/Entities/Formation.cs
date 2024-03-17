@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Formation
+    public class Formation : ISoftDetete
     {
         public int Id { get; set; }
 
@@ -16,9 +16,6 @@ namespace NeoSmart.ClassLibraries.Entities
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
-
-        [Display(Name = "Habilitado")]
-        public bool Status { get; set; }
 
         public ICollection<FormationTopic>? FormationTopics { get; set; }
 

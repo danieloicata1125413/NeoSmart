@@ -104,10 +104,10 @@ namespace NeoSmart.UnitTest.Controllers
 
             var dat1 = new DateTime();
             TimeSpan interval = new TimeSpan();
-            _mockDbContext.TrainingCalendars.Add(new TrainingCalendar { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
+            _mockDbContext.TrainingSessions.Add(new TrainingSession { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
 
             var datime1 = new DateTime();
-            _mockDbContext.Inscriptions.Add(new Inscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", TrainingCalendarId = 1, Remarks="Hola mundo" });
+            _mockDbContext.TrainingSessionInscriptions.Add(new TrainingSessionInscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", TrainingSessionId = 1, Remarks="Hola mundo" });
 
             _mockDbContext.SaveChanges();
 

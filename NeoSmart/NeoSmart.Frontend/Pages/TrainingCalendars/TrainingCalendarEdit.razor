@@ -12,7 +12,7 @@
 
 @code {
 
-    public TrainingCalendar trainingCalendar;
+    public TrainingSession trainingCalendar;
     public TrainingCalendarForm? trainingCalendarForm;
 
     [CascadingParameter]
@@ -23,7 +23,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var httpResponse = await repository.GetAsync<TrainingCalendar>($"/api/TrainingCalendars/{TrainingCalendarId}");
+        var httpResponse = await repository.GetAsync<TrainingSession>($"/api/TrainingCalendars/{TrainingCalendarId}");
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

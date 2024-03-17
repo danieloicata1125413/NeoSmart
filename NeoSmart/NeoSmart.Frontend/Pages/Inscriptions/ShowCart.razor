@@ -36,10 +36,10 @@ else
                             {
                                 <tr>
                                     <td>
-                                        <img src="@temporalInscription.TrainingCalendar!.Training!.MainImage" style="width:50px;" />
+                                        <img src="@temporalInscription.TrainingSession!.Training!.MainImage" style="width:50px;" />
                                     </td>
                                     <td>
-                                        @temporalInscription.TrainingCalendar!.Training!.Description
+                                        @temporalInscription.TrainingSession!.Training!.Description
                                     </td>
                                     <td>
                                         @temporalInscription.Remarks
@@ -63,7 +63,7 @@ else
 }
 
 @code {
-    public List<TemporalInscription>? temporalInscriptions { get; set; }
+    public List<TrainingSessionInscriptionTemporal>? temporalInscriptions { get; set; }
     private int quantity;
     private bool loading = true;
 
@@ -82,7 +82,7 @@ else
         loading = true;
         try
         {
-            var responseHppt = await repository.GetAsync<List<TemporalInscription>>("api/TemporalInscriptions/my");
+            var responseHppt = await repository.GetAsync<List<TrainingSessionInscriptionTemporal>>("api/TemporalInscriptions/my");
             temporalInscriptions = responseHppt.Response!;
             quantity = temporalInscriptions.Count();
         }

@@ -18,7 +18,7 @@ namespace NeoSmart.UnitTest.Controllers
     public class TrainingCalendarsControllerTest
     {
         private readonly DbContextOptions<DataContext> _options;
-        private readonly Mock<IGenericUnitOfWork<TrainingCalendar>> _unitOfWorkMock;
+        private readonly Mock<IGenericUnitOfWork<TrainingSession>> _unitOfWorkMock;
         private Mock<IFileStorage> _mockFileStorage = null!;
 
         public TrainingCalendarsControllerTest()
@@ -26,7 +26,7 @@ namespace NeoSmart.UnitTest.Controllers
             _options = new DbContextOptionsBuilder<DataContext>()
      .UseInMemoryDatabase(Guid.NewGuid().ToString())
      .Options;
-            _unitOfWorkMock = new Mock<IGenericUnitOfWork<TrainingCalendar>>();
+            _unitOfWorkMock = new Mock<IGenericUnitOfWork<TrainingSession>>();
             _mockFileStorage = new Mock<IFileStorage>();
         }
 
@@ -36,7 +36,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TrainingCalendarsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+            var controller = new TrainingSessionsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
             var pagination = new PaginationDTO();
 
             // Act
@@ -56,7 +56,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TrainingCalendarsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+            var controller = new TrainingSessionsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
             var pagination = new PaginationDTO();
 
             // Act
@@ -76,7 +76,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TrainingCalendarsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
+            var controller = new TrainingSessionsController(_unitOfWorkMock.Object, context, _mockFileStorage.Object);
 
             // Act
             var result = await controller.GetAsync(1) as NotFoundResult;

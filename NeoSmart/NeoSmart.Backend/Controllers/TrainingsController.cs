@@ -35,7 +35,7 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.TrainingTopics!)
                                     .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages!)
-                                .Include(o=> o.TrainingCalendars!)
+                                .Include(o=> o.TrainingSessions!)
                                     .ThenInclude(o => o.City!)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -74,7 +74,7 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.TrainingTopics!)
                                 .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages)
-                                .Include(o => o.TrainingCalendars!)
+                                .Include(o => o.TrainingSessions!)
                                 .ThenInclude(o => o.City!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)

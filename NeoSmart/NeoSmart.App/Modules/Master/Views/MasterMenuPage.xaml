@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NeoSmart.App.Views.MasterMenuPage"
+             BindingContext="{Binding Main, Source={StaticResource Locator}}"
+             Title="Menu">
+    <StackLayout
+        BackgroundColor="WhiteSmoke"
+        Padding="15,20,15,10">
+        <StackLayout
+            HorizontalOptions="Center">
+            <Label
+                Text="logo"
+                FontSize="Small"
+                TextColor="Black"
+                HorizontalTextAlignment="Center"/>
+        </StackLayout>
+        <StackLayout>
+            <Label
+            Text="Mi nombre"
+            FontSize="Small"
+            TextColor="Black"
+            HorizontalTextAlignment="Center"/>
+            <!--<Label
+            Text="{Binding Persona.CARGO, Mode=TwoWay}"
+            FontSize="Small"
+            TextColor="#FFC629"
+            FontAttributes="Bold"
+            HorizontalTextAlignment="Center"/>
+            <Label
+            Text="{Binding Zona.NOMBRE, Mode=TwoWay}"
+            FontSize="Micro"
+            TextColor="Black"
+            HorizontalTextAlignment="Center"/>
+            <Label
+            Text="{Binding Proyecto.NOMBRE, Mode=TwoWay}"
+            FontSize="Micro"
+            TextColor="Black"
+            HorizontalTextAlignment="Center"/>-->
+        </StackLayout>
+        <!--<StackLayout 
+            Orientation="Horizontal"  
+            Padding="10,10">
+            <Label Text="Trabajar en segundo plano:"
+                           TextColor="Black"
+                           VerticalOptions="Center"
+                           HorizontalOptions="StartAndExpand"/>
+            <Switch 
+                IsToggled="{Binding IsWakeLock, Mode=TwoWay}"
+                OnColor="#FF152A"
+                HorizontalOptions="End"/>
+        </StackLayout>-->
+        <!--<StackLayout>
+            <ListView
+            ItemsSource="{Binding MasterMenu, Mode=TwoWay}"
+            SeparatorColor="#2A2929"
+            Margin="5"
+            HasUnevenRows="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateCommand}"></TapGestureRecognizer>
+                                </Grid.GestureRecognizers>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="25"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Image
+                                Source="{Binding Icon}"
+                                WidthRequest="25"
+                                HeightRequest="25"
+                                Margin="5">
+                                </Image>
+                                <Label
+                                Grid.Column="1"
+                                VerticalOptions="Center"
+                                TextColor="Black"
+                                Text="{Binding Title}">
+                                </Label>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>-->
+        <StackLayout>
+            <!--<Image Source="ATI.png" WidthRequest="50" Margin="0" VerticalOptions="CenterAndExpand"/>-->
+            <StackLayout Orientation="Horizontal">
+                <Label 
+                Text="Versión: "
+                TextColor="Black"
+                FontSize="Micro"
+                VerticalOptions="Center"
+                HorizontalOptions="EndAndExpand"/>
+                <Label 
+                    Text="{Binding CurrentVersion, Mode=TwoWay}"
+                    TextColor="Black"
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="StartAndExpand"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Un producto de"
+                    TextColor="Black"
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="EndAndExpand"/>
+                <Label Text="{Binding Empresa, Mode=TwoWay}"
+                    TextColor="Black"
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="StartAndExpand"/>
+            </StackLayout>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

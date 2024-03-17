@@ -69,7 +69,7 @@
 
 @code {
     private Training? training;
-    private List<TrainingCalendar>? trainingCalendars;
+    private List<TrainingSession>? trainingCalendars;
     private int currentPage = 1;
     private int totalPages;
 
@@ -170,7 +170,7 @@
             url = $"api/TrainingCalendars?id={TrainingId}&page={page}&filter={Filter}";
         }
 
-        var response = await repository.GetAsync<List<TrainingCalendar>>(url);
+        var response = await repository.GetAsync<List<TrainingSession>>(url);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -213,7 +213,7 @@
         await SelectedPageAsync(page);
     }
 
-    private async Task DeleteAsync(TrainingCalendar trainingCalendar)
+    private async Task DeleteAsync(TrainingSession trainingCalendar)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {

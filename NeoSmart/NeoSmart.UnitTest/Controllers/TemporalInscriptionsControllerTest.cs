@@ -23,7 +23,7 @@ namespace NeoSmart.UnitTest.Controllers
         private TemporalInscriptionsController _controller = null!;
         private DataContext _context = null!;
         private DbContextOptions<DataContext> _options = null!;
-        private Mock<IGenericUnitOfWork<TemporalInscription>> _mockUnitOfWork = null!;
+        private Mock<IGenericUnitOfWork<TrainingSessionInscriptionTemporal>> _mockUnitOfWork = null!;
 
         [TestInitialize]
         public void SetUp()
@@ -33,7 +33,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .Options;
 
             _context = new DataContext(_options);
-            _mockUnitOfWork = new Mock<IGenericUnitOfWork<TemporalInscription>>();
+            _mockUnitOfWork = new Mock<IGenericUnitOfWork<TrainingSessionInscriptionTemporal>>();
             _controller = new TemporalInscriptionsController(_mockUnitOfWork.Object, _context);
 
             var claims = new List<Claim>
@@ -59,8 +59,8 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetAsync_ShouldReturnTemporalInscription_WhenIdExists()
         {
             // Arrange
-            var expectedInscription = new TemporalInscription { Id = 1 };
-            _context.TemporalInscriptions.Add(expectedInscription);
+            var expectedInscription = new TrainingSessionInscriptionTemporal { Id = 1 };
+            _context.TrainingSessionInscriptionTemporals.Add(expectedInscription);
             await _context.SaveChangesAsync();
 
             // Act
@@ -74,8 +74,8 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PutAsync_ShouldUpdateTemporalInscription_WhenOrderExists()
         {
             // Arrange
-            var expectedInscription = new TemporalInscription { Id = 1, Remarks = "Initial Remarks"};
-            _context.TemporalInscriptions.Add(expectedInscription);
+            var expectedInscription = new TrainingSessionInscriptionTemporal { Id = 1, Remarks = "Initial Remarks"};
+            _context.TrainingSessionInscriptionTemporals.Add(expectedInscription);
             await _context.SaveChangesAsync();
 
             var dto = new TemporalInscriptionDTO { Id = 1, Remarks = "Updated Remarks"};
@@ -107,7 +107,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldAddTemporalInscription_WhenDataIsValid()
         {
             // Arrange
-            var trainingCalendar = new TrainingCalendar { Id = 1, 
+            var trainingCalendar = new TrainingSession { Id = 1, 
                 DateStart = DateTime.Now,
                 DateEnd = DateTime.Now,
                 Training = new Training { Id = 1,
@@ -121,7 +121,7 @@ namespace NeoSmart.UnitTest.Controllers
                 Status = true
             };
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
-            _context.TrainingCalendars.Add(trainingCalendar);
+            _context.TrainingSessions.Add(trainingCalendar);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -151,7 +151,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldReturnNotFound_WhenUserDoesNotExistAsync()
         {
             // Arrange
-            var trainingCalendar = new TrainingCalendar
+            var trainingCalendar = new TrainingSession
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -168,7 +168,7 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingCalendars.Add(trainingCalendar);
+            _context.TrainingSessions.Add(trainingCalendar);
             await _context.SaveChangesAsync();
 
             var dto = new TemporalInscriptionDTO { trainingCalendarId = 1 };
@@ -184,7 +184,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldAddTemporalInscription_WhenTrainingCalendarAndUserExistAsync()
         {
             // Arrange
-            var trainingCalendar = new TrainingCalendar
+            var trainingCalendar = new TrainingSession
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -201,7 +201,7 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingCalendars.Add(trainingCalendar);
+            _context.TrainingSessions.Add(trainingCalendar);
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
@@ -231,8 +231,8 @@ namespace NeoSmart.UnitTest.Controllers
             var exceptionalContext = new ExceptionalDataContext(options);
             var email = "test@example.com";
 
-            exceptionalContext.TrainingCalendars.Add(
-                new TrainingCalendar
+            exceptionalContext.TrainingSessions.Add(
+                new TrainingSession
                 {
                     Id = 1,
                     DateStart = DateTime.Now,
@@ -286,7 +286,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetAsync_WithUserHavingData_ReturnsCorrectData()
         {
             // Arrange
-            var trainingCalendar = new TrainingCalendar
+            var trainingCalendar = new TrainingSession
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -303,15 +303,15 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingCalendars.Add(trainingCalendar);
+            _context.TrainingSessions.Add(trainingCalendar);
             await _context.SaveChangesAsync();
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var temporalInscription = new TemporalInscription {  TrainingCalendar = trainingCalendar, Remarks = "Some", User = user };
-            _context.TemporalInscriptions.Add(temporalInscription);
+            var temporalInscription = new TrainingSessionInscriptionTemporal { TrainingSession = trainingCalendar, Remarks = "Some", User = user };
+            _context.TrainingSessionInscriptionTemporals.Add(temporalInscription);
             await _context.SaveChangesAsync();
 
             // Act
@@ -320,7 +320,7 @@ namespace NeoSmart.UnitTest.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
-            var data = okResult!.Value as List<TemporalInscription>;
+            var data = okResult!.Value as List<TrainingSessionInscriptionTemporal>;
             Assert.AreEqual(1, data!.Count);
         }
 
@@ -328,7 +328,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetCountAsync_WithUserHavingData_ReturnsCorrectCount()
         {
             // Arrange
-            var trainingCalendar = new TrainingCalendar
+            var trainingCalendar = new TrainingSession
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -345,15 +345,15 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingCalendars.Add(trainingCalendar);
+            _context.TrainingSessions.Add(trainingCalendar);
             await _context.SaveChangesAsync();
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            _context.TemporalInscriptions.Add(new TemporalInscription { TrainingCalendar = trainingCalendar, Remarks = "Some", User = user });
-            _context.TemporalInscriptions.Add(new TemporalInscription { TrainingCalendar = trainingCalendar, Remarks = "Any", User = user });
+            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { TrainingSession = trainingCalendar, Remarks = "Some", User = user });
+            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { TrainingSession = trainingCalendar, Remarks = "Any", User = user });
             await _context.SaveChangesAsync();
 
             // Act

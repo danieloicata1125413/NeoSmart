@@ -25,11 +25,14 @@ namespace NeoSmart.BackEnd.Data
         {
             await _context.Database.EnsureCreatedAsync();
             //await CheckCountriesAsync();
+            await CheckResourceTypesAsync();
             await CheckDocumentTypesAsync();
+            await CheckCompanysAsync();
             await CheckProcessesAsync();
             await CheckOccupationsAsync();
             await CheckFormationsAsync();
             await CheckTopicsAsync();
+            //await CheckTrainingCalendarAsync();
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
             await CheckUserAsync("1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", UserType.Admin, "1090Jeep$");
@@ -45,14 +48,16 @@ namespace NeoSmart.BackEnd.Data
                 {
                     Address = address,
                     Document = document,
-                    DocumentType = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Description == "CEDULA DE CIUDADANIA"),
+                    CompanyId = 0,
+                    DocumentType = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Name == "CC"),
                     City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals(city)),
                     Email = email,
                     FirstName = firstName,
                     LastName = lastName,
                     PhoneNumber = phoneNumber,
                     UserName = email,
-                    UserType = userType
+                    UserType = userType,
+                    EmailConfirmed = true
                 };
                 try
                 {
@@ -76,6 +81,16 @@ namespace NeoSmart.BackEnd.Data
             await _userHelper.CheckRoleAsync(UserType.Trainer.ToString());
             await _userHelper.CheckRoleAsync(UserType.Employee.ToString());
         }
+        private async Task CheckResourceTypesAsync()
+        {
+            if (!_context.ResourceTypes.Any())
+            {
+                _context.ResourceTypes.Add(new ResourceType { Name = "FILE", Status = true });
+                _context.ResourceTypes.Add(new ResourceType { Name = "VIDEO", Status = true });
+                _context.ResourceTypes.Add(new ResourceType { Name = "LINK", Status = true });
+                await _context.SaveChangesAsync();
+            }
+        }
         private async Task CheckDocumentTypesAsync()
         {
             if (!_context.DocumentTypes.Any())
@@ -94,7 +109,6 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-
         //private async Task CheckCountriesAsync()
         //{
         //    if (!_context.Countries.Any())
@@ -1332,13 +1346,29 @@ namespace NeoSmart.BackEnd.Data
                 }
             }
         }
+        private async Task CheckCompanysAsync()
+        {
+            if (!_context.Companies.Any())
+            {
+                _context.Companies.Add(new Company {
+                    Id = 0,
+                    Name = "INVESA SA",
+                    Nit = "890900652-3",
+                    City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Medellín")),
+                    Status = true,
+                      
+                }); 
+                await _context.SaveChangesAsync();
+            }
+        }
         private async Task CheckProcessesAsync()
         {
             if (!_context.Processes.Any())
-            { 
-                _context.Processes.Add(new Process { Cod = "P001", Description = "Gestion Humana", Status = true });
-                _context.Processes.Add(new Process { Cod = "P002", Description = "Planta pinturas", Status = true });
-                _context.Processes.Add(new Process { Cod = "P003", Description = "Planta agroquimicos", Status = true });
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
+                _context.Processes.Add(new Process { Cod = "P001", Description = "Gestion Humana", Status = true, Company = company });
+                _context.Processes.Add(new Process { Cod = "P002", Description = "Planta pinturas", Status = true, Company = company });
+                _context.Processes.Add(new Process { Cod = "P003", Description = "Planta agroquimicos", Status = true, Company = company });
                 await _context.SaveChangesAsync();
             }
         }
@@ -1370,17 +1400,9 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Topics.Any())
             {
-                _context.Topics.Add(new Topic { Description = "Agilidad", Status = true });
-                _context.Topics.Add(new Topic { Description = "Comunicación", Status = true });
-                _context.Topics.Add(new Topic { Description = "Fomento de la confianza", Status = true });
-                _context.Topics.Add(new Topic { Description = "Gestión del cambio", Status = true });
-                _context.Topics.Add(new Topic { Description = "Leaderando a través de las culturas", Status = true });
-                _context.Topics.Add(new Topic { Description = "Leaderazgo", Status = true });
-                _context.Topics.Add(new Topic { Description = "Manejo del tiempo", Status = true });
-                _context.Topics.Add(new Topic { Description = "Manejo del estrés", Status = true });
-                _context.Topics.Add(new Topic { Description = "Organización", Status = true });
-                _context.Topics.Add(new Topic { Description = "Seguridad en el trabajo", Status = true });
-                await _context.SaveChangesAsync();
+                _context.Topics.Add(new Topic { Description = "Sistema Integrado de Gestión.", Status = true });
+                _context.Topics.Add(new Topic { Description = "Medio ambiente", Status = true });
+                await _context.SaveChangesAsync();     
             }
         }
         private async Task CheckFormationsAsync()
@@ -1388,16 +1410,48 @@ namespace NeoSmart.BackEnd.Data
             if (!_context.Formations.Any())
             {
                 var occupation = await _context.Occupations.FirstOrDefaultAsync(o => o.Cod.Equals("CA001"));
-                if (occupation != null) {
-                    _context.Formations.Add(new Formation { Cod = "E001", Description = "Excel", Status = true }); ;
-                    _context.Formations.Add(new Formation { Cod = "E002", Description = "Seguridad informatica", Status = true });
-                    _context.Formations.Add(new Formation { Cod = "E003", Description = "Office", Status = true });
-                    _context.Formations.Add(new Formation { Cod = "E004", Description = "Hseq", Status = true });
-                    _context.Formations.Add(new Formation { Cod = "E005", Description = "Riesgo locativo", Status = true });
+                if (occupation != null)
+                {
+                    _context.Formations.Add(new Formation { Cod = "E001", Description = "Inducción del personal.", Status = true }); ;
+                    _context.Formations.Add(new Formation { Cod = "E002", Description = "Formación en seguridad.", Status = true });
                     await _context.SaveChangesAsync();
                 }
             }
         }
+
+        //private async Task CheckTrainingCalendarAsync()
+        //{
+        //    if (!_context.TrainingSessions.Any())
+        //    {
+        //        _context.TrainingCalendars.Add(new TrainingCalendar { 
+        //            Description = "Primer trimestre 2024", 
+        //            DateStart = DateTime.Parse("2024-01-01"), 
+        //            DateEnd = DateTime.Parse("2024-03-31"), 
+        //            Status = true });
+        //        _context.TrainingCalendars.Add(new TrainingCalendar
+        //        {
+        //            Description = "Segundo trimestre 2024",
+        //            DateStart = DateTime.Parse("2024-04-01"),
+        //            DateEnd = DateTime.Parse("2024-06-30"),
+        //            Status = true
+        //        });
+        //        _context.TrainingCalendars.Add(new TrainingCalendar
+        //        {
+        //            Description = "Tercer trimestre 2024",
+        //            DateStart = DateTime.Parse("2024-07-01"),
+        //            DateEnd = DateTime.Parse("2024-09-30"),
+        //            Status = true
+        //        });
+        //        _context.TrainingCalendars.Add(new TrainingCalendar
+        //        {
+        //            Description = "Tercer trimestre 2024",
+        //            DateStart = DateTime.Parse("2024-10-01"),
+        //            DateEnd = DateTime.Parse("2024-12-31"),
+        //            Status = true
+        //        });
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
         private async Task CheckTrainingsAsync()
         {
             if (!_context.Trainings.Any())
@@ -1405,11 +1459,9 @@ namespace NeoSmart.BackEnd.Data
                 var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("P001"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Excel", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
-                    _context.Trainings.Add(new Training { Cod = "CA002", Description = "Seguridad informatica", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
-                    _context.Trainings.Add(new Training { Cod = "CA003", Description = "Office", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
-                    _context.Trainings.Add(new Training { Cod = "CA004", Description = "Hseq", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
-                    _context.Trainings.Add(new Training { Cod = "CA005", Description = "Riesgo locativo", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                   
                     await _context.SaveChangesAsync();
                 }
             }
