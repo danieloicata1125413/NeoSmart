@@ -1,9 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using NeoSmart.BackEnd.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NeoSmart.BackEnd.Helpers
 {
+    [ExcludeFromCodeCoverage(Justification = "Not used in the project.")]
     public class FileStorage : IFileStorage
     {
         private readonly string _connectionString;

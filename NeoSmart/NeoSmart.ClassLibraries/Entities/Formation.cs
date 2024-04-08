@@ -3,9 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Formation
+    public class Formation : ISoftDetete
     {
         public int Id { get; set; }
+
+        [Display(Name = "Empresa")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int CompanyId { get; set; }
+        public Company? Company { get; set; }
 
         [Display(Name = "Código")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -16,9 +21,6 @@ namespace NeoSmart.ClassLibraries.Entities
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
-
-        [Display(Name = "Habilitado")]
-        public bool Status { get; set; }
 
         public ICollection<FormationTopic>? FormationTopics { get; set; }
 

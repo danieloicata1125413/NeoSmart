@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
+using System.ComponentModel.Design;
 
 namespace NeoSmart.BackEnd.Controllers
 {
@@ -16,26 +18,35 @@ namespace NeoSmart.BackEnd.Controllers
     public class FormationsController : GenericController<Formation>
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public FormationsController(IGenericUnitOfWork<Formation> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public FormationsController(IGenericUnitOfWork<Formation> unitOfWork, DataContext context, IUserHelper userHelper) : base(unitOfWork, context)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Formations
+                                .Include(o => o.Company)
                                 .Include(o => o.FormationTopics)
                                 .Include(o => o.FormationOccupations)
                                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
 
             return Ok(await queryable
-                .OrderBy(x => x.Description)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description)
                 .Paginate(pagination)
                 .ToListAsync());
         }
@@ -46,11 +57,18 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var queryable = _context.Formations
                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            queryable = queryable
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description);
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
@@ -60,6 +78,7 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var formation = await _context.Formations
+                .Include(o => o.Company)
                 .Include(o => o.FormationTopics!)
                 .ThenInclude(x => x.Topic)
                 .Include(o => o.FormationOccupations!)
@@ -79,6 +98,7 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 Formation newFormation = new()
                 {
+                    CompanyId = formationDTO.CompanyId,
                     Cod = formationDTO.Cod,
                     Description = formationDTO.Description,
                     FormationTopics = new List<FormationTopic>(),
@@ -129,6 +149,7 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     return NotFound();
                 }
+                formation.CompanyId = formationDTO.CompanyId;
                 formation.Cod = formationDTO.Cod;
                 formation.Description = formationDTO.Description;
                 if (formationDTO.FormationTopicIds != null && formationDTO.FormationTopicIds.Count > 0)

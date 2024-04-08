@@ -49,18 +49,18 @@ else
                                         @inscription.User!.FullName
                                     </td>
                                     <td>
-                                        @inscription.TrainingCalendar!.Training!.Description
+                                        @inscription.TrainingSession!.Training!.Description
                                     </td>
                                     <td>
-                                        @inscription.TrainingCalendar!.DateStart
+                                        @inscription.TrainingSession!.DateStart
                                     </td>
                                     <td>
-                                        @inscription.TrainingCalendar!.DateEnd
+                                        @inscription.TrainingSession!.DateEnd
                                     </td>
                                     <td>
-                                        @if (@inscription.TrainingCalendar!.User != null)
+                                        @if (@inscription.TrainingSession!.User != null)
                                         {
-                                            @inscription.TrainingCalendar!.User!.FullName
+                                            @inscription.TrainingSession!.User!.FullName
                                         }
                                     </td>
                                     <td>
@@ -93,7 +93,7 @@ else
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
 
-    public List<Inscription>? Inscriptions { get; set; }
+    public List<TrainingSessionInscription>? Inscriptions { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -128,7 +128,7 @@ else
     {
         loading = true;
         var url = $"api/Inscriptions?page={page}";
-        var response = await repository.GetAsync<List<Inscription>>(url);
+        var response = await repository.GetAsync<List<TrainingSessionInscription>>(url);
         if (response.Error)
         {
             loading = false;

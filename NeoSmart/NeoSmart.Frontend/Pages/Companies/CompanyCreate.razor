@@ -1,0 +1,48 @@
+﻿@page "/companies/create"
+@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<CompanyForm Titulo="Nueva Empresa" @ref="CompanyForm" Company="Company" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private Company Company = new Company()
+        {
+            CityId = 0,
+            Status = true
+        };
+    private CompanyForm? CompanyForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/Companies", Company);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        CompanyForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Companies");
+    }
+}

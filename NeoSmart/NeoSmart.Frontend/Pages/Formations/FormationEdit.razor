@@ -1,5 +1,5 @@
 ﻿@page "/formations/edit/{formationId:int}"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -95,6 +95,7 @@ else
         return new FormationDTO
             {
                 Id = formation.Id,
+                CompanyId = formation.CompanyId,
                 Cod = formation.Cod,
                 Description = formation.Description,
                 Status = formation.Status,

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NeoSmart.App.Views.MasterLoginPage"
+             BindingContext="{Binding Main, Source={StaticResource Locator}}"
+             Title="Login">
+    <ContentPage.Content>
+        <Grid
+            BackgroundColor="White">
+            <Image
+                Grid.Row="0"
+                Grid.Column="0"
+                Aspect="AspectFill"
+                Opacity="0.9"
+                Source="img_neosmart_login.png"/>
+            <ScrollView>
+                <Grid BindingContext="{Binding MasterLogin}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackLayout
+                        Grid.Row="0">
+                        <Image Source="img_neosmart_logo.png" WidthRequest="150" Margin="10,10,10,10" VerticalOptions="Start"/>
+                    </StackLayout>
+                    <StackLayout 
+                        Grid.Row="1" Padding="5">
+                        <Label
+                        FontSize="Small"
+                        TextColor="Black"
+                        HorizontalTextAlignment="Center"
+                        Text="Bienvenido"/>
+                    </StackLayout>
+                    <StackLayout 
+                        Grid.Row="2" Padding="30,5,30,5">
+                        <Entry Placeholder="Email"
+                               PlaceholderColor="Black"
+                               TextColor="Black"
+                               Text="{Binding Email, Mode=TwoWay}"/>
+                        <StackLayout Orientation="Horizontal" >
+                            <Entry
+                            Placeholder="Password"
+                            PlaceholderColor="Black"
+                            TextColor="Black"
+                            IsPassword="{Binding IsPassword, Mode=TwoWay}"
+                            Text="{Binding Password, Mode=TwoWay}"
+                            HorizontalOptions="FillAndExpand"/>
+                            <Button 
+                            Text=""
+                            Background="transparent"
+                            Margin="0,0,0,0"
+                            WidthRequest="35"
+                            Padding="0"
+                            IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                            ContentLayout="Top,0"
+                            ImageSource="ic_lock_open.png"
+                            Command="{Binding LockCommand}"
+                            HorizontalOptions="End"/>
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal"  Padding="5,5">
+                            <Label Text="Recordar mis datos"
+                                   TextColor="Black"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="StartAndExpand"/>
+                            <Switch IsToggled="{Binding IsRemembered, Mode=TwoWay}"
+                                    OnColor="#FFC629"
+                                    HorizontalOptions="End"/>
+                        </StackLayout>
+                        <Button 
+                            Text="Inciar sesión"
+                            Margin="0,0,0,10"
+                            Padding="15"
+                            HorizontalOptions="FillAndExpand"
+                            IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
+                            Style = "{StaticResource PrimaryButton}"
+                            Command="{Binding LoginCommand}"/>
+                        <StackLayout Orientation="Horizontal"  Padding="5,5">
+                            <Label Text="Recodar contraseña"
+                               TextColor="Black"
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand"/>
+                            <Label Text="Activar mi cuenta"
+                                TextColor="Black"
+                                VerticalOptions="Center"
+                                HorizontalOptions="EndAndExpand"/>
+                        </StackLayout>
+                    </StackLayout>
+                    <StackLayout
+                        Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalOptions="FillAndExpand"
+                        Padding="30,0">
+                        <Button
+                        BackgroundColor="WhiteSmoke"
+                        Text="PQRS"
+                        ContentLayout="left,10"
+                        Margin="0,0,5,0"
+                        ImageSource="ic_pqrs.png"
+                        BorderColor="#2E4A9E"
+                        TextColor="Black"
+                        CornerRadius="5"
+                        HorizontalOptions="FillAndExpand"
+                        Command="{Binding PqrsCommand}"/>
+                        <Button
+                            BackgroundColor="WhiteSmoke"
+                            Text="Preguntas"
+                            ContentLayout="left,0"
+                            Margin="5,0,0,0"
+                            ImageSource="ic_preguntas_frecuentes.png"
+                            BorderColor="#2E4A9E"
+                            TextColor="Black"
+                            CornerRadius="5"
+                            HorizontalOptions="FillAndExpand"
+                            Command="{Binding PFCommand}"/>
+                    </StackLayout>
+                    <StackLayout
+                    Grid.Row="4">
+                        <StackLayout 
+                            Orientation="Vertical"
+                            Padding="5,10">
+                            <Label Text="Desarrollado por NeoSmart "
+                                   TextColor="Black"
+                                   FontSize="Micro"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="CenterAndExpand"/>
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="Versión: "
+                                   TextColor="Black"
+                                   FontSize="Micro"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="EndAndExpand"/>
+                                <Label Text="{Binding CurrentVersion, Mode=TwoWay}"
+                               TextColor="Black"
+                               FontSize="Micro"
+                               VerticalOptions="Center"
+                               HorizontalOptions="StartAndExpand"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+                    <ActivityIndicator IsRunning="{Binding IsRunning, Mode=TwoWay}"/>
+                </Grid>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

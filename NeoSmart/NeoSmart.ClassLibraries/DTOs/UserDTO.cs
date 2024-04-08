@@ -1,4 +1,5 @@
 ﻿using NeoSmart.ClassLibraries.Entities;
+using NeoSmart.ClassLibraries.Enum;
 using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.DTOs

@@ -60,5 +60,6 @@ namespace NeoSmart.UnitTest.Controllers
             Assert.AreEqual(200, result.StatusCode);
 
         }
+
     }
 }

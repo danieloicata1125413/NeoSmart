@@ -13,6 +13,9 @@ namespace NeoSmart.BackEnd.Interfaces
         Task CheckRoleAsync(string roleName);
 
         Task AddUserToRoleAsync(User user, string roleName);
+        Task<IdentityResult> AddUserToRoleAsync(User user, List<string> rolesName);
+        Task RemoveUserToRoleAsync(User user, string roleName);
+        Task<IdentityResult> RemoveUserToRoleAsync(User user, List<string> rolesName);
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);
 
@@ -25,6 +28,10 @@ namespace NeoSmart.BackEnd.Interfaces
         Task<IdentityResult> UpdateUserAsync(User user);
 
         Task<User> GetUserAsync(Guid userId);
+
+        Task<List<string>> GetUserRolesAsync(User user);
+
+        Task<List<IdentityRole>> GetRolesAsync();
 
         Task<string> GenerateEmailConfirmationTokenAsync(User user);
 

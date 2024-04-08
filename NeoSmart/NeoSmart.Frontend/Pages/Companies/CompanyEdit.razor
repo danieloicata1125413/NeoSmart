@@ -1,0 +1,72 @@
+﻿@page "/companies/edit/{CompanyId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (Company is null)
+{
+    <Loading />
+}
+else
+{
+    <CompanyForm Titulo="Editar Cargo" @ref="CompanyForm" Company="Company" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+}
+
+@code {
+    private Company? Company;
+    private CompanyForm? CompanyForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int CompanyId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var response = await repository.GetAsync<Company>($"/api/Companies/{CompanyId}");
+        if (response.Error)
+        {
+            if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                Return();
+            }
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        Company = response.Response;
+    }
+
+    private async Task SaveAsync()
+    {
+        Company!.City = null;
+        var response = await repository.PutAsync($"/api/Companies", Company);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private void Return()
+    {
+        CompanyForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Companies");
+    }
+
+}

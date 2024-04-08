@@ -1,11 +1,17 @@
 ﻿using NeoSmart.ClassLibraries.Enum;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Collections;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
     public class User : IdentityUser
     {
+        [Display(Name = "Empresa")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        public int? CompanyId { get; set; }
+        public Company? Company { get; set; }
+
         [Display(Name = "Identificación")]
         [MaxLength(50, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -34,9 +40,6 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Foto")]
         public string? Photo { get; set; }
 
-        [Display(Name = "Tipo de usuario")]
-        public UserType UserType { get; set; }
-
         [Display(Name = "Usuario")]
         public string FullName => $"{FirstName} {LastName}";
 
@@ -47,5 +50,8 @@ namespace NeoSmart.ClassLibraries.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int CityId { get; set; }
         public City? City { get; set; }
+
+        [Display(Name = "Tipos de usuario")]
+        public List<string>? UserTypes { get; set; }
     }
 }

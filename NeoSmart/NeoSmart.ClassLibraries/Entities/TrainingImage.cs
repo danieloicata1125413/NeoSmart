@@ -8,7 +8,7 @@ namespace NeoSmart.ClassLibraries.Entities
 
         public int TrainingId { get; set; }
 
-        public Training Training { get; set; } = null!;
+        public Training? Training { get; set; } = null!;
 
         [Display(Name = "Imagen")]
         public string Image { get; set; } = null!;

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
@@ -16,26 +17,35 @@ namespace NeoSmart.BackEnd.Controllers
     public class TopicsController : GenericController<Topic>
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public TopicsController(IGenericUnitOfWork<Topic> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public TopicsController(IGenericUnitOfWork<Topic> unitOfWork, DataContext context, IUserHelper userHelper) : base(unitOfWork, context)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Topics
+                                .Include(o => o.Company)
                                 .Include(t => t.FormationTopics)
                                 .Include(t => t.TrainingTopics)
                                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
 
             return Ok(await queryable
-                .OrderBy(x => x.Description)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description)
                 .Paginate(pagination)
                 .ToListAsync());
         }
@@ -46,28 +56,37 @@ namespace NeoSmart.BackEnd.Controllers
         {
             var queryable = _context.Topics
                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            queryable = queryable
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description);
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
 
+
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var state = await _context.Topics
+            var topic = await _context.Topics
+                .Include(t => t.Company)
                 .Include(t => t.FormationTopics)
                 .Include(t => t.TrainingTopics)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            if (state == null)
+            if (topic == null)
             {
                 return NotFound();
             }
-            return Ok(state);
+            return Ok(topic);
         }
     }
 

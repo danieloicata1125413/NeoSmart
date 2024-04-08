@@ -39,7 +39,7 @@ else
                             <p><strong>@inscription!.User!.Address, @inscription!.User!.City!.Name, @inscription!.User!.City!.State!.Name, @inscription!.User!.City.State!.Country!.Name</strong></p>
                         </div>
                     </div>
-                    @if (inscription!.TrainingCalendar!.User != null)
+                    @if (inscription!.TrainingSession!.User != null)
                     {
                         <h5><strong>Capacitador</strong></h5>
                         <div class="row">
@@ -50,16 +50,16 @@ else
                                 <p>Email</p>
                             </div>
                             <div class="col-8">
-                                <p><strong>@inscription!.TrainingCalendar!.User!.FullName</strong></p>
-                                <p><strong>@inscription!.TrainingCalendar!.User!.Document</strong></p>
-                                <p><strong>@inscription!.TrainingCalendar!.User!.PhoneNumber</strong></p>
-                                <p><strong>@inscription!.TrainingCalendar!.User!.UserName</strong></p>
+                                <p><strong>@inscription!.TrainingSession!.User!.FullName</strong></p>
+                                <p><strong>@inscription!.TrainingSession!.User!.Document</strong></p>
+                                <p><strong>@inscription!.TrainingSession!.User!.PhoneNumber</strong></p>
+                                <p><strong>@inscription!.TrainingSession!.User!.UserName</strong></p>
                             </div>
                         </div>
                     }
                 </div>
                 <div class="col-6">
-                    <CarouselView Images="@inscription!.TrainingCalendar!.Training!.MainImages" />
+                    <CarouselView Images="@inscription!.TrainingSession!.Training!.MainImages" />
                     <div class="row">
                         <div class="col-4">
                             @* <p>Imagen</p> *@
@@ -70,7 +70,7 @@ else
                         </div>
                         <div class="col-8">
                             @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
-                            <p>@inscription.TrainingCalendar!.Training!.Description</p>
+                            <p>@inscription.TrainingSession!.Training!.Description</p>
                             <p><strong>@($"{inscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
                             <p><strong>@EnumHelper.GetEnumDescription(inscription.InscriptionStatus)</strong></p>
                             <p><strong>@(string.IsNullOrEmpty(inscription.Remarks) ? "NA" : inscription.Remarks)</strong></p>
@@ -78,7 +78,7 @@ else
                     </div>
                     <div class="row">
                         <label>Temas:</label>
-                        @foreach (var trainingTopic in inscription.TrainingCalendar!.Training!.TrainingTopics!)
+                        @foreach (var trainingTopic in inscription.TrainingSession!.Training!.TrainingTopics!)
                         {
                             <b>@trainingTopic.Topic!.Description</b>
                         }
@@ -112,7 +112,7 @@ else
 }
 
 @code {
-    private Inscription? inscription;
+    private TrainingSessionInscription? inscription;
     private bool loading = true;
 
     [Parameter]
@@ -132,7 +132,7 @@ else
     private async Task LoadAsync()
     {
         loading = true;
-        var responseHttp = await repository.GetAsync<Inscription>($"api/Inscriptions/{InscriptionId}");
+        var responseHttp = await repository.GetAsync<TrainingSessionInscription>($"api/Inscriptions/{InscriptionId}");
         if (responseHttp.Error)
         {
             loading = false;

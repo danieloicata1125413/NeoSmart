@@ -68,7 +68,7 @@ else
     private List<string>? topics;
     private List<string>? images;
     private bool loading = true;
-    private TrainingCalendar? trainingCalendar;
+    private TrainingSession? trainingCalendar;
     private bool isAuthenticated;
     private TemporalInscriptionDTO? temporalInscriptionDTO;
 
@@ -83,7 +83,7 @@ else
     private async Task LoadTemporalInscriptionAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<TemporalInscription>($"/api/temporalInscriptions/{TemporalInscriptionId}");
+        var httpResponse = await repository.GetAsync<TrainingSessionInscriptionTemporal>($"/api/temporalInscriptions/{TemporalInscriptionId}");
 
         if (httpResponse.Error)
         {
@@ -97,10 +97,10 @@ else
         temporalInscriptionDTO = new TemporalInscriptionDTO
             {
                 Id = temporalInscription.Id,
-                trainingCalendarId = temporalInscription.TrainingCalendarId,
+                trainingCalendarId = temporalInscription.TrainingSessionId,
                 Remarks = temporalInscription.Remarks!
             };
-        trainingCalendar = temporalInscription.TrainingCalendar;
+        trainingCalendar = temporalInscription.TrainingSession;
         topics = trainingCalendar!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
         images = trainingCalendar!.Training!.TrainingImages!.Select(x => x.Image).ToList();
         loading = false;

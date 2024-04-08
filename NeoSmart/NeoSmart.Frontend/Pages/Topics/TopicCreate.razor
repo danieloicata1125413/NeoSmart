@@ -1,5 +1,5 @@
 ﻿@page "/topics/create"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -9,6 +9,7 @@
 @code {
     private Topic topic = new()
         {
+            CompanyId = 0,
             Status = true
         };
     private TopicForm? topicForm;

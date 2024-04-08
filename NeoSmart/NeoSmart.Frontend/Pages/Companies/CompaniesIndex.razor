@@ -1,0 +1,220 @@
+﻿@page "/companies"
+@attribute [Authorize(Roles = "SuperAdmin")]
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="row mb-3">
+    <div class="col-7">
+        <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
+        <h3>Empresas</h3>
+    </div>
+    <div class="col-5">
+        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar cargo..." @bind-value="Filter" />
+        <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+        <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
+    </div>
+</div>
+
+<div class="card widget-inline">
+    <div class="card-body">
+        <GenericList MyList="companies!">
+            <Body>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nit</th>
+                            <th>Nombre</th>
+                            <th>Ciudad</th>
+                            <th style="width:90px">Procesos</th>
+                            <th style="width:90px">Usuarios</th>
+                            <th>Habilitado</th>
+                            <th style="width:170px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var company in companies!)
+                        {
+                            <tr>
+                                <td>@company.Nit</td>
+                                <td>@company.Name</td>
+                                <td>@company.City!.Name</td>
+                                <td>@company.ProcessNumber</td>
+                                <td>@company.UsersNumber</td>
+                                <td><InputCheckbox @bind-Value=company.Status disabled="true"></InputCheckbox></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(company.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(company))><i class="oi oi-trash" /> Borrar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <Pagination CurrentPage="currentPage"
+                            TotalPages="totalPages"
+                            SelectedPage="SelectedPageAsync" />
+            </Body>
+        </GenericList>
+    </div>
+</div>
+
+
+@code {
+    private List<Company>? companies;
+    private int currentPage = 1;
+    private int totalPages;
+
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<CompanyEdit>(string.Empty, new ModalParameters().Add("CompanyId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<CompanyCreate>(string.Empty, new ModalParameters());
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
+    private async Task SelectedPageAsync(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+        bool ok = await LoadCompaniesAsync(page);
+        if (ok)
+        {
+            await LoadPagesAsync();
+        }
+    }
+
+    private async Task<bool> LoadPagesAsync()
+    {
+        var url = string.Empty;
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url = $"api/Companies/totalPages";
+        }
+        else
+        {
+            url = $"api/Companies/totalPages?filter={Filter}";
+        }
+
+        var response = await repository.GetAsync<int>(url);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return false;
+        }
+        totalPages = response.Response;
+        return true;
+    }
+
+    private async Task<bool> LoadCompaniesAsync(int page)
+    {
+        var url = string.Empty;
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url = $"api/Companies?page={page}";
+        }
+        else
+        {
+            url = $"api/Companies?page={page}&filter={Filter}";
+        }
+
+        var response = await repository.GetAsync<List<Company>>(url);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return false;
+        }
+        companies = response.Response;
+        return true;
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        int page = 1;
+        await LoadAsync(page);
+        await SelectedPageAsync(page);
+    }
+
+    private async Task DeleteAsync(Company company)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Realmente deseas eliminar la empresa? {company.Name}",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.DeleteAsync($"/api/Companies/{company.Id}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
+    }
+}

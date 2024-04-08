@@ -21,6 +21,7 @@ using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.BackEnd.Helper;
 using NeoSmart.Data.Entities;
 using NeoSmart.ClassLibraries.Interfaces;
+using System.Security.Cryptography.Xml;
 
 namespace NeoSmart.UnitTest.Controllers
 {
@@ -433,7 +434,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -444,7 +445,7 @@ namespace NeoSmart.UnitTest.Controllers
             var currentUser = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -556,13 +557,16 @@ namespace NeoSmart.UnitTest.Controllers
             {
                 UserName = "test",
                 Password = "123456",
-                UserType = UserType.Employee
+                UserTypes = new List<string>
+                {
+                    UserType.Employee.ToString()
+                }
             };
 
             _mockUserHelper.Setup(x => x.AddUserAsync(userModel, userModel.Password))
                 .ReturnsAsync(IdentityResult.Success);
 
-            _mockUserHelper.Setup(x => x.AddUserToRoleAsync(userModel, userModel.UserType.ToString()))
+            _mockUserHelper.Setup(x => x.AddUserToRoleAsync(userModel, UserType.Employee.ToString()))
                 .Returns(Task.CompletedTask);
 
             _mockUserHelper.Setup(x => x.GenerateEmailConfirmationTokenAsync(userModel))
@@ -578,7 +582,7 @@ namespace NeoSmart.UnitTest.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
             _mockUserHelper.Verify(x => x.AddUserAsync(userModel, userModel.Password), Times.Once());
-            _mockUserHelper.Verify(x => x.AddUserToRoleAsync(userModel, userModel.UserType.ToString()), Times.Once());
+            _mockUserHelper.Verify(x => x.AddUserToRoleAsync(userModel, UserType.Employee.ToString()), Times.Once());
             _mockUserHelper.Verify(x => x.GenerateEmailConfirmationTokenAsync(userModel), Times.Once());
             _mockMailHelper.Verify(x => x.SendMail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
         }
@@ -673,7 +677,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",

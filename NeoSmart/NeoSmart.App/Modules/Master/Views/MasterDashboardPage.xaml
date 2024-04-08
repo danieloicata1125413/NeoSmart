@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NeoSmart.App.Views.MasterDashboardPage"
+             BindingContext="{Binding Main, Source={StaticResource Locator}}"
+             BackgroundColor="White"
+             Title="Dashboard">
+    <VerticalStackLayout>
+        <Label 
+            Text="DashBoard!"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>

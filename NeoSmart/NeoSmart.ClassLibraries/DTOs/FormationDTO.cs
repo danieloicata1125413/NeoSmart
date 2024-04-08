@@ -8,6 +8,9 @@ namespace NeoSmart.ClassLibraries.DTOs
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int CompanyId { get; set; }
+
         [Display(Name = "Código")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Cod { get; set; }

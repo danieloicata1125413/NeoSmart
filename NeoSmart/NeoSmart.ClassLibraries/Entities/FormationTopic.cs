@@ -4,11 +4,11 @@
     {
         public int Id { get; set; }
 
-        public Formation Formation { get; set; } = null!;
+        public Formation? Formation { get; set; } = null!;
 
         public int FormationId { get; set; }
 
-        public Topic Topic { get; set; } = null!;
+        public Topic? Topic { get; set; } = null!;
 
         public int TopicId { get; set; }
     }

@@ -26,6 +26,8 @@ namespace NeoSmart.ClassLibraries.Entities
         public bool Type { get; set; }
 
         [Display(Name = "Proceso")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
@@ -47,10 +49,16 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Imagenes")]
         public List<string> MainImages => TrainingImages == null || TrainingImages.Count == 0 ? new List<string>() { "/img/NoImage.png" } : TrainingImages!.Select(x => x.Image).ToList();
     
-        public ICollection<TrainingCalendar>? TrainingCalendars { get; set; }
+        public ICollection<TrainingSession>? TrainingSessions { get; set; }
 
-        [Display(Name = "Calendarios")]
-        public int TrainingCalendarNumber => TrainingCalendars == null ? 0 : TrainingCalendars.Count;
+        [Display(Name = "Sesiones")]
+        public int TrainingSessionNumber => TrainingSessions == null ? 0 : TrainingSessions.Count;
+
+        public ICollection<TrainingTopicExam>? TrainingTopicExams { get; set; }
+
+        [Display(Name = "Mediciones")]
+        public int TrainingTopicExamsNumber => TrainingTopicExams == null ? 0 : TrainingTopicExams.Count;
+
 
     }
 }

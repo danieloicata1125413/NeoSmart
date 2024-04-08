@@ -1,5 +1,5 @@
 ﻿@page "/trainings"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
@@ -25,6 +25,8 @@
                 <table class="table table-responsive">
                     <thead>
                         <tr>
+                            <th>Empresa</th>
+                            <th>Proceso</th>
                             <th>Código</th>
                             <th>Capacitación</th>
                             <th>Duración</th>
@@ -39,12 +41,14 @@
                         @foreach (var training in trainings!)
                         {
                             <tr>
+                                <td>@training.Process!.Company!.Name</td>
+                                <td>@training.Process!.Description</td>
                                 <td>@training.Cod</td>
                                 <td>@training.Description</td>
                                 <td>@training.Duration</td>
                                 <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
                                 <td>@training.TrainingTopicsNumber</td>
-                                <td>@training.TrainingCalendarNumber</td>
+                                <td>@training.TrainingSessionNumber</td>
                                 <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                 <td>
                                     <a class="btn btn-info btn-sm" href="/TrainingCalendars/details/@training.Id">Agenda</a>

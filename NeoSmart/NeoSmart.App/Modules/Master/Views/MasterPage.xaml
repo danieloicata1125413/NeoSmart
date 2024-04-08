@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NeoSmart.App.Views.MasterPage"
+             xmlns:pages="clr-namespace:NeoSmart.App.Views"
+                BindingContext="{Binding Main, Source={StaticResource Locator}}"
+             Title="Master">
+    <FlyoutPage.Flyout>
+        <pages:MasterMenuPage></pages:MasterMenuPage>
+    </FlyoutPage.Flyout>
+    <FlyoutPage.Detail>
+        <NavigationPage x:Name="Navigator"
+                        BarTextColor="Black">
+            <x:Arguments>
+                <pages:MasterTabbedPage></pages:MasterTabbedPage>
+            </x:Arguments>
+        </NavigationPage>
+    </FlyoutPage.Detail>
+</FlyoutPage>

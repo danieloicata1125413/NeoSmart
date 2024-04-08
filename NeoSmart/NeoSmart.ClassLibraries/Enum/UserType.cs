@@ -2,6 +2,7 @@
 {
     public enum UserType
     {
+        SuperAdmin,
         Admin,
         Manager,
         Leader,

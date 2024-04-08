@@ -6,29 +6,30 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using NeoSmart.ClassLibraries.DTOs;
+using NeoSmart.BackEnd.Interfaces;
 
 namespace NeoSmart.BackEnd.Helper
 {
     public class TokenGenerator : ITokenGenerator
     {
         public readonly IConfiguration _configurationManager;
+
         public TokenGenerator(IConfiguration configurationManager)
         {
             _configurationManager = configurationManager;
         }
 
-        public TokenDTO GenerateTokenJwt(User user)
+        public TokenDTO GenerateTokenJwtAsync(User user, List<string> roleList)
         {
             // appsetting for Token JWT
             var secretKey = _configurationManager["Jwt:Key"];
             var audienceToken = _configurationManager["Jwt:Audience"];
             var issuerToken = _configurationManager["Jwt:Issuer"];
             var expireTime = _configurationManager["Jwt:Expire"];
-
+            //var roleList = await _userHelper.GetUserRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email!),
-                new Claim(ClaimTypes.Role, user.UserType.ToString()),
                 new Claim("Document", user.Document),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
@@ -36,6 +37,10 @@ namespace NeoSmart.BackEnd.Helper
                 new Claim("Photo", user.Photo ?? string.Empty),
                 new Claim("CityId", user.CityId.ToString())
             };
+            foreach (string role in roleList)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
