@@ -26,6 +26,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .UseInMemoryDatabase(databaseName: "InMemoryDatabase")
                 .Options;
             _unitOfWorkMock = new Mock<IGenericUnitOfWork<Formation>>();
+            _mockUserHelper = new Mock<IUserHelper>();
         }
 
         [TestInitialize]
@@ -34,7 +35,7 @@ namespace NeoSmart.UnitTest.Controllers
             _mockUserHelper = new Mock<IUserHelper>();
             // Setting up InMemory database
             _mockDbContext = new DataContext(_options);
-            _controller = new FormationsController(_unitOfWorkMock.Object, _mockDbContext);
+            _controller = new FormationsController(_unitOfWorkMock.Object, _mockDbContext, _mockUserHelper.Object);
 
             // Mock user identity
             var claims = new List<Claim>

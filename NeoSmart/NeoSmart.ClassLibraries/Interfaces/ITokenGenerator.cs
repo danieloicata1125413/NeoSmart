@@ -5,6 +5,6 @@ namespace NeoSmart.ClassLibraries.Interfaces
 {
     public interface ITokenGenerator
     {
-        TokenDTO GenerateTokenJwt(User user);
+        TokenDTO GenerateTokenJwtAsync(User user, List<string> roleList);
     }
 }

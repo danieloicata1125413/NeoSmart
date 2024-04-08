@@ -1,5 +1,5 @@
 ﻿@page "/companies"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin")]
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService

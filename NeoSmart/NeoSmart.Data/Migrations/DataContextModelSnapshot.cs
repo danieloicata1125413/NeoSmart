@@ -31,6 +31,11 @@ namespace NeoSmart.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -47,6 +52,10 @@ namespace NeoSmart.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -216,7 +225,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Nit")
                         .IsUnique();
 
                     b.ToTable("Companies");
@@ -292,6 +301,9 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -311,7 +323,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Cod")
+                    b.HasIndex("CompanyId", "Cod")
                         .IsUnique();
 
                     b.ToTable("Formations");
@@ -437,10 +449,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Cod")
+                    b.HasIndex("CompanyId", "Cod")
                         .IsUnique();
-
-                    b.HasIndex("CompanyId");
 
                     b.ToTable("Processes");
                 });
@@ -559,6 +569,9 @@ namespace NeoSmart.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -573,7 +586,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Description")
+                    b.HasIndex("CompanyId", "Description")
                         .IsUnique();
 
                     b.ToTable("Topics");
@@ -683,10 +696,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Cod")
+                    b.HasIndex("ProcessId", "Cod")
                         .IsUnique();
-
-                    b.HasIndex("ProcessId");
 
                     b.ToTable("Trainings");
                 });
@@ -1082,9 +1093,6 @@ namespace NeoSmart.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("UserType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
@@ -1188,6 +1196,13 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("UserTopicExamAnswers");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Role", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+
+                    b.HasDiscriminator().HasValue("Role");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1261,6 +1276,17 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Formation", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
+                        .WithMany("Formations")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.FormationOccupation", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Formation", "Formation")
@@ -1330,6 +1356,17 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Topic", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
+                        .WithMany("Topics")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExam", b =>
@@ -1566,7 +1603,11 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Company", b =>
                 {
+                    b.Navigation("Formations");
+
                     b.Navigation("Process");
+
+                    b.Navigation("Topics");
 
                     b.Navigation("Users");
                 });

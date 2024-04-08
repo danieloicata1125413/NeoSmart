@@ -16,7 +16,7 @@ namespace NeoSmart.ClassLibraries.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int TopicId { get; set; }
-        public Topic Topic { get; set; } = null!;
+        public Topic? Topic { get; set; } = null!;
 
         [Display(Name = "Descripción")]
         [DataType(DataType.MultilineText)]

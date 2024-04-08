@@ -66,10 +66,10 @@ namespace NeoSmart.UnitTest.Controllers
             var Id = 1;
 
             var userName = "test@example.com";
-            var user = new User { Document = "3435354", UserName = userName, UserType = UserType.Admin, CityId = 1 };
+            var user = new User { Document = "3435354", UserName = userName, CityId = 1 };
              _mockUserHelper.Setup(x => x.GetUserAsync(userName))
                   .ReturnsAsync(user);
-              _mockUserHelper.Setup(x => x.IsUserInRoleAsync(user, user.UserType.ToString()))
+              _mockUserHelper.Setup(x => x.IsUserInRoleAsync(user, UserType.Admin.ToString()))
                   .ReturnsAsync(true);
 
              
@@ -92,7 +92,7 @@ namespace NeoSmart.UnitTest.Controllers
             });
 
 
-            _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo ="", UserName = userName, UserType = UserType.Admin, CityId = 1 }); ;
+            _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo ="", UserName = userName, CityId = 1 }); ;
 
             _mockDbContext.Trainings.Add(new Training { Id = 1, Cod="", Description="", Duration=1, Type=false });
 

@@ -27,6 +27,8 @@ namespace NeoSmart.ClassLibraries.DTOs
         public bool Type { get; set; }
 
         [Display(Name = "Proceso")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
         public List<int>? TrainingTopicIds { get; set; }

@@ -21,6 +21,7 @@ namespace NeoSmart.UnitTest.Controllers
         private DataContext _context = null!;
         private Mock<IFileStorage> _mockFileStorage = null!;
         private Mock<IGenericUnitOfWork<Training>> _mockUnitOfWork = null!;
+        private Mock<IUserHelper> _mockUserHelper = null!;
         private const string _container = "trainings";
         private const string _string64base = "U29tZVZhbGlkQmFzZTY0U3RyaW5n";
 
@@ -34,7 +35,8 @@ namespace NeoSmart.UnitTest.Controllers
             _context = new DataContext(options);
             _mockFileStorage = new Mock<IFileStorage>();
             _mockUnitOfWork = new Mock<IGenericUnitOfWork<Training>>();
-            _controller = new TrainingsController(_mockUnitOfWork.Object, _context, _mockFileStorage.Object);
+            _mockUserHelper = new Mock<IUserHelper>();
+            _controller = new TrainingsController(_mockUnitOfWork.Object, _context, _mockFileStorage.Object, _mockUserHelper.Object);
         }
 
         [TestCleanup]
@@ -52,7 +54,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
             using var context = new DataContext(options);
-            var controller = new TrainingsController(_mockUnitOfWork.Object, context, _mockFileStorage.Object);
+            var controller = new TrainingsController(_mockUnitOfWork.Object, context, _mockFileStorage.Object, _mockUserHelper.Object);
             var pagination = new PaginationDTO();
 
             // Act
@@ -75,7 +77,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
             using var context = new DataContext(options);
-            var controller = new TrainingsController(_mockUnitOfWork.Object, context, _mockFileStorage.Object);
+            var controller = new TrainingsController(_mockUnitOfWork.Object, context, _mockFileStorage.Object, _mockUserHelper.Object);
             var pagination = new PaginationDTO();
 
             // Act

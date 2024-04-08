@@ -38,5 +38,14 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Procesos")]
         public int ProcessNumber => Process == null ? 0 : Process.Count;
+        public ICollection<Formation>? Formations { get; set; }
+
+        [Display(Name = "Formaciones")]
+        public int FormationsNumber => Formations == null ? 0 : Formations.Count;
+
+        public ICollection<Topic>? Topics { get; set; }
+
+        [Display(Name = "Temas")]
+        public int TopicsNumber => Topics == null ? 0 : Topics.Count;
     }
 }

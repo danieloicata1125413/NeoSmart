@@ -41,6 +41,29 @@
                                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
                             </div>
                         </div>
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <label>Empresa:</label>
+                                <select class="form-select" @bind="FormationDTO.CompanyId">
+                                    <option value="0">-- Seleccione una empresa --</option>
+                                    @if (companies is not null)
+                                    {
+                                        @foreach (var company in companies)
+                                        {
+                                            if (FormationDTO.CompanyId != 0)
+                                            {
+                                                <option value="@company.Id" selected="@(company.Id == FormationDTO.CompanyId)">@company.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@company.Id">@company.Name</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <ValidationMessage For="@(() => FormationDTO.CompanyId)" />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="FormationTopics" role="tabpanel" aria-labelledby="FormationTopics-tab">
@@ -63,6 +86,7 @@
 
 @code {
     private EditContext editContext = null!;
+    private List<Company>? companies;
     private List<Occupation>? occupations;
     private List<MultipleSelectorModel> selectedTopics { get; set; } = new();
     private List<MultipleSelectorModel> nonSelectedTopics { get; set; } = new();
@@ -111,12 +135,24 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCompaniesAsync();
         editContext = new(FormationDTO);
-
         selectedTopics = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         nonSelectedTopics = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         selectedOccupations = SelectedOccupations.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         nonSelectedOccupations = NonSelectedOccupations.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+    }
+
+    private async Task LoadCompaniesAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Company>>("/api/companies/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        companies = responseHttp.Response;
     }
 
     private async Task OnDataAnnotationsValidatedAsync()

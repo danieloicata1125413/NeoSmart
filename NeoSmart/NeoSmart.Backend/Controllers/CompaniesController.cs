@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
@@ -18,17 +19,35 @@ namespace NeoSmart.BackEnd.Controllers
     public class CompaniesController : GenericController<Company>
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public CompaniesController(IGenericUnitOfWork<Company> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public CompaniesController(IGenericUnitOfWork<Company> unitOfWork, DataContext context, IUserHelper userHelper) : base(unitOfWork, context)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
         [AllowAnonymous]
+        [HttpGet("comboAll")]
+        public async Task<ActionResult> GetComboAllAsync()
+        {
+            return Ok(await _context.Companies
+                .OrderBy(c => c.Name)
+                .ToListAsync());
+        }
+
         [HttpGet("combo")]
         public async Task<ActionResult> GetComboAsync()
         {
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company == null)
+            {
+                return Ok(await _context.Companies
+                .OrderBy(c => c.Name)
+                .ToListAsync());
+            }
             return Ok(await _context.Companies
+                .Where(c => c.Id == user.Company.Id)
                 .OrderBy(c => c.Name)
                 .ToListAsync());
         }

@@ -19,12 +19,14 @@ namespace NeoSmart.UnitTest.Controllers
     {
         private readonly DbContextOptions<DataContext> _options;
         private readonly Mock<IGenericUnitOfWork<Topic>> _unitOfWorkMock;
+        private Mock<IUserHelper> _mockUserHelper = null!;
         public TopicsControllerTests()
         {
             _options = new DbContextOptionsBuilder<DataContext>()
              .UseInMemoryDatabase(Guid.NewGuid().ToString())
              .Options;
             _unitOfWorkMock = new Mock<IGenericUnitOfWork<Topic>>();
+            _mockUserHelper = new Mock<IUserHelper>();
         }
 
         [TestMethod]
@@ -33,7 +35,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TopicsController(_unitOfWorkMock.Object, context);
+            var controller = new TopicsController(_unitOfWorkMock.Object, context, _mockUserHelper.Object);
             var pagination = new PaginationDTO();
 
             // Act
@@ -53,7 +55,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TopicsController(_unitOfWorkMock.Object, context);
+            var controller = new TopicsController(_unitOfWorkMock.Object, context, _mockUserHelper.Object);
             var pagination = new PaginationDTO();
 
             // Act
@@ -73,7 +75,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new TopicsController(_unitOfWorkMock.Object, context);
+            var controller = new TopicsController(_unitOfWorkMock.Object, context, _mockUserHelper.Object);
 
             // Act
             var result = await controller.GetAsync(1) as NotFoundResult;

@@ -2,7 +2,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 
 @if (Users is null)
 {
@@ -29,8 +29,6 @@ else
                             <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
                         </div>
                     </div>
-
-                   
 
                     <table class="table table-striped">
                         <thead>
@@ -65,7 +63,7 @@ else
                                     <td>@user.Email</td>
                                     <td>@user.Address, @user.City!.Name</td>
                                     <td>@user.EmailConfirmed</td>
-                                    <td>@EnumHelper.GetEnumDescription(user.UserType)</td>
+                                    @* <td>@EnumHelper.GetEnumDescription(user.UserType)</td> *@
                                 </tr>
                             }
                         </tbody>

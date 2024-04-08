@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
@@ -19,42 +20,55 @@ namespace NeoSmart.BackEnd.Controllers
     {
         private readonly DataContext _context;
         private readonly IFileStorage _fileStorage;
+        private readonly IUserHelper _userHelper;
 
-        public TrainingsController(IGenericUnitOfWork<Training> unitOfWork, DataContext context, IFileStorage fileStorage) : base(unitOfWork, context)
+        public TrainingsController(IGenericUnitOfWork<Training> unitOfWork, DataContext context, IFileStorage fileStorage, IUserHelper userHelper) : base(unitOfWork, context)
         {
             _context = context;
             _fileStorage = fileStorage;
+            _userHelper = userHelper;
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Trainings
                                 .Include(o => o.Process!)
+                                    .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
                                     .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages!)
                                 .Include(o=> o.TrainingSessions!)
                                     .ThenInclude(o => o.City!)
                                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
 
             return Ok(await queryable
-                .OrderBy(x => x.Description)
+                .OrderBy(s => s.Process!.Company!.Name)
+                .ThenBy(s => s.Process!.Description)
+                .ThenBy(s => s.Description)
                 .Paginate(pagination)
                 .ToListAsync());
         }
 
-        [AllowAnonymous]
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Trainings
                 .AsQueryable();
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -65,12 +79,12 @@ namespace NeoSmart.BackEnd.Controllers
             return Ok(totalPages);
         }
 
-        [AllowAnonymous]
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
             var training = await _context.Trainings
                                 .Include(o => o.Process!)
+                                .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
                                 .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages)

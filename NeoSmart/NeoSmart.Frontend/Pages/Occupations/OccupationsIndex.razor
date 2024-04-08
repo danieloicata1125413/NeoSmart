@@ -1,5 +1,5 @@
 ﻿@page "/occupations"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -23,9 +23,10 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Empresa</th>
+                            <th>Proceso</th>
                             <th>Código</th>
                             <th>Cargo</th>
-                            <th>Proceso</th>
                             <th style="width:90px">Entrenamientos</th>
                             <th>Habilitado</th>
                             <th style="width:170px"></th>
@@ -35,9 +36,10 @@
                         @foreach (var occupation in occupations!)
                         {
                             <tr>
+                                <td>@occupation.Process!.Company!.Name</td>
+                                <td>@occupation.Process!.Description</td>
                                 <td>@occupation.Cod</td>
                                 <td>@occupation.Description</td>
-                                <td>@occupation.Process!.Description</td>
                                 <td>@occupation.FormationOccupationsNumber</td>
                                 <td><InputCheckbox @bind-Value=occupation.Status disabled="true"></InputCheckbox></td>
                                 <td>

@@ -179,7 +179,8 @@ namespace NeoSmart.BackEnd.Controllers
                 var result = await _userHelper.UpdateUserAsync(currentUser);
                 if (result.Succeeded)
                 {
-                    return Ok(_tokenGenerator.GenerateTokenJwt(user));
+                    var listRoles = await _userHelper.GetUserRolesAsync(user);
+                    return Ok(_tokenGenerator.GenerateTokenJwtAsync(user, listRoles));
                 }
 
                 return BadRequest(result.Errors.FirstOrDefault());
@@ -211,7 +212,7 @@ namespace NeoSmart.BackEnd.Controllers
             var result = await _userHelper.AddUserAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
+                await _userHelper.AddUserToRoleAsync(user, model.UserType.ToString());
 
                 var response = await SendConfirmationEmailAsync(user);
                 if (response.IsSuccess)
@@ -232,7 +233,8 @@ namespace NeoSmart.BackEnd.Controllers
             if (result.Succeeded)
             {
                 var user = await _userHelper.GetUserAsync(model.Email);
-                return Ok(_tokenGenerator.GenerateTokenJwt(user));
+                var listRoles = await _userHelper.GetUserRolesAsync(user);
+                return Ok(_tokenGenerator.GenerateTokenJwtAsync(user, listRoles));
             }
 
             if (result.IsLockedOut)

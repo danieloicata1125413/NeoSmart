@@ -10,11 +10,11 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
-        public Formation Formation { get; set; } = null!;
+        public Formation? Formation { get; set; } = null!;
 
         public int FormationId { get; set; }
 
-        public Occupation Occupation { get; set; } = null!;
+        public Occupation? Occupation { get; set; } = null!;
 
         public int OccupationId { get; set; }
     }

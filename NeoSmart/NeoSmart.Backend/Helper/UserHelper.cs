@@ -74,6 +74,7 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(string email)
         {
             var user = await _context.Users
+                .Include(x => x.Company)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
@@ -85,12 +86,31 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(Guid userId)
         {
             var user = await _context.Users
+                .Include(x => x.Company)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
                 .ThenInclude(s => s.Country)
                 .FirstOrDefaultAsync(x => x.Id == userId.ToString());
             return user!;
+        }
+
+        public async Task<List<string>> GetUserRolesAsync(User user)
+        {
+            try{
+               
+                    return new List<string>(await _userManager.GetRolesAsync(user));
+
+            } 
+            catch (Exception ex)
+            {
+                return new List<string>();
+            }
+        }
+
+        public async Task<List<IdentityRole>> GetRolesAsync()
+        {
+            return await _roleManager.Roles.ToListAsync();
         }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)

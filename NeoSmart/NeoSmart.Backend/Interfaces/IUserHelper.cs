@@ -26,6 +26,8 @@ namespace NeoSmart.BackEnd.Interfaces
 
         Task<User> GetUserAsync(Guid userId);
 
+        Task<List<string>> GetUserRolesAsync(User user);
+
         Task<string> GenerateEmailConfirmationTokenAsync(User user);
 
         Task<IdentityResult> ConfirmEmailAsync(User user, string token);

@@ -1,5 +1,5 @@
 ﻿@page "/topics"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
@@ -25,6 +25,7 @@
                 <table class="table table-responsive">
                     <thead>
                         <tr>
+                            <th>Empresa</th>
                             <th>Temas</th>
                             <th>Entrenamientos</th>
                             <th>Capacitaciones</th>
@@ -36,6 +37,7 @@
                         @foreach (var topic in topics!)
                         {
                             <tr>
+                                <td>@topic.Company!.Name</td>
                                 <td>@topic.Description</td>
                                 <td>@topic.FormationTopicsNumber</td>
                                 <td>@topic.TrainingTopicsNumber</td>

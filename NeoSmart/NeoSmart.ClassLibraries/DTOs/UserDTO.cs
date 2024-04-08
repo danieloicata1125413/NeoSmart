@@ -1,4 +1,5 @@
 ﻿using NeoSmart.ClassLibraries.Entities;
+using NeoSmart.ClassLibraries.Enum;
 using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.DTOs
@@ -17,5 +18,8 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [StringLength(20, MinimumLength = 6, ErrorMessage = "El campo {0} debe tener entre {2} y {1} carácteres.")]
         public string PasswordConfirm { get; set; } = null!;
+
+        [Display(Name = "Tipo de usuario")]
+        public UserType UserType { get; set; }
     }
 }

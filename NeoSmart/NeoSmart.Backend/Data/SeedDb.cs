@@ -6,6 +6,7 @@ using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
+using System.ComponentModel.Design;
 
 namespace NeoSmart.BackEnd.Data
 {
@@ -37,12 +38,14 @@ namespace NeoSmart.BackEnd.Data
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
             await CheckSlider();
-            await CheckUserAsync("1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", UserType.Admin, "1090Jeep$");
-            await CheckUserAsync("43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", UserType.Admin, "Inicio123*");
-            await CheckUserAsync("15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", UserType.Admin, "Inicio123*");
+            await CheckUserAsync(null, "1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", UserType.SuperAdmin, "1090Jeep$");
+            await CheckUserAsync(null, "43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", UserType.SuperAdmin, "Inicio123*");
+            await CheckUserAsync(null, "15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", UserType.SuperAdmin, "Inicio123*");
+            await CheckUserAsync("830118667-1", "10903883481", "Daniel", "Oicata Hernandez", "danielandres011@hotmail.com", "3177457755", "CARRERA", "Duitama", UserType.Admin, "1090Jeep$");
         }
         private async Task CheckRolesAsycn()
         {
+            await _userHelper.CheckRoleAsync(UserType.SuperAdmin.ToString());
             await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
             await _userHelper.CheckRoleAsync(UserType.Manager.ToString());
             await _userHelper.CheckRoleAsync(UserType.Leader.ToString());
@@ -77,6 +80,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
+
         //private async Task CheckCountriesAsync()
         //{
         //    if (!_context.Countries.Any())
@@ -1318,13 +1322,22 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Companies.Any())
             {
-                _context.Companies.Add(new Company {
+                _context.Companies.Add(new Company
+                {
                     Id = 0,
                     Name = "INVESA SA",
                     Nit = "890900652-3",
                     City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Medellín")),
                     Status = true,
-                }); 
+                });
+                _context.Companies.Add(new Company
+                {
+                    Id = 0,
+                    Name = "ATI SAS",
+                    Nit = "830118667-1",
+                    City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Duitama")),
+                    Status = true,
+                });
                 await _context.SaveChangesAsync();
             }
         }
@@ -1333,9 +1346,19 @@ namespace NeoSmart.BackEnd.Data
             if (!_context.Processes.Any())
             {
                 var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
-                _context.Processes.Add(new Process { Cod = "P001", Description = "Gestion Humana", Status = true, Company = company });
-                _context.Processes.Add(new Process { Cod = "P002", Description = "Planta pinturas", Status = true, Company = company });
-                _context.Processes.Add(new Process { Cod = "P003", Description = "Planta agroquimicos", Status = true, Company = company });
+                if (company != null)
+                {
+                    _context.Processes.Add(new Process { Cod = "I-P001", Description = "Gestion Humana", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Cod = "I-P002", Description = "Planta pinturas", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Cod = "I-P003", Description = "Planta agroquimicos", Status = true, CompanyId = company.Id, Company = company });
+                }
+                company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "830118667-1");
+                if (company != null)
+                {
+                    _context.Processes.Add(new Process { Cod = "ATI-P001", Description = "Gestion Humana", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Cod = "ATI-P002", Description = "HSEQ", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Cod = "ATI-P003", Description = "Financiera", Status = true, CompanyId = company.Id, Company = company });
+                }
                 await _context.SaveChangesAsync();
             }
         }
@@ -1343,33 +1366,36 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Occupations.Any())
             {
-                var process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("P001"));
+                var process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P001"));
                 if (process != null)
                 {
                     _context.Occupations.Add(new Occupation { Cod = "CA001", Description = "Analista Gestion Humana", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("P002"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P002"));
                 if (process != null)
                 {
                     _context.Occupations.Add(new Occupation { Cod = "CA002", Description = "Operario pinturas", ProcessId = process.Id, Process = process, Status = true });
                     _context.Occupations.Add(new Occupation { Cod = "CA003", Description = "Coordinador Pinturas", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("P003"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P003"));
                 if (process != null)
                 {
                     _context.Occupations.Add(new Occupation { Cod = "CA004", Description = "Auxiliar Pinturas", ProcessId = process.Id, Process = process, Status = true });
                     _context.Occupations.Add(new Occupation { Cod = "CA005", Description = "Operario Agroquimicos", ProcessId = process.Id, Process = process, Status = true });
                 }
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P001"));
+                if (process != null)
+                {
+                    _context.Occupations.Add(new Occupation { Cod = "CA002", Description = "Lider Gestión Humana", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA003", Description = "Lider Administrativo", ProcessId = process.Id, Process = process, Status = true });
+                }
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P002"));
+                if (process != null)
+                {
+                    _context.Occupations.Add(new Occupation { Cod = "CA004", Description = "Coordinador Hseq", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA005", Description = "Coordinador Psev", ProcessId = process.Id, Process = process, Status = true });
+                }
                 await _context.SaveChangesAsync();
-            }
-        }
-        private async Task CheckTopicsAsync()
-        {
-            if (!_context.Topics.Any())
-            {
-                _context.Topics.Add(new Topic { Description = "Sistema Integrado de Gestión.", Status = true });
-                _context.Topics.Add(new Topic { Description = "Medio ambiente", Status = true });
-                await _context.SaveChangesAsync();     
             }
         }
         private async Task CheckFormationsAsync()
@@ -1379,12 +1405,42 @@ namespace NeoSmart.BackEnd.Data
                 var occupation = await _context.Occupations.FirstOrDefaultAsync(o => o.Cod.Equals("CA001"));
                 if (occupation != null)
                 {
-                    _context.Formations.Add(new Formation { Cod = "E001", Description = "Inducción del personal.", Status = true }); ;
-                    _context.Formations.Add(new Formation { Cod = "E002", Description = "Formación en seguridad.", Status = true });
+                    var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
+                    if (company != null)
+                    {
+                        _context.Formations.Add(new Formation { Cod = "E001", Description = "Inducción del personal.", Status = true, CompanyId = company.Id, Company = company }); ;
+                        _context.Formations.Add(new Formation { Cod = "E002", Description = "Formación en seguridad.", Status = true, CompanyId = company.Id, Company = company });
+                    }
+                    company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "830118667-1");
+                    if (company != null)
+                    {
+                        _context.Formations.Add(new Formation { Cod = "A001", Description = "Riesgo Biológico.", Status = true, CompanyId = company.Id, Company = company }); ;
+                        _context.Formations.Add(new Formation { Cod = "A002", Description = "Manejo de Extintores.", Status = true, CompanyId = company.Id, Company = company });
+                    }
                     await _context.SaveChangesAsync();
                 }
             }
         }
+        private async Task CheckTopicsAsync()
+        {
+            if (!_context.Topics.Any())
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
+                if (company != null)
+                {
+                    _context.Topics.Add(new Topic { Description = "Sistema Integrado de Gestión.", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Topics.Add(new Topic { Description = "Medio ambiente", Status = true, CompanyId = company.Id, Company = company });
+                }
+                company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "830118667-1");
+                if (company != null)
+                {
+                    _context.Topics.Add(new Topic { Description = "Sistema Integrado de Gestión.", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Topics.Add(new Topic { Description = "Medio ambiente", Status = true, CompanyId = company.Id, Company = company });
+                }
+                await _context.SaveChangesAsync();
+            }
+        }
+
 
         //private async Task CheckTrainingCalendarAsync()
         //{
@@ -1423,11 +1479,19 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Trainings.Any())
             {
-                var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("P001"));
+                var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("I-P001"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
-                    _context.Trainings.Add(new Training { Cod = "CA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "ICA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Cod = "ICA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+
+                    await _context.SaveChangesAsync();
+                }
+                process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("ATI-P002"));
+                if (process != null)
+                {
+                    _context.Trainings.Add(new Training { Cod = "ATICA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Cod = "ATICA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
@@ -1441,7 +1505,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckUserAsync(string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, UserType userType, string pass)
+        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, UserType userType, string pass)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)
@@ -1457,9 +1521,17 @@ namespace NeoSmart.BackEnd.Data
                     LastName = lastName,
                     PhoneNumber = phoneNumber,
                     UserName = email,
-                    UserType = userType,
                     EmailConfirmed = true
                 };
+                if (!string.IsNullOrEmpty(nit))
+                {
+                    var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == nit);
+                    if (company != null)
+                    {
+                        user.CompanyId = company.Id;
+                        user.Company = company;
+                    }
+                }
                 try
                 {
                     await _userHelper.AddUserAsync(user, pass);

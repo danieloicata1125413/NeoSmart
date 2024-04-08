@@ -40,7 +40,7 @@ namespace NeoSmart.UnitTest.Controllers
             _mockUserHelper = new Mock<IUserHelper>();
             // Setting up InMemory database
             _mockDbContext = new DataContext(_options);
-            _controller = new OccupationsController(_unitOfWorkMock.Object, _mockDbContext);
+            _controller = new OccupationsController(_unitOfWorkMock.Object, _mockDbContext, _mockUserHelper.Object);
 
             // Mock user identity
             var claims = new List<Claim>
@@ -67,7 +67,7 @@ namespace NeoSmart.UnitTest.Controllers
         {
             // Arrange
             using var context = new DataContext(_options);
-            var controller = new OccupationsController(_unitOfWorkMock.Object, context);
+            var controller = new OccupationsController(_unitOfWorkMock.Object, context,_mockUserHelper.Object);
 
             // Act
             var result = await controller.GetComboAsync() as OkObjectResult;

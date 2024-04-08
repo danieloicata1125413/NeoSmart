@@ -433,7 +433,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -444,7 +444,7 @@ namespace NeoSmart.UnitTest.Controllers
             var currentUser = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",
@@ -673,7 +673,7 @@ namespace NeoSmart.UnitTest.Controllers
             var user = new User
             {
                 Email = "some@yopmail.com",
-                UserType = UserType.Employee,
+                //UserType = UserType.Employee,
                 Document = "123",
                 FirstName = "John",
                 LastName = "Doe",

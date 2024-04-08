@@ -16,6 +16,7 @@ namespace NeoSmart.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -54,24 +55,6 @@ namespace NeoSmart.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DocumentTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Formations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Formations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,40 +106,6 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Topics",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Topics", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TrainingCalendar",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrainingCalendar", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -198,56 +147,6 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FormationTopics",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FormationId = table.Column<int>(type: "int", nullable: false),
-                    TopicId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FormationTopics", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FormationTopics_Formations_FormationId",
-                        column: x => x.FormationId,
-                        principalTable: "Formations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FormationTopics_Topics_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TopicExams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TopicId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TopicExams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TopicExams_Topics_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Cities",
                 columns: table => new
                 {
@@ -263,31 +162,6 @@ namespace NeoSmart.Data.Migrations
                         name: "FK_Cities_States_StateId",
                         column: x => x.StateId,
                         principalTable: "States",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TopicExamQuestions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TopicExamId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Correct = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TopicExamQuestions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TopicExamQuestions_TopicExams_TopicExamId",
-                        column: x => x.TopicExamId,
-                        principalTable: "TopicExams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -322,14 +196,13 @@ namespace NeoSmart.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
                     Document = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DocumentTypeId = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserType = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CityId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -360,12 +233,36 @@ namespace NeoSmart.Data.Migrations
                         name: "FK_AspNetUsers_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUsers_DocumentTypes_DocumentTypeId",
                         column: x => x.DocumentTypeId,
                         principalTable: "DocumentTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Formations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Formations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Formations_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -389,6 +286,28 @@ namespace NeoSmart.Data.Migrations
                     table.PrimaryKey("PK_Processes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Processes_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Topics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Topics", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Topics_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
@@ -481,37 +400,6 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTopicExams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TopicExamId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserTopicExams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserTopicExams_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserTopicExams_TopicExams_TopicExamId",
-                        column: x => x.TopicExamId,
-                        principalTable: "TopicExams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Occupations",
                 columns: table => new
                 {
@@ -542,7 +430,6 @@ namespace NeoSmart.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TrainingCalendarId = table.Column<int>(type: "int", nullable: false),
                     Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
@@ -559,24 +446,42 @@ namespace NeoSmart.Data.Migrations
                         principalTable: "Processes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Trainings_TrainingCalendar_TrainingCalendarId",
-                        column: x => x.TrainingCalendarId,
-                        principalTable: "TrainingCalendar",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTopicExamAnswers",
+                name: "FormationTopics",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserTopicExamId = table.Column<int>(type: "int", nullable: false),
-                    Question = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Answer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    FormationId = table.Column<int>(type: "int", nullable: false),
+                    TopicId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormationTopics", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FormationTopics_Formations_FormationId",
+                        column: x => x.FormationId,
+                        principalTable: "Formations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_FormationTopics_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TopicExams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TopicId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -584,11 +489,11 @@ namespace NeoSmart.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTopicExamAnswers", x => x.Id);
+                    table.PrimaryKey("PK_TopicExams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserTopicExamAnswers_UserTopicExams_UserTopicExamId",
-                        column: x => x.UserTopicExamId,
-                        principalTable: "UserTopicExams",
+                        name: "FK_TopicExams_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -610,13 +515,13 @@ namespace NeoSmart.Data.Migrations
                         column: x => x.FormationId,
                         principalTable: "Formations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_FormationOccupations_Occupations_OccupationId",
                         column: x => x.OccupationId,
                         principalTable: "Occupations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -712,6 +617,57 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrainingTopics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    TopicId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingTopics", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingTopics_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_TrainingTopics_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TopicExamQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TopicExamId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopicExamQuestions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TopicExamQuestions_TopicExams_TopicExamId",
+                        column: x => x.TopicExamId,
+                        principalTable: "TopicExams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TrainingTopicExams",
                 columns: table => new
                 {
@@ -733,39 +689,44 @@ namespace NeoSmart.Data.Migrations
                         column: x => x.TopicExamId,
                         principalTable: "TopicExams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_TrainingTopicExams_Trainings_TrainingId",
                         column: x => x.TrainingId,
                         principalTable: "Trainings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TrainingTopics",
+                name: "UserTopicExams",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TrainingId = table.Column<int>(type: "int", nullable: false),
-                    TopicId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TopicExamId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainingTopics", x => x.Id);
+                    table.PrimaryKey("PK_UserTopicExams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TrainingTopics_Topics_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topics",
+                        name: "FK_UserTopicExams_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_TrainingTopics_Trainings_TrainingId",
-                        column: x => x.TrainingId,
-                        principalTable: "Trainings",
+                        name: "FK_UserTopicExams_TopicExams_TopicExamId",
+                        column: x => x.TopicExamId,
+                        principalTable: "TopicExams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -862,6 +823,32 @@ namespace NeoSmart.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserTopicExamAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserTopicExamId = table.Column<int>(type: "int", nullable: false),
+                    Question = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Answer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTopicExamAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserTopicExamAnswers_UserTopicExams_UserTopicExamId",
+                        column: x => x.UserTopicExamId,
+                        principalTable: "UserTopicExams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -928,9 +915,9 @@ namespace NeoSmart.Data.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companies_Name",
+                name: "IX_Companies_Nit",
                 table: "Companies",
-                column: "Name",
+                column: "Nit",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -956,9 +943,9 @@ namespace NeoSmart.Data.Migrations
                 column: "OccupationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Formations_Cod",
+                name: "IX_Formations_CompanyId_Cod",
                 table: "Formations",
-                column: "Cod",
+                columns: new[] { "CompanyId", "Cod" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -978,15 +965,10 @@ namespace NeoSmart.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Processes_Cod",
+                name: "IX_Processes_CompanyId_Cod",
                 table: "Processes",
-                column: "Cod",
+                columns: new[] { "CompanyId", "Cod" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Processes_CompanyId",
-                table: "Processes",
-                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_States_CountryId_Name",
@@ -1005,9 +987,9 @@ namespace NeoSmart.Data.Migrations
                 column: "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Topics_Description",
+                name: "IX_Topics_CompanyId_Description",
                 table: "Topics",
-                column: "Description",
+                columns: new[] { "CompanyId", "Description" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1026,20 +1008,10 @@ namespace NeoSmart.Data.Migrations
                 column: "TrainingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trainings_Cod",
+                name: "IX_Trainings_ProcessId_Cod",
                 table: "Trainings",
-                column: "Cod",
+                columns: new[] { "ProcessId", "Cod" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trainings_ProcessId",
-                table: "Trainings",
-                column: "ProcessId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trainings_TrainingCalendarId",
-                table: "Trainings",
-                column: "TrainingCalendarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrainingSessionAttends_TrainingSessionId",
@@ -1208,9 +1180,6 @@ namespace NeoSmart.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Processes");
-
-            migrationBuilder.DropTable(
-                name: "TrainingCalendar");
 
             migrationBuilder.DropTable(
                 name: "DocumentTypes");

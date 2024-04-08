@@ -1,5 +1,5 @@
 ﻿@page "/processes"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
@@ -25,6 +25,7 @@
                 <table class="table table-responsive">
                     <thead>
                         <tr>
+                            <th>Empresa</th>
                             <th>Código</th>
                             <th>Procesos</th>
                             <th style="width:210px">Cargos</th>
@@ -36,6 +37,7 @@
                         @foreach (var process in processes!)
                         {
                             <tr>
+                                <td>@process.Company!.Name</td>
                                 <td>@process.Cod</td>
                                 <td>@process.Description</td>
                                 <td>@process.OccupationsNumber</td>

@@ -39,19 +39,32 @@ namespace NeoSmart.Data.Entities
         public DbSet<UserTopicExam> UserTopicExams { get; set; }
         public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
 
+        public DbSet<Role> AspNetRoles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Company>().HasIndex(c => c.Name).IsUnique();
-            modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
-            modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
-            modelBuilder.Entity<Formation>().HasIndex(s => new { s.Cod }).IsUnique();
-            modelBuilder.Entity<Training>().HasIndex(s => new { s.Cod }).IsUnique();
-            modelBuilder.Entity<Topic>().HasIndex(c => c.Description).IsUnique();
+            modelBuilder.Entity<Company>().HasIndex(c => c.Nit).IsUnique();
+            modelBuilder.Entity<Process>().HasIndex(p => new { p.CompanyId, p.Cod }).IsUnique();
+            modelBuilder.Entity<Occupation>().HasIndex(o => new { o.ProcessId, o.Cod }).IsUnique();
+            modelBuilder.Entity<Formation>().HasIndex(f => new { f.CompanyId, f.Cod }).IsUnique();
+            modelBuilder.Entity<Topic>().HasIndex(t => new { t.CompanyId, t.Description }).IsUnique();
+            modelBuilder.Entity<Training>().HasIndex(t => new { t.ProcessId, t.Cod }).IsUnique();
+
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();
             modelBuilder.Entity<City>().HasIndex(c => new { c.StateId, c.Name }).IsUnique();
-            modelBuilder.Entity<DocumentType>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<DocumentType>().HasIndex(d => d.Name).IsUnique();
+            DisableCascadingDelete(modelBuilder);
+        }
+
+        private void DisableCascadingDelete(ModelBuilder modelBuilder)
+        {
+            var relationships = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys());
+            foreach (var relationship in relationships)
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
 
         public override int SaveChanges()
