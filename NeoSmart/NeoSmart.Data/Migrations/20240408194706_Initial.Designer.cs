@@ -12,8 +12,8 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240408051142_InitialDB")]
-    partial class InitialDB
+    [Migration("20240408194706_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,11 +34,6 @@ namespace NeoSmart.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -55,10 +50,6 @@ namespace NeoSmart.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1096,6 +1087,9 @@ namespace NeoSmart.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("UserTypes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
@@ -1199,19 +1193,12 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("UserTopicExamAnswers");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Role", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
-
-                    b.HasDiscriminator().HasValue("Role");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1220,7 +1207,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1229,7 +1216,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1238,13 +1225,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1253,7 +1240,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1262,7 +1249,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.State", "State")
                         .WithMany("Cities")
                         .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("State");
@@ -1273,7 +1260,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("City");
@@ -1284,7 +1271,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
                         .WithMany("Formations")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -1295,13 +1282,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Formation", "Formation")
                         .WithMany("FormationOccupations")
                         .HasForeignKey("FormationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Occupation", "Occupation")
                         .WithMany("FormationOccupations")
                         .HasForeignKey("OccupationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Formation");
@@ -1314,13 +1301,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Formation", "Formation")
                         .WithMany("FormationTopics")
                         .HasForeignKey("FormationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Topic", "Topic")
                         .WithMany("FormationTopics")
                         .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Formation");
@@ -1333,7 +1320,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
                         .WithMany("Occupations")
                         .HasForeignKey("ProcessId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Process");
@@ -1344,7 +1331,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
                         .WithMany("Process")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -1355,7 +1342,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Country", "Country")
                         .WithMany("States")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -1366,7 +1353,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
                         .WithMany("Topics")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -1377,7 +1364,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Topic", "Topic")
                         .WithMany()
                         .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Topic");
@@ -1388,7 +1375,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
                         .WithMany("TopicExamQuestions")
                         .HasForeignKey("TopicExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("TopicExam");
@@ -1399,7 +1386,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
                         .WithMany("Trainings")
                         .HasForeignKey("ProcessId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Process");
@@ -1410,7 +1397,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
                         .WithMany("TrainingImages")
                         .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Training");
@@ -1421,13 +1408,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.ResourceType", "ResourceType")
                         .WithMany()
                         .HasForeignKey("ResourceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
                         .WithMany()
                         .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ResourceType");
@@ -1440,18 +1427,19 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
                         .WithMany("TrainingSessions")
                         .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("City");
 
@@ -1465,12 +1453,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
                         .WithMany("TrainingSessionAttends")
                         .HasForeignKey("TrainingSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("TrainingSession");
 
@@ -1482,12 +1471,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
                         .WithMany("TrainingSessionInscriptions")
                         .HasForeignKey("TrainingSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("TrainingSession");
 
@@ -1499,12 +1489,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
                         .WithMany("TrainingSessionInscriptionTemporals")
                         .HasForeignKey("TrainingSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("TrainingSession");
 
@@ -1516,13 +1507,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Topic", "Topic")
                         .WithMany("TrainingTopics")
                         .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
                         .WithMany("TrainingTopics")
                         .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Topic");
@@ -1535,13 +1526,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
                         .WithMany()
                         .HasForeignKey("TopicExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
                         .WithMany("TrainingTopicExams")
                         .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("TopicExam");
@@ -1554,17 +1545,18 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
                         .WithMany("Users")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.DocumentType", "DocumentType")
                         .WithMany()
                         .HasForeignKey("DocumentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("City");
@@ -1579,13 +1571,13 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
                         .WithMany()
                         .HasForeignKey("TopicExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("TopicExam");
@@ -1598,7 +1590,7 @@ namespace NeoSmart.Data.Migrations
                     b.HasOne("NeoSmart.ClassLibraries.Entities.UserTopicExam", "UserTopicExam")
                         .WithMany("UserTopicExamAnswers")
                         .HasForeignKey("UserTopicExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("UserTopicExam");

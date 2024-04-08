@@ -12,10 +12,10 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
-        [Display(Name = "Medición")]
+        [Display(Name = "User")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public User? User { get; set; }
         public string? UserId { get; set; }
+        public User? User { get; set; }
 
         [Display(Name = "Medición")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]

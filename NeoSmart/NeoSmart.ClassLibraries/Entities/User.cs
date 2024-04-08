@@ -1,6 +1,7 @@
 ﻿using NeoSmart.ClassLibraries.Enum;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Collections;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
@@ -49,5 +50,8 @@ namespace NeoSmart.ClassLibraries.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int CityId { get; set; }
         public City? City { get; set; }
+
+        [Display(Name = "Tipos de usuario")]
+        public List<string>? UserTypes { get; set; }
     }
 }

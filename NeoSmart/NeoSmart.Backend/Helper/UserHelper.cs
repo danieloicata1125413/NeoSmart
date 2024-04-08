@@ -4,6 +4,8 @@ using NeoSmart.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.ClassLibraries.DTOs;
+using Microsoft.Build.Framework;
+using NeoSmart.BackEnd.Helpers;
 
 namespace NeoSmart.BackEnd.Helper
 {
@@ -43,15 +45,26 @@ namespace NeoSmart.BackEnd.Helper
             return await _userManager.ConfirmEmailAsync(user, token);
         }
 
-
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
         }
-
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
             await _userManager.AddToRoleAsync(user, roleName);
+        }
+        public async Task<IdentityResult> AddUserToRoleAsync(User user, List<string> rolesName)
+        {
+            return await _userManager.AddToRolesAsync(user, rolesName);
+        }
+        public async Task RemoveUserToRoleAsync(User user, string roleName)
+        {
+            await _userManager.RemoveFromRoleAsync(user, roleName);
+        }
+
+        public async Task<IdentityResult> RemoveUserToRoleAsync(User user, List<string> rolesName)
+        {
+            return await _userManager.RemoveFromRolesAsync(user, rolesName);
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)

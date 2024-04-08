@@ -39,8 +39,6 @@ namespace NeoSmart.Data.Entities
         public DbSet<UserTopicExam> UserTopicExams { get; set; }
         public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
 
-        public DbSet<Role> AspNetRoles { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

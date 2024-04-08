@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,7 @@ using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
+using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
@@ -212,8 +214,10 @@ namespace NeoSmart.BackEnd.Controllers
             var result = await _userHelper.AddUserAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _userHelper.AddUserToRoleAsync(user, model.UserType.ToString());
-
+                foreach (var UserType in model.UserTypes!)
+                {
+                    await _userHelper.AddUserToRoleAsync(user, UserType.ToString());
+                }
                 var response = await SendConfirmationEmailAsync(user);
                 if (response.IsSuccess)
                 {
@@ -223,6 +227,56 @@ namespace NeoSmart.BackEnd.Controllers
                 return BadRequest(response.Message);
             }
 
+            return BadRequest(result.Errors.FirstOrDefault());
+        }
+
+        [HttpGet("Roles")]
+        public async Task<ActionResult> GetRolesAsync()
+        {
+            var identityRoles = await _userHelper.GetRolesAsync();
+            if (identityRoles == null)
+            {
+                return NotFound();
+            }
+            return Ok(
+                identityRoles.
+                Select(x => x.Name!.ToString())
+                .ToList());
+        }
+
+        [HttpGet("UserRoles/{userId}")]
+        public async Task<ActionResult> GetUserRolesAsync(Guid userId)
+        {
+            var currentUser = await _userHelper.GetUserAsync(userId);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+            UserDTO model = new UserDTO();
+            model.UserName = currentUser.UserName;
+            model.UserTypes = await _userHelper.GetUserRolesAsync(currentUser);
+
+            return Ok(model);
+        }
+
+        [HttpPost("UserRoles")]
+        public async Task<ActionResult> PostUserRolesAsync([FromBody] UserDTO model)
+        {
+            var currentUser = await _userHelper.GetUserAsync(model.UserName!);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+            var listRoles = await _userHelper.GetRolesAsync();
+            var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listRoles.Where(x=>x.Name != UserType.SuperAdmin.ToString()).Select(x=>x.Name!.ToString()).ToList());
+            if (result.Succeeded)
+            {
+                result = await _userHelper.AddUserToRoleAsync(currentUser, model.UserTypes!.Select(x => x.ToString()).ToList());
+                if (result.Succeeded)
+                {
+                    return Ok(model);
+                }
+            }
             return BadRequest(result.Errors.FirstOrDefault());
         }
 
