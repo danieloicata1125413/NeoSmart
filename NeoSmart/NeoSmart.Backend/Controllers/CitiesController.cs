@@ -67,28 +67,5 @@ namespace NeoSmart.BackEnd.Controllers
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
-
-
-
-        //[HttpPost("totalPages2")]
-        //public async Task<ActionResult> PostPages2Async(CityPaginationDTO pagination)
-        //{
-        //    var queryable = _context.Cities
-        //        .Where(x => x.State!.Id == pagination.Id)
-        //        .AsQueryable();
-
-        //    if (!string.IsNullOrWhiteSpace(pagination.Filter))
-        //    {
-        //        queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-        //    }
-        //    if (pagination.predicate != null)
-        //    {
-        //        queryable = queryable.Where(pagination.predicate);
-        //    }
-
-        //    double count = await queryable.CountAsync();
-        //    double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
-        //    return Ok(totalPages);
-        //}
     }
 }

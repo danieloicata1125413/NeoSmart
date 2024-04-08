@@ -1,41 +1,78 @@
 ﻿@page "/"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
 
 <PageTitle>NeoSmart</PageTitle>
-<TrainingGrid></TrainingGrid>
+
 <AuthorizeView Roles="Admin">
     <Authorized>
         <div class="row mb-3">
-                @* <div class="col-12">
-                    <div class="card widget-inline">
-                        <div class="card-body">
-                            <PartialPanelBuscar></PartialPanelBuscar>
-                        </div>
-                    </div>
-                </div> *@
-                <!-- end col-->
-
-                @* <div class="col-3">
-                    <PartialUsuarios></PartialUsuarios>
-                </div>
-
-                <div class="col-3">
-                    <div class="card widget-inline">
-                        <div class="card-body p-0">
-                            <PartialMensajes></PartialMensajes>
-                        </div>
-                    </div>
-                </div> *@
-
+            @* <div class="col-12">
+            <div class="card widget-inline">
+            <div class="card-body">
+            <PartialPanelBuscar></PartialPanelBuscar>
             </div>
-            @* <div class="row">
-                <div class="card widget-inline">
-                    <div class="card-body">
-                        <PartialCalendar></PartialCalendar>
-                    </div>
-                </div>
+            </div>
             </div> *@
+            <!-- end col-->
+            @* <div class="col-3">
+            <PartialUsuarios></PartialUsuarios>
+            </div>
+
+            <div class="col-3">
+            <div class="card widget-inline">
+            <div class="card-body p-0">
+            <PartialMensajes></PartialMensajes>
+            </div>
+            </div>
+            </div> *@
+
+        </div>
+        @* <div class="row">
+        <div class="card widget-inline">
+        <div class="card-body">
+        <PartialCalendar></PartialCalendar>
+        </div>
+        </div>
+        </div> *@
     </Authorized>
     <NotAuthorized>
-        @* <p>No Estas autenticado y autorizado</p> *@
+        
     </NotAuthorized>
 </AuthorizeView>
+
+@if (_source != null)
+{
+    @* <div class="row mb-3">
+        <CarouselView Images="@_source" />
+    </div> *@
+}
+
+<Landing />
+
+
+@code {
+
+    private List<string>? _source = null;
+
+    public List<Slider>? Sliders { get; set; } = null;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadSlidersAsync();
+    }
+
+    private async Task LoadSlidersAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Slider>>("/api/Sliders/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Sliders = responseHttp.Response;
+        _source = Sliders!.Select(x => x.Image).ToList();
+    }
+}

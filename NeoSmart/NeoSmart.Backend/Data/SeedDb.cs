@@ -24,6 +24,7 @@ namespace NeoSmart.BackEnd.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
+
             //await CheckCountriesAsync();
             await CheckResourceTypesAsync();
             await CheckDocumentTypesAsync();
@@ -35,43 +36,10 @@ namespace NeoSmart.BackEnd.Data
             //await CheckTrainingCalendarAsync();
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
+            await CheckSlider();
             await CheckUserAsync("1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", UserType.Admin, "1090Jeep$");
             await CheckUserAsync("43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", UserType.Admin, "Inicio123*");
             await CheckUserAsync("15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", UserType.Admin, "Inicio123*");
-        }
-        private async Task CheckUserAsync(string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, UserType userType, string pass)
-        {
-            User user = await _userHelper.GetUserAsync(email);
-            if (user == null)
-            {
-                user = new User
-                {
-                    Address = address,
-                    Document = document,
-                    CompanyId = 0,
-                    DocumentType = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Name == "CC"),
-                    City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals(city)),
-                    Email = email,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    PhoneNumber = phoneNumber,
-                    UserName = email,
-                    UserType = userType,
-                    EmailConfirmed = true
-                };
-                try
-                {
-                    await _userHelper.AddUserAsync(user, pass);
-                    await _userHelper.AddUserToRoleAsync(user, userType.ToString());
-
-                    //string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                    //await _userHelper.ConfirmEmailAsync(user, token);
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
         }
         private async Task CheckRolesAsycn()
         {
@@ -1356,7 +1324,6 @@ namespace NeoSmart.BackEnd.Data
                     Nit = "890900652-3",
                     City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Medellín")),
                     Status = true,
-                      
                 }); 
                 await _context.SaveChangesAsync();
             }
@@ -1459,10 +1426,51 @@ namespace NeoSmart.BackEnd.Data
                 var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("P001"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "CA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
                     _context.Trainings.Add(new Training { Cod = "CA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
-                   
+
                     await _context.SaveChangesAsync();
+                }
+            }
+        }
+        private async Task CheckSlider()
+        {
+            if (!_context.Sliders.Any())
+            {
+                _context.Sliders.Add(new Slider { Description = "Base", Image = "https://neosmartstorage.blob.core.windows.net/sliders/f2ee58b1-831b-4c0b-97eb-f7859aff5d7c.jpg" });
+                await _context.SaveChangesAsync();
+            }
+        }
+        private async Task CheckUserAsync(string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, UserType userType, string pass)
+        {
+            User user = await _userHelper.GetUserAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Address = address,
+                    Document = document,
+                    DocumentType = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Name == "CC"),
+                    City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals(city)),
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    PhoneNumber = phoneNumber,
+                    UserName = email,
+                    UserType = userType,
+                    EmailConfirmed = true
+                };
+                try
+                {
+                    await _userHelper.AddUserAsync(user, pass);
+                    await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                    //string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                    //await _userHelper.ConfirmEmailAsync(user, token);
+                }
+                catch (Exception ex)
+                {
+
                 }
             }
         }

@@ -60,15 +60,15 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var state = await _context.Topics
+            var topic = await _context.Topics
                 .Include(t => t.FormationTopics)
                 .Include(t => t.TrainingTopics)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            if (state == null)
+            if (topic == null)
             {
                 return NotFound();
             }
-            return Ok(state);
+            return Ok(topic);
         }
     }
 }

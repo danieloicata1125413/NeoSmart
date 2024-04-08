@@ -12,15 +12,15 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231122233946_InitialDB")]
-    partial class InitialDB
+    [Migration("20240407221345_UpdateUser")]
+    partial class UpdateUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -182,6 +182,49 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("Cities");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Nit")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Companies");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -252,6 +295,12 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -259,6 +308,9 @@ namespace NeoSmart.Data.Migrations
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -314,38 +366,6 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("FormationTopics");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Inscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("InscriptionStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TrainingCalendarId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingCalendarId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Inscriptions");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.Property<int>("Id")
@@ -398,6 +418,9 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -420,7 +443,69 @@ namespace NeoSmart.Data.Migrations
                     b.HasIndex("Cod")
                         .IsUnique();
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Processes");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.QuestionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuestionTypes");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.ResourceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResourceTypes");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Slider", b =>
@@ -469,32 +554,6 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("States");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TemporalInscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TrainingCalendarId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingCalendarId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TemporalInscriptions");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -521,6 +580,79 @@ namespace NeoSmart.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Topics");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("TopicExams");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExamQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Correct")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TopicExamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicExamId");
+
+                    b.ToTable("TopicExamQuestions");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
@@ -562,52 +694,6 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("Trainings");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<TimeSpan?>("TimeEnd")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan?>("TimeStart")
-                        .HasColumnType("time");
-
-                    b.Property<int>("TrainingId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Type")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("TrainingId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrainingCalendars");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
                 {
                     b.Property<int>("Id")
@@ -628,6 +714,227 @@ namespace NeoSmart.Data.Migrations
                     b.HasIndex("TrainingId");
 
                     b.ToTable("TrainingImages");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ResourceTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceTypeId");
+
+                    b.HasIndex("TrainingId");
+
+                    b.ToTable("TrainingResources");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("TimeEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("TimeStart")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Type")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TrainingId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainingSessions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionAttend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("Accuracy")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<decimal?>("Altitude")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<decimal?>("AltitudeAccuracy")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<string>("Signature")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TrainingSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingSessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainingSessionAttends");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InscriptionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TrainingSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingSessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainingSessionInscriptions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionTemporal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TrainingSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingSessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrainingSessionInscriptionTemporals");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopic", b =>
@@ -653,6 +960,44 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("TrainingTopics");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopicExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempt")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan?>("TimeEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("TimeStart")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TopicExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicExamId");
+
+                    b.HasIndex("TrainingId");
+
+                    b.ToTable("TrainingTopicExams");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -667,6 +1012,9 @@ namespace NeoSmart.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -744,6 +1092,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasIndex("CityId");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("DocumentTypeId");
 
                     b.HasIndex("NormalizedEmail")
@@ -755,6 +1105,90 @@ namespace NeoSmart.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TopicExamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicExamId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTopicExams");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExamAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Correct")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserTopicExamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserTopicExamId");
+
+                    b.ToTable("UserTopicExamAnswers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -819,6 +1253,17 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("State");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Company", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.FormationOccupation", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Formation", "Formation")
@@ -857,23 +1302,6 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Inscription", b =>
-                {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
-                        .WithMany("Inscriptions")
-                        .HasForeignKey("TrainingCalendarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("TrainingCalendar");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Process", "Process")
@@ -883,6 +1311,17 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Process");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Process", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
+                        .WithMany("Process")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.State", b =>
@@ -896,21 +1335,26 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TemporalInscription", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExam", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingCalendar", "TrainingCalendar")
-                        .WithMany("TemporalInscriptions")
-                        .HasForeignKey("TrainingCalendarId")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                    b.Navigation("Topic");
+                });
 
-                    b.Navigation("TrainingCalendar");
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExamQuestion", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
+                        .WithMany("TopicExamQuestions")
+                        .HasForeignKey("TopicExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("TopicExam");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
@@ -924,7 +1368,37 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("Process");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                        .WithMany("TrainingImages")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Training");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingResource", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.ResourceType", "ResourceType")
+                        .WithMany()
+                        .HasForeignKey("ResourceTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                        .WithMany()
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ResourceType");
+
+                    b.Navigation("Training");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSession", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
                         .WithMany()
@@ -933,7 +1407,7 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
-                        .WithMany("TrainingCalendars")
+                        .WithMany("TrainingSessions")
                         .HasForeignKey("TrainingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -949,15 +1423,55 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionAttend", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
-                        .WithMany("TrainingImages")
-                        .HasForeignKey("TrainingId")
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
+                        .WithMany("TrainingSessionAttends")
+                        .HasForeignKey("TrainingSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Training");
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("TrainingSession");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
+                        .WithMany("TrainingSessionInscriptions")
+                        .HasForeignKey("TrainingSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("TrainingSession");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionTemporal", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
+                        .WithMany("TrainingSessionInscriptionTemporals")
+                        .HasForeignKey("TrainingSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("TrainingSession");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopic", b =>
@@ -979,6 +1493,25 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("Training");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingTopicExam", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
+                        .WithMany()
+                        .HasForeignKey("TopicExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
+                        .WithMany("TrainingTopicExams")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TopicExam");
+
+                    b.Navigation("Training");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.User", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.City", "City")
@@ -986,6 +1519,10 @@ namespace NeoSmart.Data.Migrations
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.Company", "Company")
+                        .WithMany("Users")
+                        .HasForeignKey("CompanyId");
 
                     b.HasOne("NeoSmart.ClassLibraries.Entities.DocumentType", "DocumentType")
                         .WithMany()
@@ -995,7 +1532,46 @@ namespace NeoSmart.Data.Migrations
 
                     b.Navigation("City");
 
+                    b.Navigation("Company");
+
                     b.Navigation("DocumentType");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExam", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TopicExam", "TopicExam")
+                        .WithMany()
+                        .HasForeignKey("TopicExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TopicExam");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExamAnswer", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.UserTopicExam", "UserTopicExam")
+                        .WithMany("UserTopicExamAnswers")
+                        .HasForeignKey("UserTopicExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserTopicExam");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Company", b =>
+                {
+                    b.Navigation("Process");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Country", b =>
@@ -1034,20 +1610,34 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("TrainingTopics");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TopicExam", b =>
+                {
+                    b.Navigation("TopicExamQuestions");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Training", b =>
                 {
-                    b.Navigation("TrainingCalendars");
-
                     b.Navigation("TrainingImages");
+
+                    b.Navigation("TrainingSessions");
+
+                    b.Navigation("TrainingTopicExams");
 
                     b.Navigation("TrainingTopics");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingCalendar", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSession", b =>
                 {
-                    b.Navigation("Inscriptions");
+                    b.Navigation("TrainingSessionAttends");
 
-                    b.Navigation("TemporalInscriptions");
+                    b.Navigation("TrainingSessionInscriptionTemporals");
+
+                    b.Navigation("TrainingSessionInscriptions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExam", b =>
+                {
+                    b.Navigation("UserTopicExamAnswers");
                 });
 #pragma warning restore 612, 618
         }

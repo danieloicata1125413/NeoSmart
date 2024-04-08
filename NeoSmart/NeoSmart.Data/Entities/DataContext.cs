@@ -18,7 +18,6 @@ namespace NeoSmart.Data.Entities
         public DbSet<Formation> Formations { get; set; }
         public DbSet<FormationOccupation> FormationOccupations { get; set; }
         public DbSet<FormationTopic> FormationTopics { get; set; }
-
         public DbSet<Occupation> Occupations { get; set; }
         public DbSet<Process> Processes { get; set; }
         public DbSet<QuestionType> QuestionTypes { get; set; }
@@ -40,15 +39,10 @@ namespace NeoSmart.Data.Entities
         public DbSet<UserTopicExam> UserTopicExams { get; set; }
         public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
 
-        
-        
-        
-        
-        
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Company>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Process>().HasIndex(c => c.Cod).IsUnique();
             modelBuilder.Entity<Occupation>().HasIndex(s => new { s.ProcessId, s.Cod }).IsUnique();
             modelBuilder.Entity<Formation>().HasIndex(s => new { s.Cod }).IsUnique();

@@ -7,10 +7,6 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
-        [Display(Name = "Periodo")]
-        public int TrainingCalendarId { get; set; }
-        public TrainingCalendar? TrainingCalendar { get; set; }
-
         [Display(Name = "Código")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Cod { get; set; }

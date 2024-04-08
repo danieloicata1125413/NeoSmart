@@ -29,6 +29,11 @@ namespace NeoSmart.ClassLibraries.Entities
         public int CityId { get; set; }
         public City? City { get; set; }
 
+        public ICollection<User>? Users { get; set; }
+
+        [Display(Name = "Users")]
+        public int UsersNumber => Users == null ? 0 : Users.Count;
+
         public ICollection<Process>? Process { get; set; }
 
         [Display(Name = "Procesos")]
