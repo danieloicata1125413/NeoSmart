@@ -87,7 +87,10 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(string email)
         {
             var user = await _context.Users
-                .Include(x => x.Company)
+                .Include(x => x.Company!)
+                .Include(x => x.Occupation!)
+                .ThenInclude(x => x.Process!)
+                .ThenInclude(x => x.Company!)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
@@ -99,7 +102,10 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(Guid userId)
         {
             var user = await _context.Users
-                .Include(x => x.Company)
+                .Include(x => x.Company!)
+                .Include(x => x.Occupation!)
+                .ThenInclude(x => x.Process!)
+                .ThenInclude(x => x.Company!)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)

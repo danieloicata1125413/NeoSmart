@@ -18,5 +18,8 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [StringLength(20, MinimumLength = 6, ErrorMessage = "El campo {0} debe tener entre {2} y {1} carácteres.")]
         public string PasswordConfirm { get; set; } = null!;
+
+        [Display(Name = "Tipos de usuario")]
+        public List<string>? UserTypes { get; set; }
     }
 }

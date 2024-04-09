@@ -47,6 +47,8 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<ActionResult> GetAll([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Users
+                .Include(c => c.Company)
+                .Include(c => c.Occupation)
                 .Include(u => u.City)
                 .AsQueryable();
 
@@ -55,9 +57,14 @@ namespace NeoSmart.BackEnd.Controllers
                 queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
                                                  x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             return Ok(await queryable
-                .OrderBy(x => x.FirstName)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(x => x.FirstName)
                 .ThenBy(x => x.LastName)
                 .Paginate(pagination)
                 .ToListAsync());
@@ -73,7 +80,11 @@ namespace NeoSmart.BackEnd.Controllers
                 queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
                                                  x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
@@ -157,7 +168,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             try
             {
-                var currentUser = await _userHelper.GetUserAsync(User.Identity!.Name!);
+                var currentUser = await _userHelper.GetUserAsync(user.UserName!);
                 if (currentUser == null)
                 {
                     return NotFound();
@@ -167,6 +178,16 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     var photoUser = Convert.FromBase64String(user.Photo);
                     user.Photo = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
+                }
+                currentUser.CompanyId = null;
+                if (user.CompanyId > 0) {
+                    currentUser.CompanyId = user.CompanyId;
+                }
+
+                currentUser.OccupationId = null;
+                if (user.OccupationId > 0)
+                {
+                    currentUser.OccupationId = user.OccupationId;
                 }
 
                 currentUser.Document = user.Document;
@@ -198,6 +219,13 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<ActionResult> GetAsync()
         {
             return Ok(await _userHelper.GetUserAsync(User.Identity!.Name!));
+        }
+
+        [HttpGet("{userName}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="SuperAdmin,Admin")]
+        public async Task<ActionResult> GetAsync(string userName)
+        {
+            return Ok(await _userHelper.GetUserAsync(userName));
         }
 
         [HttpPost("CreateUser")]
@@ -245,6 +273,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpGet("UserRoles/{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
         public async Task<ActionResult> GetUserRolesAsync(Guid userId)
         {
             var currentUser = await _userHelper.GetUserAsync(userId);
@@ -260,6 +289,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpPost("UserRoles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
         public async Task<ActionResult> PostUserRolesAsync([FromBody] UserDTO model)
         {
             var currentUser = await _userHelper.GetUserAsync(model.UserName!);

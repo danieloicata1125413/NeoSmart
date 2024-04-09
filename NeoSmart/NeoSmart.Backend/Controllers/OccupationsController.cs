@@ -9,6 +9,7 @@ using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
+using System.ComponentModel.Design;
 
 namespace NeoSmart.BackEnd.Controllers
 {
@@ -27,10 +28,11 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("comboAll")]
-        public async Task<ActionResult> GetComboAllAsync()
+        [HttpGet("combo/{processId}")]
+        public async Task<ActionResult> GetComboAllAsync(int processId)
         {
             return Ok(await _context.Occupations
+                .Where(c => c.Process!.Id == processId)
                 .OrderBy(s => s.Process!.Company!.Name)
                 .ThenBy(s => s.Process!.Description)
                 .ThenBy(s => s.Description)

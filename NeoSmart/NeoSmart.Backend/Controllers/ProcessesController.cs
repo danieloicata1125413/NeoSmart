@@ -64,7 +64,11 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             return Ok(await queryable
                 .OrderBy(c => c.Company!.Name)
                 .ThenBy(c => c.Description)
@@ -80,6 +84,11 @@ namespace NeoSmart.BackEnd.Controllers
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
             }
             queryable = queryable.OrderBy(c => c.Company!.Name)
                         .ThenBy(c => c.Description);

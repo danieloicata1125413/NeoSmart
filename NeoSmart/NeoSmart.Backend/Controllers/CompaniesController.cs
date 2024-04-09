@@ -64,7 +64,11 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Id == user.Company!.Id);
+            }
             return Ok(await queryable
                 .OrderBy(x => x.Name)
                 .Paginate(pagination)

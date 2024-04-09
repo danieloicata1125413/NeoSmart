@@ -1,4 +1,5 @@
-﻿@page "/EditUser"
+﻿@page "/EditUser/{UserName}"
+@page "/EditUser"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
@@ -16,7 +17,14 @@ else
             <div class="card-header">
                 <span>
                     <i class="oi oi-person" /> Editar Usuario
-                    <a class="btn btn-sm btn-secondary float-end" @onclick=@(() => ShowModal())><i class="oi oi-key" /> Cambiar Contraseña</a>
+                    @if (@UserName != null)
+                    {
+                        <button class="btn btn-sm btn-danger float-end me-1" @onclick="CloseModalAsync"><i class="oi oi-ban" /> Cerrar</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-success float-end me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+                    }
                     <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
                 </span>
             </div>
@@ -60,19 +68,68 @@ else
                                 <ValidationMessage For="@(() => user.DocumentTypeId)" />
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label>Teléfono:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.PhoneNumber" />
-                                <ValidationMessage For="@(() => user.PhoneNumber)" />
-                            </div>
+                        <div class="form-group mb-2">
+                            <label>Empresa:</label>
+                            <select class="form-select" @onchange="CompanyChangedAsync">
+                                <option value="0">-- Seleccione una empresa --</option>
+                                @if (companies is not null)
+                                {
+                                    @foreach (var company in companies)
+                                    {
+                                        if (user!.Company is not null)
+                                        {
+                                            <option value="@company.Id" selected="@(company.Id == user!.Company!.Id)">@company.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@company.Id">@company.Name</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <ValidationMessage For="@(() => user!.CompanyId)" />
                         </div>
-                        <div class="mb-3">
-                            <label>Dirección:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.Address" />
-                                <ValidationMessage For="@(() => user.Address)" />
-                            </div>
+                        <div class="form-group mb-2">
+                            <label>Proceso:</label>
+                            <select class="form-select" @onchange="ProcessChangedAsync">
+                                <option value="0">-- Seleccione un proceso --</option>
+                                @if (processes is not null)
+                                {
+                                @foreach (var process in processes!)
+                                {
+                                    if (user!.Occupation is not null)
+                                    {
+                                        <option value="@process.Id" selected="@(process.Id == user!.Occupation!.Process!.Id)">@process.Description</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@process.Id">@process.Description</option>
+                                    }
+                                }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label>Cargo:</label>
+                            <select class="form-select" @bind="user!.OccupationId">
+                                <option value="0">-- Seleccione un proceso --</option>
+                                @if (occupations is not null)
+                                {
+                                    @foreach (var occupation in occupations)
+                                    {
+                                        if (user!.Occupation is not null)
+                                        {
+                                            <option value="@occupation.Id" selected="@(occupation.Id == user!.Occupation!.Id)">@occupation.Description</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@occupation.Id">@occupation.Description</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <ValidationMessage For="@(() => user!.OccupationId)" />
                         </div>
                     </div>
                     <div class="col-6">
@@ -123,6 +180,20 @@ else
                             </div>
                         </div>
                         <div class="mb-3">
+                            <label>Dirección:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@user.Address" />
+                                <ValidationMessage For="@(() => user.Address)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Teléfono:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@user.PhoneNumber" />
+                                <ValidationMessage For="@(() => user.PhoneNumber)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
                         </div>
                     </div>
@@ -134,18 +205,44 @@ else
 
 @code {
     private User? user;
+    private List<Company>? companies = null!;
+    private List<Process>? processes = null!;
+    private List<Occupation>? occupations = null!;
     private List<DocumentType>? documentTypes;
     private List<Country>? countries;
     private List<State>? states;
     private List<City>? cities;
     private string? imageUrl;
+    private bool isEdit = true;
+
+    [Parameter]
+    public string? UserName { get; set; }
 
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUserAsyc();
+        await LoadCompaniesAsync();
+        if (user!.Company != null)
+        {
+            if (user!.Occupation == null)
+            {
+                processes = null;
+                occupations = null;
+                await LoadProcessesAsync(user!.Company!.Id);
+            }
+        }
+        if (user!.Occupation != null)
+        {
+            await LoadProcessesAsync(user!.Occupation!.Process!.Company!.Id);
+            await LoadOccupationsAsync(user!.Occupation!.Process!.Id);
+        }
+
         await LoadDocumentTypeAsync();
         await LoadCountriesAsync();
         await LoadStatesAsyn(user!.City!.State!.Country!.Id);
@@ -156,17 +253,19 @@ else
             imageUrl = user.Photo;
             user.Photo = null;
         }
-
-    }
-
-    private void ShowModal()
-    {
-        var modalReference = Modal.Show<ChangePassword>();
     }
 
     private async Task LoadUserAsyc()
     {
-        var responseHTTP = await repository.GetAsync<User>($"/api/accounts");
+        HttpResponseWrapper<User> responseHTTP;
+        if (UserName == null)
+        {
+            responseHTTP = await repository.GetAsync<User>($"/api/accounts");
+        }
+        else
+        {
+            responseHTTP = await repository.GetAsync<User>($"/api/accounts/{UserName}");
+        }
         if (responseHTTP.Error)
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -187,6 +286,27 @@ else
         imageUrl = null;
     }
 
+    private async Task CompanyChangedAsync(ChangeEventArgs e)
+    {
+        var selectedCompany = Convert.ToInt32(e.Value!);
+        user!.CompanyId = selectedCompany;
+        user!.Company = null;
+        processes = null;
+        occupations = null;
+        user!.OccupationId = 0;
+        user!.Occupation = null;
+        await LoadProcessesAsync(selectedCompany);
+    }
+
+    private async Task ProcessChangedAsync(ChangeEventArgs e)
+    {
+        var selectedProcess = Convert.ToInt32(e.Value!);
+        occupations = null;
+        user!.OccupationId = 0;
+        user!.Occupation = null;
+        await LoadOccupationsAsync(selectedProcess);
+    }
+
     private async Task CountryChangedAsync(ChangeEventArgs e)
     {
         var selectedCountry = Convert.ToInt32(e.Value!);
@@ -202,6 +322,43 @@ else
         cities = null;
         user.CityId = 0;
         await LoadCitiesAsyn(selectedState);
+    }
+
+    private async Task LoadCompaniesAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Company>>("/api/companies/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        companies = responseHttp.Response;
+    }
+
+    private async Task LoadProcessesAsync(int companyId)
+    {
+        var responseHttp = await repository.GetAsync<List<Process>>($"/api/processes/combo/{companyId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        processes = responseHttp.Response;
+    }
+
+    private async Task LoadOccupationsAsync(int processId)
+    {
+        var responseHttp = await repository.GetAsync<List<Occupation>>($"/api/occupations/combo/{processId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        occupations = responseHttp.Response;
     }
 
     private async Task LoadDocumentTypeAsync()
@@ -258,15 +415,27 @@ else
 
     private async Task SaveUserAsync()
     {
-        var responseHttp = await repository.PutAsync<User, TokenDTO>("/api/accounts", user!);
-        if (responseHttp.Error)
+        if (isEdit)
         {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
+            var responseHttp = await repository.PutAsync<User, TokenDTO>("/api/accounts", user!);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+            if (UserName == null)
+            {
+                await loginService.LoginAsync(responseHttp.Response!.Token);
+                navigationManager.NavigateTo("/");
+            }
+            await BlazoredModal.CloseAsync(ModalResult.Ok());
         }
+    }
 
-        await loginService.LoginAsync(responseHttp.Response!.Token);
-        navigationManager.NavigateTo("/");
+    private async Task CloseModalAsync()
+    {
+        isEdit = false;
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
     }
 }

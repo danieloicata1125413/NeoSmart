@@ -16,7 +16,8 @@ else
                 <div class="card-header">
                     <span>
                         <i class="oi oi-people"></i> Usuarios
-                        <a class="btn btn-sm btn-primary float-end" href="/register/?IsAdmin=true"><i class="oi oi-plus"></i> Adicionar Admin</a>
+                        @* <a class="btn btn-sm btn-primary float-end" href="/register/?IsAdmin=true"><i class="oi oi-plus"></i> Adicionar Admin</a> *@
+                        <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync(null))><i class="oi oi-plus"></i> Adicionar</button>
                     </span>
                 </div>
                 <div class="card-body">
@@ -40,7 +41,8 @@ else
                                 <th>Email</th>
                                 <th>Dirección</th>
                                 <th>Confirmado</th>
-                                <th>Tipo Usuario</th>
+                                <th>Empresa</th>
+                                <th>Opciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,7 +65,17 @@ else
                                     <td>@user.Email</td>
                                     <td>@user.Address, @user.City!.Name</td>
                                     <td>@user.EmailConfirmed</td>
-                                    @* <td>@EnumHelper.GetEnumDescription(user.UserType)</td> *@
+                                    @if (@user.Company != null)
+                                    {
+                                        <td>@user.Company!.Name</td>
+                                    }
+                                    else
+                                    {
+                                        <td>NeoSmart</td>
+                                    }
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(@user.UserName, true))><i class="oi oi-pencil" /> Editar</button>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -81,6 +93,9 @@ else
     public List<User>? Users { get; set; }
     private int currentPage = 1;
     private int totalPages;
+
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -144,5 +159,25 @@ else
     {
         Filter = string.Empty;
         await LoadAsync();
+    }
+
+    private async Task ShowModalAsync(string? userName, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<EditUser>(string.Empty, new ModalParameters().Add("UserName", userName));
+        }
+        else
+        {
+            modalReference = Modal.Show<RegisterUser>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
     }
 }

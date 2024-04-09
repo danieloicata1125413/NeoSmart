@@ -35,8 +35,23 @@ namespace NeoSmart.BackEnd.Helper
                 new Claim("LastName", user.LastName),
                 new Claim("Address", user.Address),
                 new Claim("Photo", user.Photo ?? string.Empty),
-                new Claim("CityId", user.CityId.ToString())
+                new Claim("CityId", user.CityId.ToString()),
+                
             };
+            if (user.Company != null)
+            {
+                new Claim("Company", user.Company!.Name.ToString());
+            }
+
+            if (user.Occupation != null)
+            {
+                new Claim("Occupation", user.Occupation!.Description.ToString());
+                if (user.Occupation!.Process != null)
+                {
+                    new Claim("Process", user.Occupation!.Process!.Description.ToString());
+                }
+            }
+
             foreach (string role in roleList)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

@@ -38,10 +38,10 @@ namespace NeoSmart.BackEnd.Data
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
             await CheckSlider();
-            await CheckUserAsync(null, "1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", UserType.SuperAdmin, "1090Jeep$");
-            await CheckUserAsync(null, "43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", UserType.SuperAdmin, "Inicio123*");
-            await CheckUserAsync(null, "15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", UserType.SuperAdmin, "Inicio123*");
-            await CheckUserAsync("830118667-1", "10903883481", "Daniel", "Oicata Hernandez", "danielandres011@hotmail.com", "3177457755", "CARRERA", "Duitama", UserType.Admin, "1090Jeep$");
+            await CheckUserAsync(null, "1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", null, UserType.SuperAdmin, "1090Jeep$");
+            await CheckUserAsync(null, "43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", null, UserType.SuperAdmin, "Inicio123*");
+            await CheckUserAsync(null, "15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", null, UserType.SuperAdmin, "Inicio123*");
+            await CheckUserAsync("830118667-1", "10903883481", "Daniel", "Oicata Hernandez", "danielandres011@hotmail.com", "3177457755", "CARRERA", "Duitama", "CA008", UserType.Admin, "1090Jeep$");
         }
         private async Task CheckRolesAsycn()
         {
@@ -1386,14 +1386,14 @@ namespace NeoSmart.BackEnd.Data
                 process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P001"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA002", Description = "Lider Gestión Humana", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA003", Description = "Lider Administrativo", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA006", Description = "Lider Gestión Humana", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA007", Description = "Lider Administrativo", ProcessId = process.Id, Process = process, Status = true });
                 }
                 process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P002"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA004", Description = "Coordinador Hseq", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA005", Description = "Coordinador Psev", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA008", Description = "Coordinador Hseq", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Cod = "CA009", Description = "Coordinador Psev", ProcessId = process.Id, Process = process, Status = true });
                 }
                 await _context.SaveChangesAsync();
             }
@@ -1440,7 +1440,6 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-
 
         //private async Task CheckTrainingCalendarAsync()
         //{
@@ -1505,7 +1504,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, UserType userType, string pass)
+        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, string? occupationCod, UserType userType, string pass)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)
@@ -1530,6 +1529,15 @@ namespace NeoSmart.BackEnd.Data
                     {
                         user.CompanyId = company.Id;
                         user.Company = company;
+                    }
+                }
+                if (!string.IsNullOrEmpty(occupationCod))
+                {
+                    var occupation = await _context.Occupations.FirstOrDefaultAsync(x => x.Cod == occupationCod);
+                    if (occupation != null)
+                    {
+                        user.OccupationId = occupation.Id;
+                        user.Occupation = occupation;
                     }
                 }
                 try
