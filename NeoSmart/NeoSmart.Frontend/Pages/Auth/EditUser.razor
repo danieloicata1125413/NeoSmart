@@ -13,188 +13,194 @@ else
 {
     <EditForm Model="user" OnValidSubmit="SaveUserAsync">
         <DataAnnotationsValidator />
-        <div class="card">
-            <div class="card-header">
-                <span>
-                    <i class="oi oi-person" /> Editar Usuario
-                    @if (@UserName != null)
-                    {
-                        <button class="btn btn-sm btn-danger float-end me-1" @onclick="CloseModalAsync"><i class="oi oi-ban" /> Cerrar</button>
-                    }
-                    else
-                    {
-                        <a class="btn btn-sm btn-success float-end me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
-                    }
-                    <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
-                </span>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label>Nombres:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.FirstName" />
-                                <ValidationMessage For="@(() => user.FirstName)" />
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Apellidos:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.LastName" />
-                                <ValidationMessage For="@(() => user.LastName)" />
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Documento:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.Document" />
-                                <ValidationMessage For="@(() => user.Document)" />
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Tipo:</label>
-                            <div>
-                                <select class="form-select" @bind="user.DocumentTypeId">
-                                    <option value="0">-- Seleccione un tipo de documento --</option>
-                                    @if (documentTypes is not null)
-                                    {
-                                        @foreach (var documentType in documentTypes)
-                                        {
-                                            <option value="@documentType.Id" selected="@(documentType.Id == user.DocumentType!.Id)">@documentType.Description</option>
-                                        }
-                                    }
-                                </select>
-                                <ValidationMessage For="@(() => user.DocumentTypeId)" />
-                            </div>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Empresa:</label>
-                            <select class="form-select" @onchange="CompanyChangedAsync">
-                                <option value="0">-- Seleccione una empresa --</option>
-                                @if (companies is not null)
-                                {
-                                    @foreach (var company in companies)
-                                    {
-                                        if (user!.Company is not null)
-                                        {
-                                            <option value="@company.Id" selected="@(company.Id == user!.Company!.Id)">@company.Name</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@company.Id">@company.Name</option>
-                                        }
-                                    }
-                                }
-                            </select>
-                            <ValidationMessage For="@(() => user!.CompanyId)" />
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Proceso:</label>
-                            <select class="form-select" @onchange="ProcessChangedAsync">
-                                <option value="0">-- Seleccione un proceso --</option>
-                                @if (processes is not null)
-                                {
-                                @foreach (var process in processes!)
-                                {
-                                    if (user!.Occupation is not null)
-                                    {
-                                        <option value="@process.Id" selected="@(process.Id == user!.Occupation!.Process!.Id)">@process.Description</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@process.Id">@process.Description</option>
-                                    }
-                                }
-                                }
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-2">
-                            <label>Cargo:</label>
-                            <select class="form-select" @bind="user!.OccupationId">
-                                <option value="0">-- Seleccione un proceso --</option>
-                                @if (occupations is not null)
-                                {
-                                    @foreach (var occupation in occupations)
-                                    {
-                                        if (user!.Occupation is not null)
-                                        {
-                                            <option value="@occupation.Id" selected="@(occupation.Id == user!.Occupation!.Id)">@occupation.Description</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@occupation.Id">@occupation.Description</option>
-                                        }
-                                    }
-                                }
-                            </select>
-                            <ValidationMessage For="@(() => user!.OccupationId)" />
-                        </div>
+        <div class="row">
+            <div class="col-12 justify-content-center m-auto">
+                <div class="card justify-content-center">
+                    <div class="card-header">
+                        <span>
+                            <i class="oi oi-person" /> Editar Usuario
+                            @if (@UserName != null)
+                            {
+                                <button class="btn btn-sm btn-danger float-end me-1" @onclick="CloseModalAsync"><i class="oi oi-ban" /> Cerrar</button>
+                            }
+                            else
+                            {
+                                <a class="btn btn-sm btn-success float-end me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+                            }
+                            <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
+                        </span>
                     </div>
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label>País:</label>
-                            <div>
-                                <select class="form-select" @onchange="CountryChangedAsync">
-                                    <option value="0">-- Seleccione un país --</option>
-                                    @if (countries is not null)
-                                    {
-                                        @foreach (var country in countries)
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label>Nombres:</label>
+                                    <div>
+                                        <InputText class="form-control" @bind-Value="@user.FirstName" />
+                                        <ValidationMessage For="@(() => user.FirstName)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Apellidos:</label>
+                                    <div>
+                                        <InputText class="form-control" @bind-Value="@user.LastName" />
+                                        <ValidationMessage For="@(() => user.LastName)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Documento:</label>
+                                    <div>
+                                        <InputText class="form-control" @bind-Value="@user.Document" />
+                                        <ValidationMessage For="@(() => user.Document)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Tipo:</label>
+                                    <div>
+                                        <select class="form-select" @bind="user.DocumentTypeId">
+                                            <option value="0">-- Seleccione un tipo de documento --</option>
+                                            @if (documentTypes is not null)
+                                            {
+                                                @foreach (var documentType in documentTypes)
+                                                {
+                                                    <option value="@documentType.Id" selected="@(documentType.Id == user.DocumentType!.Id)">@documentType.Description</option>
+                                                }
+                                            }
+                                        </select>
+                                        <ValidationMessage For="@(() => user.DocumentTypeId)" />
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label>Empresa:</label>
+                                    <select class="form-select" @onchange="CompanyChangedAsync">
+                                        <option value="0">-- Seleccione una empresa --</option>
+                                        @if (companies is not null)
                                         {
-                                            <option value="@country.Id" selected="@(country.Id == user.City!.State!.Country!.Id)">@country.Name</option>
+                                            @foreach (var company in companies)
+                                            {
+                                                if (user!.Company is not null)
+                                                {
+                                                    <option value="@company.Id" selected="@(company.Id == user!.Company!.Id)">@company.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@company.Id">@company.Name</option>
+                                                }
+                                            }
                                         }
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Estado/Departamento:</label>
-                            <div>
-                                <select class="form-select" @onchange="StateChangedAsync">
-                                    <option value="0">-- Seleccione un estado/departamento --</option>
-                                    @if (states is not null)
-                                    {
-                                        @foreach (var state in states)
+                                    </select>
+                                    <ValidationMessage For="@(() => user!.CompanyId)" />
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label>Proceso:</label>
+                                    <select class="form-select" @onchange="ProcessChangedAsync">
+                                        <option value="0">-- Seleccione un proceso --</option>
+                                        @if (processes is not null)
                                         {
-                                            <option value="@state.Id" selected="@(state.Id == user.City!.State!.Id)">@state.Name</option>
+                                            @foreach (var process in processes!)
+                                            {
+                                                if (user!.Occupation is not null)
+                                                {
+                                                    <option value="@process.Id" selected="@(process.Id == user!.Occupation!.Process!.Id)">@process.Description</option>
+
+                                                }
+                                                else
+                                                {
+                                                    <option value="@process.Id">@process.Description</option>
+                                                }
+                                            }
                                         }
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Ciudad:</label>
-                            <div>
-                                <select class="form-select" @bind="user.CityId">
-                                    <option value="0">-- Seleccione una ciudad --</option>
-                                    @if (cities is not null)
-                                    {
-                                        @foreach (var city in cities)
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label>Cargo:</label>
+                                    <select class="form-select" @bind="user!.OccupationId">
+                                        <option value="0">-- Seleccione un proceso --</option>
+                                        @if (occupations is not null)
                                         {
-                                            <option value="@city.Id" selected="@(city.Id == user.City!.Id)">@city.Name</option>
+                                            @foreach (var occupation in occupations)
+                                            {
+                                                if (user!.Occupation is not null)
+                                                {
+                                                    <option value="@occupation.Id" selected="@(occupation.Id == user!.Occupation!.Id)">@occupation.Description</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@occupation.Id">@occupation.Description</option>
+                                                }
+                                            }
                                         }
-                                    }
-                                </select>
-                                <ValidationMessage For="@(() => user.CityId)" />
+                                    </select>
+                                    <ValidationMessage For="@(() => user!.OccupationId)" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Dirección:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.Address" />
-                                <ValidationMessage For="@(() => user.Address)" />
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label>País:</label>
+                                    <div>
+                                        <select class="form-select" @onchange="CountryChangedAsync">
+                                            <option value="0">-- Seleccione un país --</option>
+                                            @if (countries is not null)
+                                            {
+                                                @foreach (var country in countries)
+                                                {
+                                                    <option value="@country.Id" selected="@(country.Id == user.City!.State!.Country!.Id)">@country.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Estado/Departamento:</label>
+                                    <div>
+                                        <select class="form-select" @onchange="StateChangedAsync">
+                                            <option value="0">-- Seleccione un estado/departamento --</option>
+                                            @if (states is not null)
+                                            {
+                                                @foreach (var state in states)
+                                                {
+                                                    <option value="@state.Id" selected="@(state.Id == user.City!.State!.Id)">@state.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ciudad:</label>
+                                    <div>
+                                        <select class="form-select" @bind="user.CityId">
+                                            <option value="0">-- Seleccione una ciudad --</option>
+                                            @if (cities is not null)
+                                            {
+                                                @foreach (var city in cities)
+                                                {
+                                                    <option value="@city.Id" selected="@(city.Id == user.City!.Id)">@city.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <ValidationMessage For="@(() => user.CityId)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Dirección:</label>
+                                    <div>
+                                        <InputText class="form-control" @bind-Value="@user.Address" />
+                                        <ValidationMessage For="@(() => user.Address)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Teléfono:</label>
+                                    <div>
+                                        <InputText class="form-control" @bind-Value="@user.PhoneNumber" />
+                                        <ValidationMessage For="@(() => user.PhoneNumber)" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label>Teléfono:</label>
-                            <div>
-                                <InputText class="form-control" @bind-Value="@user.PhoneNumber" />
-                                <ValidationMessage For="@(() => user.PhoneNumber)" />
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
                         </div>
                     </div>
                 </div>

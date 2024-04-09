@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
+using System.Diagnostics.Contracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -28,9 +30,10 @@ namespace NeoSmart.BackEnd.Controllers
         private readonly IMailHelper _mailHelper;
         private readonly DataContext _context;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IMapper _mapper;
         private readonly string _container;
 
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext context, ITokenGenerator tokenGenerator)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext context, ITokenGenerator tokenGenerator, IMapper mapper)
         {
             _userHelper = userHelper;
             _configuration = configuration;
@@ -38,6 +41,7 @@ namespace NeoSmart.BackEnd.Controllers
             _mailHelper = mailHelper;
             _context = context;
             _tokenGenerator = tokenGenerator;
+            _mapper = mapper;
             _container = "users";
         }
 
@@ -231,7 +235,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpPost("CreateUser")]
         public async Task<ActionResult> CreateUserAsync([FromBody] UserDTO model)
         {
-            User user = model;
+
+            User user = _mapper.Map<User>(model);
 
             if (!string.IsNullOrEmpty(model.Photo))
             {
