@@ -41,7 +41,6 @@ namespace NeoSmart.BackEnd.Data
             await CheckUserAsync(null, "1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "Duitama", null, UserType.SuperAdmin, "1090Jeep$");
             await CheckUserAsync(null, "43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "Medellín", null, UserType.SuperAdmin, "Inicio123*");
             await CheckUserAsync(null, "15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "Medellín", null, UserType.SuperAdmin, "Inicio123*");
-            await CheckUserAsync("830118667-1", "10903883481", "Daniel", "Oicata Hernandez", "danielandres011@hotmail.com", "3177457755", "CARRERA", "Duitama", "CA008", UserType.Admin, "1090Jeep$");
         }
         private async Task CheckRolesAsycn()
         {
@@ -1327,6 +1326,14 @@ namespace NeoSmart.BackEnd.Data
                     Id = 0,
                     Name = "INVESA SA",
                     Nit = "890900652-3",
+                    City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Medellín")),
+                    Status = true,
+                });
+                _context.Companies.Add(new Company
+                {
+                    Id = 0,
+                    Name = "Comfenalco Antioquia",
+                    Nit = "890900842",
                     City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.Equals("Medellín")),
                     Status = true,
                 });

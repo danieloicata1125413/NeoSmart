@@ -13,8 +13,8 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 //enviroments
-//var UrlBack = "https://neosmartbackend.azurewebsites.net/";
-var UrlBack = "https://localhost:7010/";
+var UrlBack = "https://neosmartbackend.azurewebsites.net/";
+//var UrlBack = "https://localhost:7010/";
 
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(UrlBack) });
 

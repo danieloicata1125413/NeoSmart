@@ -293,6 +293,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpGet("Roles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> GetRolesAsync()
         {
             var identityRoles = await _userHelper.GetRolesAsync();
@@ -300,13 +301,21 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 return NotFound();
             }
-            return Ok(
-                identityRoles
-                .ToList());
+            List<RoleDTO> listRolesDTO = new List<RoleDTO>();
+            foreach (var identityRole in identityRoles!)
+            {
+                listRolesDTO.Add( new RoleDTO()
+                {
+                    Id = identityRole.Id,
+                    Name = identityRole.Name,
+                });
+            }
+            
+            return Ok(listRolesDTO);
         }
 
         [HttpGet("UserRoles/{userId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin, Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
         public async Task<ActionResult> GetUserRolesAsync(Guid userId)
         {
             var currentUser = await _userHelper.GetUserAsync(userId);
