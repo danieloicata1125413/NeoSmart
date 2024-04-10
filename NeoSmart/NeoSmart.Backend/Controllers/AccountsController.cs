@@ -301,13 +301,12 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
             return Ok(
-                identityRoles.
-                Select(x => x.Name!.ToString())
+                identityRoles
                 .ToList());
         }
 
         [HttpGet("UserRoles/{userId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin, Admin")]
         public async Task<ActionResult> GetUserRolesAsync(Guid userId)
         {
             var currentUser = await _userHelper.GetUserAsync(userId);
@@ -324,7 +323,7 @@ namespace NeoSmart.BackEnd.Controllers
 
         [HttpPost("UserRoles")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
-        public async Task<ActionResult> PostUserRolesAsync([FromBody] UserDTO model)
+        public async Task<ActionResult> PostUserRolesAsync([FromBody] UserRolesDTO model)
         {
             var currentUser = await _userHelper.GetUserAsync(model.UserName!);
             if (currentUser == null)

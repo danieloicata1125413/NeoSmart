@@ -58,7 +58,7 @@ else
                                         {
                                             <img src="./img/ic_user.png" width="80" height="80" style="border-radius:50%" />
                                         }
-                                        </td>
+                                    </td>
                                     <td>@user.FullName</td>
                                     <td>@user.Document</td>
                                     <td>@user.PhoneNumber</td>
@@ -75,6 +75,7 @@ else
                                     }
                                     <td>
                                         <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(@user.UserName, true))><i class="oi oi-pencil" /> Editar</button>
+                                        <button class="btn btn-info btn-sm" @onclick=@(() => ShowRolesAsync(@user))><i class="oi oi-pencil" /> Roles</button>
                                         <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(@user))><i class="oi oi-trash" /> Borrar</button>
                                     </td>
                                 </tr>
@@ -181,6 +182,20 @@ else
             await LoadAsync();
         }
     }
+
+    private async Task ShowRolesAsync(User user)
+    {
+        IModalReference modalReference;
+
+        modalReference = Modal.Show<RoleUser>(string.Empty, new ModalParameters().Add("User", user));
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
     private async Task DeleteAsync(User user)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
