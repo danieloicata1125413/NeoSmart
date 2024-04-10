@@ -75,6 +75,7 @@ else
                                     }
                                     <td>
                                         <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(@user.UserName, true))><i class="oi oi-pencil" /> Editar</button>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(@user))><i class="oi oi-trash" /> Borrar</button>
                                     </td>
                                 </tr>
                             }
@@ -179,5 +180,40 @@ else
         {
             await LoadAsync();
         }
+    }
+    private async Task DeleteAsync(User user)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Esta seguro que quieres borrar la cuenta de : {user.FullName}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var response = await repository.DeleteAsync($"api/Accounts/{user.Id}");
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
     }
 }

@@ -184,7 +184,8 @@ namespace NeoSmart.BackEnd.Controllers
                     user.Photo = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
                 }
                 currentUser.CompanyId = null;
-                if (user.CompanyId > 0) {
+                if (user.CompanyId > 0)
+                {
                     currentUser.CompanyId = user.CompanyId;
                 }
 
@@ -226,7 +227,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpGet("{userName}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="SuperAdmin,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
         public async Task<ActionResult> GetAsync(string userName)
         {
             return Ok(await _userHelper.GetUserAsync(userName));
@@ -261,6 +262,34 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             return BadRequest(result.Errors.FirstOrDefault());
+        }
+
+        [HttpDelete("{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
+        public async Task<ActionResult> DeleteUserAsync(Guid userId)
+        {
+            var currentUser = await _userHelper.GetUserAsync(userId);
+            if (currentUser != null)
+            {
+                var listUserRoles = await _userHelper.GetUserRolesAsync(currentUser);
+                var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listUserRoles.Select(x => x.ToString()).ToList());
+                if (result.Succeeded)
+                {
+                    result = await _userHelper.RemoveUserAsync(currentUser);
+                    if (result.Succeeded)
+                    {
+                        var response = SendRemoveConfirmationEmailAsync(currentUser);
+                        if (response.IsSuccess)
+                        {
+                            return NoContent();
+                        }
+
+                        return BadRequest(response.Message);
+                    }
+                }
+                return BadRequest(result.Errors.FirstOrDefault());
+            }
+            return BadRequest("No existe el usuario");
         }
 
         [HttpGet("Roles")]
@@ -303,7 +332,9 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
             var listRoles = await _userHelper.GetRolesAsync();
-            var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listRoles.Where(x=>x.Name != UserType.SuperAdmin.ToString()).Select(x=>x.Name!.ToString()).ToList());
+            var listUserRoles = await _userHelper.GetUserRolesAsync(currentUser);
+            //var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listRoles.Where(x => x.Name != UserType.SuperAdmin.ToString()).Select(x => x.Name!.ToString()).ToList());
+            var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listUserRoles.Select(x => x.ToString()).ToList());
             if (result.Succeeded)
             {
                 result = await _userHelper.AddUserToRoleAsync(currentUser, model.UserTypes!.Select(x => x.ToString()).ToList());
@@ -390,6 +421,16 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<h1>NeoSmart - Confirmación de cuenta</h1>" +
                 $"<p>Para habilitar el usuario, por favor hacer clic 'Confirmar Email':</p>" +
                 $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
+        }
+
+        private Response<string> SendRemoveConfirmationEmailAsync(User user)
+        {
+            return _mailHelper.SendMail(user.FullName, user.Email!,
+                $"NeoSmart - Se ha eliminado tu cuenta",
+                $"<h1>NeoSmart - Confirmación de eliminación la cuenta</h1>" +
+                $"<p>{user.FullName}, Sentimos mucho que te tengas que ir, recuerda que puedes crear de nuevo tu cuenta cuando quieras.</p>" +
+                $"<p>Atentamente:</p>" +
+                $"<p>Equipo de neosmart.</p>");
         }
 
     }

@@ -22,6 +22,7 @@ using NeoSmart.BackEnd.Helper;
 using NeoSmart.Data.Entities;
 using NeoSmart.ClassLibraries.Interfaces;
 using System.Security.Cryptography.Xml;
+using AutoMapper;
 
 namespace NeoSmart.UnitTest.Controllers
 {
@@ -33,6 +34,7 @@ namespace NeoSmart.UnitTest.Controllers
         private Mock<IConfiguration> _mockConfiguration = null!;
         private Mock<IFileStorage> _mockFileStorage = null!;
         private Mock<ITokenGenerator> _mockTokenGenerator = null!;
+        private Mock<IMapper> _mockMapper = null!;
         private AccountsController _controller = null!;
         private DataContext _context = null!;
         private const string _container = "userphotos";
@@ -45,6 +47,9 @@ namespace NeoSmart.UnitTest.Controllers
             _mockMailHelper = new Mock<IMailHelper>();
             _mockFileStorage = new Mock<IFileStorage>();
             _mockTokenGenerator = new Mock<ITokenGenerator>();
+            _mockMapper = new Mock<IMapper>();
+            _mockMapper.Setup(m => m.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
+            _mockMapper.Setup(m => m.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(new User());
             _mockConfiguration = new Mock<IConfiguration>();
             _mockConfiguration
                 .SetupGet(x => x["Url Frontend"])
@@ -83,7 +88,7 @@ namespace NeoSmart.UnitTest.Controllers
             _context.Users.Add(new User { FirstName = "Jane", LastName = "Smith", Address = "Calle Luna Calle Sol", Document = "2020", CityId = 1 });
             _context.SaveChanges();
 
-            _controller = new AccountsController(_mockUserHelper.Object, _mockConfiguration.Object, _mockFileStorage.Object, _mockMailHelper.Object, _context, _mockTokenGenerator.Object)
+            _controller = new AccountsController(_mockUserHelper.Object, _mockConfiguration.Object, _mockFileStorage.Object, _mockMailHelper.Object, _context, _mockTokenGenerator.Object, _mockMapper.Object)
             {
                 Url = mockUrlHelper.Object
             };
@@ -553,7 +558,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task CreateUserAsync_ValidModel_NoPhoto_ReturnsNoContent()
         {
             // Arrange
-            var userModel = new UserDTO
+            var userModelDTO = new UserDTO
             {
                 UserName = "test",
                 Password = "123456",
@@ -562,8 +567,8 @@ namespace NeoSmart.UnitTest.Controllers
                     UserType.Employee.ToString()
                 }
             };
-
-            _mockUserHelper.Setup(x => x.AddUserAsync(userModel, userModel.Password))
+            User userModel = _mockMapper.Object.Map<User>(userModelDTO);
+            _mockUserHelper.Setup(x => x.AddUserAsync(userModel, userModelDTO.Password))
                 .ReturnsAsync(IdentityResult.Success);
 
             _mockUserHelper.Setup(x => x.AddUserToRoleAsync(userModel, UserType.Employee.ToString()))
@@ -577,11 +582,11 @@ namespace NeoSmart.UnitTest.Controllers
                 .Returns(response);
 
             // Act
-            var result = await _controller.CreateUserAsync(userModel);
+            var result = await _controller.CreateUserAsync(userModelDTO);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
-            _mockUserHelper.Verify(x => x.AddUserAsync(userModel, userModel.Password), Times.Once());
+            _mockUserHelper.Verify(x => x.AddUserAsync(userModel, userModelDTO.Password), Times.Once());
             _mockUserHelper.Verify(x => x.AddUserToRoleAsync(userModel, UserType.Employee.ToString()), Times.Once());
             _mockUserHelper.Verify(x => x.GenerateEmailConfirmationTokenAsync(userModel), Times.Once());
             _mockMailHelper.Verify(x => x.SendMail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
@@ -591,11 +596,11 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task CreateUserAsync_ValidModel_WithPhoto_ReturnsNoContent()
         {
             // Arrange
-            var userModel = new UserDTO
+            var userModelDTO = new UserDTO
             {
                 Photo = _string64base
             };
-
+            User userModel = _mockMapper.Object.Map<User>(userModelDTO);
             _mockFileStorage.Setup(x => x.SaveFileAsync(It.IsAny<byte[]>(), ".jpg", It.IsAny<string>()))
                 .ReturnsAsync("somePhotoPath");
 
@@ -613,7 +618,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .Returns(response);
 
             // Act
-            var result = await _controller.CreateUserAsync(userModel);
+            var result = await _controller.CreateUserAsync(userModelDTO);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
@@ -646,8 +651,8 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task CreateUserAsync_SendConfirmationEmailFails_ReturnsBadRequest()
         {
             // Arrange
-            var userModel = new UserDTO();
-
+            var userModelDTO = new UserDTO();
+            User userModel = _mockMapper.Object.Map<User>(userModelDTO);
             _mockUserHelper.Setup(x => x.AddUserAsync(It.IsAny<User>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
@@ -659,7 +664,7 @@ namespace NeoSmart.UnitTest.Controllers
                 .Returns(response);
 
             // Act
-            var result = await _controller.CreateUserAsync(userModel);
+            var result = await _controller.CreateUserAsync(userModelDTO);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));

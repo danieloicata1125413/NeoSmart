@@ -49,6 +49,11 @@ namespace NeoSmart.BackEnd.Helper
         {
             return await _userManager.CreateAsync(user, password);
         }
+        public async Task<IdentityResult> RemoveUserAsync(User user)
+        {
+            var currentUser = await _userManager.FindByIdAsync(user.Id);
+            return await _userManager.DeleteAsync(currentUser!);
+        }
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
             await _userManager.AddToRoleAsync(user, roleName);

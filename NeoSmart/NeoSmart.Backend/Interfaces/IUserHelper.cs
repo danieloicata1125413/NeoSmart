@@ -10,6 +10,8 @@ namespace NeoSmart.BackEnd.Interfaces
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
+        Task<IdentityResult> RemoveUserAsync(User user);
+
         Task CheckRoleAsync(string roleName);
 
         Task AddUserToRoleAsync(User user, string roleName);
