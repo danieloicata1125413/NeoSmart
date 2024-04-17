@@ -43,6 +43,7 @@
                                 <td>@topic.TrainingTopicsNumber</td>
                                 <td><InputCheckbox @bind-Value=topic.Status disabled="true"></InputCheckbox></td>
                                 <td>
+                                    <a class="btn btn-info btn-sm" href="/TopicExams/@topic.Id"><i class="oi oi-pencil" /> Examen</a>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(topic.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(topic))><i class="oi oi-trash" /> Borrar</button>
                                 </td>
