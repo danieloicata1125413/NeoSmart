@@ -25,6 +25,18 @@ namespace NeoSmart.BackEnd.Controllers
             _userHelper = userHelper;
         }
 
+
+        [AllowAnonymous]
+        [HttpGet("combo/{companyId}")]
+        public async Task<ActionResult> GetComboAllAsync(int companyId)
+        {
+            return Ok(await _context.Topics
+                .Where(c => c.Company!.Id == companyId)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description)
+                .ToListAsync());
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
@@ -78,9 +90,9 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var topic = await _context.Topics
-                .Include(t => t.Company)
-                .Include(t => t.FormationTopics)
-                .Include(t => t.TrainingTopics)
+                .Include(t => t.Company!)
+                .Include(t => t.FormationTopics!)
+                .Include(t => t.TrainingTopics!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (topic == null)
             {

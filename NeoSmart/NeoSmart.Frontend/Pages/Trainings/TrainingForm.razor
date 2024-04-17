@@ -54,7 +54,7 @@
                             <div class="form-group mb-2">
                                 <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
                             </div>
-                            <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
+                            @* <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
                                 <label>Proceso:</label>
                                 <select class="form-select" @bind="TrainingDTO.ProcessId">
                                     <option value="0">-- Seleccione un proceso --</option>
@@ -74,6 +74,49 @@
                                     }
                                 </select>
                                 <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                            </div> *@
+                            <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
+                                <div class="form-group mb-2">
+                                    <label>Empresa:</label>
+                                    <select class="form-select" @onchange="CompanyChangedAsync">
+                                        <option value="0">-- Seleccione una empresa --</option>
+                                        @if (companies is not null)
+                                        {
+                                            @foreach (var company in companies)
+                                            {
+                                                if (TrainingDTO.Process is not null)
+                                                {
+                                                    <option value="@company.Id" selected="@(company.Id == TrainingDTO.Process!.Company!.Id)">@company.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@company.Id">@company.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label>Proceso:</label>
+                                    <select class="form-select" @bind="TrainingDTO.ProcessId">
+                                        <option value="0">-- Seleccione un proceso --</option>
+                                        @if (processes is not null)
+                                        {
+                                            @foreach (var process in processes)
+                                            {
+                                                if (TrainingDTO.Process is not null)
+                                                {
+                                                    <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@process.Id">@process.Description</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -89,8 +132,8 @@
                         {
                             foreach (TrainingImage trainingImage in TrainingDTO.TrainingImages)
                             {
-                                    <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
-                                    @* <button type="button" class="btn btn-outline-danger" @onclick="DeleteImageAction"><i class="oi oi-plus" /> eliminar Imágen</button> *@
+                                <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
+                                @* <button type="button" class="btn btn-outline-danger" @onclick="DeleteImageAction"><i class="oi oi-plus" /> eliminar Imágen</button> *@
                             }
                         }
                     </div>
@@ -109,6 +152,7 @@
 
 @code {
     private EditContext editContext = null!;
+    private List<Company>? companies;
     private List<Process>? processes;
     private List<MultipleSelectorModel> selected { get; set; } = new();
     private List<MultipleSelectorModel> nonSelected { get; set; } = new();
@@ -165,26 +209,48 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCompaniesAsync();
+        if (TrainingDTO!.Process != null)
+        {
+            await LoadProcessesAsync(TrainingDTO!.Process!.Company!.Id);
+        }
         editContext = new(TrainingDTO);
-        await LoadProcessesAsync();
         selected = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         nonSelected = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
     }
 
-    private async Task LoadProcessesAsync()
+    private async Task CompanyChangedAsync(ChangeEventArgs e)
     {
-        loading = true;
-        var responseHttp = await repository.GetAsync<List<Process>>("/api/processes/combo");
+        var selectedCompany = Convert.ToInt32(e.Value!);
+        processes = null;
+        TrainingDTO.ProcessId = 0;
+        await LoadProcessesAsync(selectedCompany);
+    }
+
+    private async Task LoadCompaniesAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Company>>("/api/companies/combo");
         if (responseHttp.Error)
         {
-            loading = false;
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
 
+        companies = responseHttp.Response;
+    }
+
+
+    private async Task LoadProcessesAsync(int companyId)
+    {
+        var responseHttp = await repository.GetAsync<List<Process>>($"/api/processes/combo/{companyId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
         processes = responseHttp.Response;
-        loading = false;
     }
 
     private async Task OnDataAnnotationsValidatedAsync()

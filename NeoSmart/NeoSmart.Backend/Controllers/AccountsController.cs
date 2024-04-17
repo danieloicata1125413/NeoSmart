@@ -166,6 +166,8 @@ namespace NeoSmart.BackEnd.Controllers
             return NoContent();
         }
 
+
+
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PutAsync(User user)
@@ -415,6 +417,18 @@ namespace NeoSmart.BackEnd.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetValidate/{userName}")]
+        public async Task<ActionResult<bool>> GetValidate(string userName)
+        {
+            var CMAUser = await _userHelper.GetUserAsync(userName);
+            if (CMAUser != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private async Task<Response<string>> SendConfirmationEmailAsync(User user)
         {
             var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
@@ -439,6 +453,170 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<p>{user.FullName}, Sentimos mucho que te tengas que ir, recuerda que puedes crear de nuevo tu cuenta cuando quieras.</p>" +
                 $"<p>Atentamente:</p>" +
                 $"<p>Equipo de neosmart.</p>");
+        }
+
+
+        //Recordar contraseña
+        [AllowAnonymous]
+        [HttpGet("GetPasswordResetToken/{userName}")]
+        public async Task<ActionResult<bool>> GetPasswordResetToken(string userName)
+        {
+            var user = await _userHelper.GetUserAsync(userName);
+            if (user != null)
+            {
+                var token = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                if (token != null)
+                {
+                    var result = await DeleteAllUserTokenReset(user);
+                    if (result)
+                    {
+                        var usersTokenReset = await GetUserTokenResetCreate(user, token);
+                        if (usersTokenReset != null)
+                        {
+                            var tokenLink = Url.Action("/api/accounts/ResetPasswordByToken", "accounts", new
+                            {
+                                UserName = userName,
+                                Token = usersTokenReset.Id
+                            }, HttpContext.Request.Scheme, _configuration["Url FrontEnd"]);
+                            var estado = _mailHelper.SendMail(user.FullName, user.Email!,
+                                                            "NeoSmart - Restablecimiento de contraseña",
+                                                            $"<h1>NeoSmart - Restablecimiento de contraseña</h1>" +
+                                                            $"Para restablecer su contraseña, " +
+                                                            $"por favor hacer clic en el siguiente enlace:" +
+                                                            $"</br></br><a href ={tokenLink}>Restablecer Contraseña</a>" +
+                                                            $"</br>Tiempo máximo para realizar el proceso: " + usersTokenReset.FechaMax +
+                                                            $"</br></br>NeoSmart");
+                            if (estado.IsSuccess)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SetResetPassword")]
+        public async Task<ActionResult> GetResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            var user = await _userHelper.GetUserAsync(model.Email);
+            if (user != null)
+            {
+                var aspNetUsersTokenReset = await GetUserTokenResetById(Guid.Parse(model.Token));
+                if (aspNetUsersTokenReset != null)
+                {
+                    if (aspNetUsersTokenReset.Deleted == null)
+                    {
+                        if (aspNetUsersTokenReset.FechaMax > DateTime.Now)
+                        {
+                            var identityResult = await _userHelper.ResetPasswordAsync(user, aspNetUsersTokenReset!.Token!, model.Password);
+                            if (identityResult.Succeeded)
+                            {
+                                aspNetUsersTokenReset.Processed = true;
+                                await PutUsersTokenReset(aspNetUsersTokenReset);
+                                _mailHelper.SendMail(user.FullName, user.Email!, "NeoSmart - Restablecimiento de contraseña exitoso", $"<h1>NeoSmart - Restablecimiento de contraseña exitoso!</h1>" +
+                                  $"Su contraseña ha sido modificada exitosamente." +
+                                  $"</br>Proceso realizado: " + DateTime.Now +
+                                  $"</br></br>NeoSmart");
+                                await DeleteAllUserTokenReset(user);
+                                return Ok();
+                            }
+                        }
+                        else
+                        {
+                            await DeleteUserTokenReset(aspNetUsersTokenReset.Id);
+                        }
+                    }
+                }
+            }
+            return NotFound();
+        }
+        private async Task<bool> PutUsersTokenReset(UserTokenReset usersTokenReset)
+        {
+            _context.Entry(usersTokenReset).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine("Error:", ex.Message);
+            }
+            return false;
+        }
+        private async Task<bool> DeleteAllUserTokenReset(User user)
+        {
+            var usersTokenResetList = await _context.AspNetUserTokenReset
+                .Where(x => x.UserId!.Equals(user.Id))
+                .ToListAsync();
+            foreach (UserTokenReset item in usersTokenResetList)
+            {
+                try
+                {
+                    _context.AspNetUserTokenReset.Remove(item);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+            }
+            return true;
+        }
+        private async Task<bool> DeleteUserTokenReset(Guid guid)
+        {
+            var usersTokenReset = await _context.AspNetUserTokenReset
+                .FindAsync(guid);
+            if (usersTokenReset != null)
+            {
+                try
+                {
+                    _context.AspNetUserTokenReset.Remove(usersTokenReset);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+            }
+            return true;
+        }
+        private async Task<UserTokenReset?> GetUserTokenResetCreate(User user, string token)
+        {
+            try
+            {
+                UserTokenReset userTokenReset = new UserTokenReset()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    Fecha = DateTime.Now,
+                    FechaMax = DateTime.Now.AddHours(1),
+                    Token = token,
+                    Processed = false
+                };
+                _context.AspNetUserTokenReset.Add(userTokenReset);
+                await _context.SaveChangesAsync();
+                return userTokenReset;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error:", ex.Message);
+            }
+            return null;
+        }
+
+        private async Task<UserTokenReset?> GetUserTokenResetById(Guid guid)
+        {
+            var userTokenReset = await _context.AspNetUserTokenReset
+                .FindAsync(guid);
+            if (userTokenReset != null)
+            {
+                return userTokenReset;
+            }
+            return null;
         }
 
     }

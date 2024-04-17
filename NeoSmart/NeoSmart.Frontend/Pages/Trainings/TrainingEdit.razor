@@ -138,7 +138,7 @@ else
     private async Task LoadTopicsAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<List<Topic>>("/api/topics");
+        var httpResponse = await repository.GetAsync<List<Topic>>($"/api/topics/combo/{trainingDTO.Process!.CompanyId}");
 
         if (httpResponse.Error)
         {
