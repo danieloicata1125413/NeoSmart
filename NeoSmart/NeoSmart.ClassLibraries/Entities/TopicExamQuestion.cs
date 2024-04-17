@@ -13,7 +13,7 @@ namespace NeoSmart.ClassLibraries.Entities
         public int Id { get; set; }
 
         [Display(Name = "Medición")]
-        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int TopicExamId { get; set; }
         public TopicExam? TopicExam { get; set; }
 

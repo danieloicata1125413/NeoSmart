@@ -15,9 +15,10 @@
         </div>
         <div class="card-body m-2">
             <div class="form-group mb-2">
-                <label class="control-label">Medición:</label>
-                <InputTextArea class="form-control" @bind-Value="@topicExam.Description" />
-                <ValidationMessage For="@(() => topicExam.Description)" />
+                <label class="control-label">ExamQuestionen:</label>
+                <InputTextArea class="form-control" @bind-Value="@topicExamQuestion.Description" />
+                <ValidationMessage For="@(() => topicExamQuestion.Description)" />
+                <InputCheckbox @bind-Value=@CorrectValue></InputCheckbox> <label class="control-label">Opción correcta</label>
                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
             </div>
             
@@ -30,15 +31,20 @@
 
 @code {
     private EditContext editContext = null!;
+    bool CorrectValue
+    {
+        get => Convert.ToBoolean(topicExamQuestion.Correct);
+        set => topicExamQuestion.Correct = value;
+    }
     bool StatusValue
     {
-        get => Convert.ToBoolean(topicExam.Status);
-        set => topicExam.Status = value;
+        get => Convert.ToBoolean(topicExamQuestion.Status);
+        set => topicExamQuestion.Status = value;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        editContext = new(topicExam);
+        editContext = new(topicExamQuestion);
     }
 
     [EditorRequired]
@@ -47,7 +53,7 @@
 
     [EditorRequired]
     [Parameter]
-    public TopicExam topicExam { get; set; } = null!;
+    public TopicExamQuestion topicExamQuestion { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]
