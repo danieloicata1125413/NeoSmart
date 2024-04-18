@@ -1,4 +1,5 @@
-﻿using NeoSmart.ClassLibraries.Interfaces;
+﻿using NeoSmart.ClassLibraries.Enum;
+using NeoSmart.ClassLibraries.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
@@ -30,6 +31,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
+
+        public int TrainingStatusId { get; set; }
+        public TrainingStatus? TrainingStatus { get; set; }
 
         [Display(Name = "Habilitado")]
         public bool Status { get; set; }

@@ -18,13 +18,13 @@ namespace NeoSmart.ClassLibraries.Entities
         public string? UserId { get; set; }
 
         public int TrainingSessionId { get; set; }
-
         public TrainingSession? TrainingSession { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Comentarios")]
         public string? Remarks { get; set; }
 
-        public InscriptionStatus InscriptionStatus { get; set; }
+        public int InscriptionStatusId { get; set; }
+        public InscriptionStatus? InscriptionStatus { get; set; }
     }
 }

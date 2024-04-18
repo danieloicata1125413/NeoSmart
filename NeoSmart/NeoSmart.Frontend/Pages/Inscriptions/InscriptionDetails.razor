@@ -72,7 +72,7 @@ else
                             @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
                             <p>@inscription.TrainingSession!.Training!.Description</p>
                             <p><strong>@($"{inscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
-                            <p><strong>@EnumHelper.GetEnumDescription(inscription.InscriptionStatus)</strong></p>
+                            <p><strong>@inscription.InscriptionStatus!.Description</strong></p>
                             <p><strong>@(string.IsNullOrEmpty(inscription.Remarks) ? "NA" : inscription.Remarks)</strong></p>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ else
 
         </div>
         <div class="card-footer">
-            @if (inscription!.InscriptionStatus == InscriptionStatus.Registered)
+            @if (inscription!.InscriptionStatus!.Name.Equals("Registered"))
             {
                 <CascadingAuthenticationState>
                     <AuthorizeView Roles="Employee">
@@ -151,17 +151,17 @@ else
 
     private async Task CancelInscriptionAsync()
     {
-        await ModifyTemporalOrder("Cancelar", InscriptionStatus.Cancelled);
+        // await ModifyTemporalOrder("Cancelar", InscriptionStatus.Cancelled);
     }
 
     private async Task RefusedInscriptionAsync()
     {
-        await ModifyTemporalOrder("Rechazar", InscriptionStatus.Refused);
+        // await ModifyTemporalOrder("Rechazar", InscriptionStatus.Refused);
     }
 
     private async Task ConfirmedOrderAsync()
     {
-        await ModifyTemporalOrder("Confirmar", InscriptionStatus.Confirmed);
+        // await ModifyTemporalOrder("Confirmar", InscriptionStatus.Confirmed);
     }
 
     private async Task ModifyTemporalOrder(string message, InscriptionStatus status)
@@ -180,7 +180,7 @@ else
             return;
         }
 
-        var inscriptionDTO = new InscriptionDTO
+        var inscriptionDTO = new TrainingSessionInscriptionDTO
             {
                 Id = InscriptionId,
                 InscriptionStatus = status

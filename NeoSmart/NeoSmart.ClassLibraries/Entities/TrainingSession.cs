@@ -35,7 +35,6 @@ namespace NeoSmart.ClassLibraries.Entities
         public TimeSpan? TimeEnd { get; set; }
 
         [Display(Name = "Ciudad")]
-        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
         public int CityId { get; set; }
 
         public City? City { get; set; }

@@ -40,11 +40,16 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.TrainingImages!)
                                 .Include(o=> o.TrainingSessions!)
                                     .ThenInclude(o => o.City!)
+                                    .Include(o => o.TrainingStatus!)
                                 .AsQueryable();
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)
             {
                 queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
+            }
+            if (pagination.Id > 0)
+            {
+                queryable = queryable.Where(x => x.TrainingStatusId == pagination.Id);
             }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -69,6 +74,10 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
             }
+            if (pagination.Id > 0)
+            {
+                queryable = queryable.Where(x => x.TrainingStatusId == pagination.Id);
+            }
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -90,6 +99,7 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.TrainingImages)
                                 .Include(o => o.TrainingSessions!)
                                 .ThenInclude(o => o.City!)
+                                .Include(o => o.TrainingStatus!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)
             {
@@ -152,6 +162,7 @@ namespace NeoSmart.BackEnd.Controllers
                     .Include(x => x.TrainingTopics!)
                     .ThenInclude(x => x.Topic)
                     .Include(x => x.Process)
+                    .Include(o => o.TrainingStatus!)
                     .FirstOrDefaultAsync(x => x.Id == trainingDTO.Id);
                 if (training == null)
                 {

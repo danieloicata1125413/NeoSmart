@@ -37,13 +37,14 @@ namespace NeoSmart.BackEnd.Helper
 
             foreach (var temporalInscription in temporalInscriptions)
             {
+                var trainingStatus = _context.InscriptionStatus.FirstOrDefaultAsync(x => x.Name.Equals("Registered"));
                 TrainingSessionInscription inscription = new()
                 {
                     Date = DateTime.UtcNow,
                     User = user,
                     Remarks = temporalInscription.Remarks,
                     TrainingSessionId = temporalInscription.TrainingSessionId,
-                    InscriptionStatus = InscriptionStatus.Registered
+                    InscriptionStatusId = trainingStatus.Id
                 };
                 _context.TrainingSessionInscriptions.Add(inscription);
                 //Enviar email

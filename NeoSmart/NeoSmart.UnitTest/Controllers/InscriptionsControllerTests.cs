@@ -38,7 +38,7 @@ namespace NeoSmart.UnitTest.Controllers
         private readonly DbContextOptions<DataContext> _options;
         private Mock<IUserHelper> _mockUserHelper = null!;
         private Mock<IMailHelper> _mockMailHelper = null!;
-        private InscriptionsController _controller = null!;
+        private TrainingSessionInscriptionsController _controller = null!;
         private DataContext _context = null!;
         private DataContext _mockDbContext = null!;
 
@@ -54,7 +54,7 @@ namespace NeoSmart.UnitTest.Controllers
 
             _mockDbContext = new DataContext(_options);
 
-            _controller = new InscriptionsController(_mockInscriptionsHelper.Object, _mockDbContext, _mockUserHelper.Object, _mockMailHelper.Object);
+            _controller = new TrainingSessionInscriptionsController(_mockInscriptionsHelper.Object, _mockDbContext, _mockUserHelper.Object, _mockMailHelper.Object);
 
         }
 
@@ -130,7 +130,7 @@ namespace NeoSmart.UnitTest.Controllers
             using var context = new DataContext(_options);
             var Id = 67;
 
-            var controller = new InscriptionsController(
+            var controller = new TrainingSessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),
@@ -157,7 +157,7 @@ namespace NeoSmart.UnitTest.Controllers
             var userName = "testuser";
             var mockUser = new User();
 
-            var controller = new InscriptionsController(
+            var controller = new TrainingSessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),
@@ -188,7 +188,7 @@ namespace NeoSmart.UnitTest.Controllers
             var userName = "testuser";
             var mockUser = new User();
 
-            var controller = new InscriptionsController(
+            var controller = new TrainingSessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),

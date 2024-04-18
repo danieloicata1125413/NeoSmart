@@ -67,7 +67,7 @@ else
                                         @inscription.Remarks
                                     </td>
                                     <td>
-                                        @EnumHelper.GetEnumDescription(inscription.InscriptionStatus)
+                                        @inscription.InscriptionStatus!.Description
                                     </td>
                                     <td>
                                         <button @onclick=@(() => ShowModalAsync(inscription.Id)) class="btn btn-info btn-sm"><i class="oi oi-info" /> Detalles</button>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.ClassLibraries.Entities;
+using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Interfaces;
 
 namespace NeoSmart.Data.Entities
@@ -36,9 +37,10 @@ namespace NeoSmart.Data.Entities
         public DbSet<TrainingSessionInscriptionTemporal> TrainingSessionInscriptionTemporals { get; set; }
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
         public DbSet<TrainingTopicExam> TrainingTopicExams { get; set; }
+        public DbSet<TrainingStatus> TrainingStatus { get; set; }
         public DbSet<UserTopicExam> UserTopicExams { get; set; }
         public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
-
+        public DbSet<InscriptionStatus> InscriptionStatus { get; set; }
         public DbSet<UserTokenReset> AspNetUserTokenReset { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,6 +52,7 @@ namespace NeoSmart.Data.Entities
             modelBuilder.Entity<Formation>().HasIndex(f => new { f.CompanyId, f.Cod }).IsUnique();
             modelBuilder.Entity<Topic>().HasIndex(t => new { t.CompanyId, t.Description }).IsUnique();
             modelBuilder.Entity<Training>().HasIndex(t => new { t.ProcessId, t.Cod }).IsUnique();
+            modelBuilder.Entity<TrainingStatus>().HasIndex(c => c.Name).IsUnique();
 
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();

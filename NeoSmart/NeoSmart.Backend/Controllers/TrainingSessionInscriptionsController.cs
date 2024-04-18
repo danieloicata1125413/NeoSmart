@@ -16,14 +16,14 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class InscriptionsController : ControllerBase
+    public class TrainingSessionInscriptionsController : ControllerBase
     {
         private readonly IInscriptionsHelper _inscriptionsHelper;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
 
-        public InscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper, IMailHelper mailHelper)
+        public TrainingSessionInscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper, IMailHelper mailHelper)
         {
             _inscriptionsHelper = inscriptionsHelper;
             _context = context;
@@ -52,6 +52,7 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
+                .Include(i => i.InscriptionStatus!)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
 
@@ -91,6 +92,7 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
+                .Include(i => i.InscriptionStatus!)
                 .AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
@@ -128,7 +130,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(InscriptionDTO inscriptionDTO)
+        public async Task<ActionResult> PutAsync(TrainingSessionInscriptionDTO inscriptionDTO)
         {
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user == null)
@@ -137,7 +139,7 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
-            if (!isAdmin && inscriptionDTO.InscriptionStatus != InscriptionStatus.Cancelled)
+            if (!isAdmin && inscriptionDTO.InscriptionStatus!.Name.Equals("Cancelled"))
             {
                 return BadRequest("Solo permitido para trabajadores.");
             }
@@ -153,7 +155,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Confirmed)
+            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Confirmed"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -163,7 +165,7 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Muchas gracias!</b>");
             }
 
-            if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Refused)
+            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Refused"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -173,7 +175,7 @@ namespace NeoSmart.BackEnd.Controllers
                $"<b>Será en una nueva oportunidad!</b>");
             }
 
-            if (inscriptionDTO.InscriptionStatus == InscriptionStatus.Cancelled)
+            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Cancelled"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,

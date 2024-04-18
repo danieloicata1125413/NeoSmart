@@ -9,70 +9,90 @@
         <h3>Capacitaciones</h3>
     </div>
     <div class="col-5">
+        <select class="form-select" @onchange="TrainingStatusChangedAsync">
+            <option value="0">-- Todos los estados --</option>
+            @if (trainingStatus is not null)
+            {
+                @foreach (var item in trainingStatus)
+                {
+                    <option value="@item.Id">@item.Description</option>
+                }
+            }
+        </select>
         <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar capacitación..." @bind-value="Filter" />
         <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
         <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
     </div>
 </div>
-
-<div class="card widget-inline">
-    <div class="card-body">
-        <GenericList MyList="trainings">
-            <NoRecords>
-                <p>Aun no hay Capacitaciones registradas.</p>
-            </NoRecords>
-            <Body>
-                <table class="table table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Empresa</th>
-                            <th>Proceso</th>
-                            <th>Código</th>
-                            <th>Capacitación</th>
-                            <th>Duración</th>
-                            <th>Interna</th>
-                            <th>Temas</th>
-                            <th>Programación</th>
-                            <th>Habilitado</th>
-                            <th style="width:220px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var training in trainings!)
-                        {
+@if (loading == true)
+{
+    <Loading />
+}
+else
+{
+    <div class="card widget-inline">
+        <div class="card-body">
+            <GenericList MyList="trainings">
+                <NoRecords>
+                    <p>Aun no hay Capacitaciones registradas.</p>
+                </NoRecords>
+                <Body>
+                    <table class="table table-responsive">
+                        <thead>
                             <tr>
-                                <td>@training.Process!.Company!.Name</td>
-                                <td>@training.Process!.Description</td>
-                                <td>@training.Cod</td>
-                                <td>@training.Description</td>
-                                <td>@training.Duration</td>
-                                <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
-                                <td>@training.TrainingTopicsNumber</td>
-                                <td>@training.TrainingSessionNumber</td>
-                                <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
-                                <td>
-                                    <a class="btn btn-info btn-sm" href="/TrainingCalendars/details/@training.Id">Agenda</a>
-                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
-                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
-                                </td>
+                                <th>Empresa</th>
+                                <th>Proceso</th>
+                                <th>Código</th>
+                                <th>Capacitación</th>
+                                <th>Duración</th>
+                                <th>Interna</th>
+                                <th>Estado</th>
+                                <th>Temas</th>
+                                <th>Programación</th>
+                                <th>Habilitado</th>
+                                <th style="width:220px"></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-                <Pagination CurrentPage="currentPage"
-                            TotalPages="totalPages"
-                            SelectedPage="SelectedPageAsync" />
-            </Body>
-        </GenericList>
+                        </thead>
+                        <tbody>
+                            @foreach (var training in trainings!)
+                            {
+                                <tr>
+                                    <td>@training.Process!.Company!.Name</td>
+                                    <td>@training.Process!.Description</td>
+                                    <td>@training.Cod</td>
+                                    <td>@training.Description</td>
+                                    <td>@training.Duration</td>
+                                    <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
+                                    <td>@training.TrainingStatus!.Description</td>
+                                    <td>@training.TrainingTopicsNumber</td>
+                                    <td>@training.TrainingSessionNumber</td>
+                                    <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
+                                    <td>
+                                        <a class="btn btn-info btn-sm" href="/TrainingCalendars/details/@training.Id">Agenda</a>
+                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <Pagination CurrentPage="currentPage"
+                                TotalPages="totalPages"
+                                SelectedPage="SelectedPageAsync" />
+                </Body>
+            </GenericList>
 
+        </div>
     </div>
-</div>
-
+}
 
 @code {
+    private List<TrainingStatus>? trainingStatus;
+    private int trainingStatusId;
     private List<Training>? trainings;
     private int currentPage = 1;
     private int totalPages;
+    private bool loading = false;
 
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
@@ -87,7 +107,28 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadTrainingStatusAsync();
         await LoadAsync();
+    }
+
+    private async Task TrainingStatusChangedAsync(ChangeEventArgs e)
+    {
+        var selectedTrainingStatus = Convert.ToInt32(e.Value!);
+        trainingStatusId = selectedTrainingStatus;
+        await ApplyFilterAsync();
+    }
+
+    private async Task LoadTrainingStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<TrainingStatus>>("/api/TrainingStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        trainingStatus = responseHttp.Response;
     }
 
     private async Task ShowModalAsync(int id = 0, bool isEdit = false)
@@ -135,11 +176,11 @@
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings/totalPages";
+            url = $"api/trainings/totalPages?Id={trainingStatusId}";
         }
         else
         {
-            url = $"api/trainings/totalPages?filter={Filter}";
+            url = $"api/trainings/totalPages?Id={trainingStatusId}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -155,14 +196,15 @@
 
     private async Task<bool> LoadListAsync(int page)
     {
+        loading = true;
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings?page={page}";
+            url = $"api/trainings?Id={trainingStatusId}&page={page}";
         }
         else
         {
-            url = $"api/trainings?page={page}&filter={Filter}";
+            url = $"api/trainings?Id={trainingStatusId}&page={page}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<List<Training>>(url);
@@ -170,10 +212,12 @@
         {
             var message = await response.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            loading = false;
             return false;
         }
 
         trainings = response.Response;
+        loading = false;
         return true;
     }
 
