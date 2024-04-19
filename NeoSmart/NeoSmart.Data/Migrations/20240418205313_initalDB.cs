@@ -329,12 +329,17 @@ namespace NeoSmart.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProcessId = table.Column<int>(type: "int", nullable: false),
                     Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
+                    Requirement = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Type = table.Column<bool>(type: "bit", nullable: false),
-                    ProcessId = table.Column<int>(type: "int", nullable: false),
+                    Entity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     TrainingStatusId = table.Column<int>(type: "int", nullable: false),
+                    Observation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>

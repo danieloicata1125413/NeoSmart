@@ -1502,16 +1502,16 @@ namespace NeoSmart.BackEnd.Data
                 var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("I-P001"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "ICA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
-                    _context.Trainings.Add(new Training { Cod = "ICA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "ICA001", Description = "Inducción al sistema integrado de gestión.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
+                    _context.Trainings.Add(new Training { Cod = "ICA002", Description = "Manejo integral de residuos solidos.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
                 process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("ATI-P002"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "ATICA001", Description = "Inducción al sistema integrado de gestión.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
-                    _context.Trainings.Add(new Training { Cod = "ATICA002", Description = "Manejo integral de residuos solidos.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
+                    _context.Trainings.Add(new Training { Cod = "ATICA001", Description = "Inducción al sistema integrado de gestión.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
+                    _context.Trainings.Add(new Training { Cod = "ATICA002", Description = "Manejo integral de residuos solidos.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
 
                     await _context.SaveChangesAsync();
                 }

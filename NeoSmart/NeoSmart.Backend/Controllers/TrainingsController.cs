@@ -36,11 +36,11 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Process!)
                                     .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
-                                    .ThenInclude(x => x.Topic)
+                                    .ThenInclude(x => x.Topic!)
                                 .Include(o => o.TrainingImages!)
-                                .Include(o=> o.TrainingSessions!)
+                                .Include(o => o.TrainingSessions!)
                                     .ThenInclude(o => o.City!)
-                                    .Include(o => o.TrainingStatus!)
+                                .Include(o => o.TrainingStatus!)
                                 .AsQueryable();
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)

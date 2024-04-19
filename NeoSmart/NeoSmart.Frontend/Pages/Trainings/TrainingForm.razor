@@ -38,43 +38,17 @@
                                 <label class="control-label">Descripción:</label>
                                 <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
                                 <ValidationMessage For="@(() => TrainingDTO.Description)" />
-
                             </div>
-
+                            <div class="form-group mb-2">
+                                <label class="control-label">Justificación:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Requirement" />
+                                <ValidationMessage For="@(() => TrainingDTO.Requirement)" />
+                            </div>
                             <div class="form-group mb-2">
                                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
                             </div>
                         </div>
                         <div class="col-6 p-2">
-                            <div class="form-group mb-2">
-                                <label class="control-label">Duración:</label>
-                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
-                                <ValidationMessage For="@(() => TrainingDTO.Duration)" />
-                            </div>
-                            <div class="form-group mb-2">
-                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
-                            </div>
-                            @* <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
-                                <label>Proceso:</label>
-                                <select class="form-select" @bind="TrainingDTO.ProcessId">
-                                    <option value="0">-- Seleccione un proceso --</option>
-                                    @if (processes is not null)
-                                    {
-                                        @foreach (var process in processes)
-                                        {
-                                            if (TrainingDTO.ProcessId != 0)
-                                            {
-                                                <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@process.Id">@process.Description</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-                                <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
-                            </div> *@
                             <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
                                 <div class="form-group mb-2">
                                     <label>Empresa:</label>
@@ -117,6 +91,34 @@
                                     </select>
                                     <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
                                 </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label>Fecha inicio:</label>
+                                <InputDate Type="InputDateType.Date" class="form-control float-end" style="max-width: 150px;" @bind-Value="@TrainingDTO.DateStart" />
+                                <ValidationMessage For="@(() => @TrainingDTO.DateStart)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Duración:</label>
+                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
+                                <ValidationMessage For="@(() => TrainingDTO.Duration)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Entidad:</label>
+                                <InputText class="form-control" @bind-Value="@TrainingDTO.Entity" />
+                                <ValidationMessage For="@(() => TrainingDTO.Entity)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Precio:</label>
+                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Price" />
+                                <ValidationMessage For="@(() => TrainingDTO.Price)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Observación:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Observation" />
+                                <ValidationMessage For="@(() => TrainingDTO.Observation)" />
                             </div>
                         </div>
                     </div>
