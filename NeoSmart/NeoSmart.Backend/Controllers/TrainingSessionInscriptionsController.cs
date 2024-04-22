@@ -52,7 +52,7 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
-                .Include(i => i.InscriptionStatus!)
+                .Include(i => i.TrainingSessionInscriptionStatus!)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
 
@@ -92,7 +92,8 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
-                .Include(i => i.InscriptionStatus!)
+                .Include(i => i.TrainingSessionInscriptionStatus!)
+                .Include(i => i.TrainingSessionInscriptionAttends!)
                 .AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
@@ -185,7 +186,7 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Será en una nueva oportunidad!</b>");
             }
 
-            inscription.InscriptionStatus = inscriptionDTO.InscriptionStatus;
+            inscription.TrainingSessionInscriptionStatus = inscriptionDTO.InscriptionStatus;
             _context.Update(inscription);
             await _context.SaveChangesAsync();
             return Ok(inscription);
@@ -199,7 +200,6 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 return NoContent();
             }
-
             return BadRequest(response.Message);
         }
     }

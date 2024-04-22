@@ -366,40 +366,6 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("FormationTopics");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.InscriptionStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Deleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InscriptionStatus");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Occupation", b =>
                 {
                     b.Property<int>("Id")
@@ -702,13 +668,19 @@ namespace NeoSmart.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -718,18 +690,18 @@ namespace NeoSmart.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Observation")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int?>("Price")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProcessId")
                         .HasColumnType("int");
 
                     b.Property<string>("Requirement")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -739,6 +711,9 @@ namespace NeoSmart.Data.Migrations
 
                     b.Property<bool>("Type")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -835,6 +810,10 @@ namespace NeoSmart.Data.Migrations
                     b.Property<DateTime?>("Deleted")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Link")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
@@ -867,7 +846,55 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("TrainingSessions");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionAttend", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TrainingSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainingSessionInscriptionStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingSessionInscriptionStatusId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TrainingSessionId", "UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("TrainingSessionInscriptions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionAttend", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -905,25 +932,21 @@ namespace NeoSmart.Data.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<int>("TrainingSessionId")
+                    b.Property<int>("TrainingSessionInscriptionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingSessionId");
+                    b.HasIndex("TrainingSessionInscriptionId")
+                        .IsUnique();
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrainingSessionAttends");
+                    b.ToTable("TrainingSessionInscriptionAttends");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -934,39 +957,27 @@ namespace NeoSmart.Data.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("Deleted")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InscriptionStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Remarks")
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<int>("TrainingSessionId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("InscriptionStatusId");
-
-                    b.HasIndex("TrainingSessionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrainingSessionInscriptions");
+                    b.ToTable("TrainingSessionInscriptionStatus");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionTemporal", b =>
@@ -1592,48 +1603,41 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionAttend", b =>
-                {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
-                        .WithMany("TrainingSessionAttends")
-                        .HasForeignKey("TrainingSessionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("TrainingSession");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
                 {
-                    b.HasOne("NeoSmart.ClassLibraries.Entities.InscriptionStatus", "InscriptionStatus")
-                        .WithMany()
-                        .HasForeignKey("InscriptionStatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSession", "TrainingSession")
                         .WithMany("TrainingSessionInscriptions")
                         .HasForeignKey("TrainingSessionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionStatus", "TrainingSessionInscriptionStatus")
+                        .WithMany()
+                        .HasForeignKey("TrainingSessionInscriptionStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("InscriptionStatus");
-
                     b.Navigation("TrainingSession");
 
+                    b.Navigation("TrainingSessionInscriptionStatus");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionAttend", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", "TrainingSessionInscription")
+                        .WithMany("TrainingSessionInscriptionAttends")
+                        .HasForeignKey("TrainingSessionInscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TrainingSessionInscription");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscriptionTemporal", b =>
@@ -1831,11 +1835,14 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSession", b =>
                 {
-                    b.Navigation("TrainingSessionAttends");
-
                     b.Navigation("TrainingSessionInscriptionTemporals");
 
                     b.Navigation("TrainingSessionInscriptions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingSessionInscription", b =>
+                {
+                    b.Navigation("TrainingSessionInscriptionAttends");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTopicExam", b =>

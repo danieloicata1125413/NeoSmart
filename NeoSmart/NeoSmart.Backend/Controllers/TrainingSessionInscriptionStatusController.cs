@@ -9,11 +9,11 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class InscriptionStatusController : ControllerBase
+    public class TrainingSessionInscriptionStatusController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public InscriptionStatusController(DataContext context) : base()
+        public TrainingSessionInscriptionStatusController(DataContext context) : base()
         {
             _context = context;
         }
@@ -22,7 +22,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("combo")]
         public async Task<IActionResult> GetComboAsync()
         {
-            return Ok(await _context.InscriptionStatus
+            return Ok(await _context.TrainingSessionInscriptionStatus
                 .OrderBy(x => x.Name)
                 .ToListAsync());
         }

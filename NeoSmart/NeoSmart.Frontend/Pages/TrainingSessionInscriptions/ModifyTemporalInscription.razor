@@ -1,4 +1,4 @@
-﻿@page "/Inscriptions/ModifyTemporalInscription/{TemporalInscriptionId:int}"
+﻿@page "/TrainingSessionInscriptions/ModifyTrainingSessionInscriptionTemporal/{TrainingSessionInscriptionTemporalId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -14,24 +14,24 @@ else
                 <div class="row">
                     <div class="col">
                     <a class="btn btn-outline-success float-start me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
-                    <h4 class="float-start">@trainingCalendar!.Training!.Description</h4>
+                    <h4 class="float-start">@trainingSession!.Training!.Description</h4>
                     </div>
                 </div>
             </div>
             <div class="card-body m-2">
-            <CarouselView Images="@trainingCalendar!.Training!.MainImages" />
+            <CarouselView Images="@trainingSession!.Training!.MainImages" />
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
                         <label>Nombre:</label>
                         <div>
-                            <b>@trainingCalendar!.Training!.Description</b>
+                            <b>@trainingSession!.Training!.Description</b>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label>Descripción:</label>
                         <div>
-                            <b>@trainingCalendar!.Training!.Description</b>
+                            <b>@trainingSession!.Training!.Description</b>
                         </div>
                     </div>
                     
@@ -46,13 +46,13 @@ else
                     </div>
                 </div>
                 <div class="col-6">
-                    <EditForm Model="temporalInscriptionDTO" OnValidSubmit="UpdateCartAsync">
+                    <EditForm Model="trainingSessionInscriptionTemporalDTO" OnValidSubmit="UpdateCartAsync">
                         <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label>Comentarios:</label>
                             <div>
-                                <InputTextArea class="form-control" @bind-Value="@temporalInscriptionDTO!.Remarks" />
-                                <ValidationMessage For="@(() => temporalInscriptionDTO.Remarks)" />
+                                <InputTextArea class="form-control" @bind-Value="@trainingSessionInscriptionTemporalDTO!.Remarks" />
+                                <ValidationMessage For="@(() => trainingSessionInscriptionTemporalDTO.Remarks)" />
                             </div>
                         </div>
                         <button class="btn btn-primary" type="submit"><i class="oi oi-check" /> Actualizar Carro</button>
@@ -68,22 +68,22 @@ else
     private List<string>? topics;
     private List<string>? images;
     private bool loading = true;
-    private TrainingSession? trainingCalendar;
+    private TrainingSession? trainingSession;
     private bool isAuthenticated;
-    private TemporalInscriptionDTO? temporalInscriptionDTO;
+    private TrainingSessionInscriptionTemporalDTO? trainingSessionInscriptionTemporalDTO;
 
     [Parameter]
-    public int TemporalInscriptionId { get; set; }
+    public int TrainingSessionInscriptionTemporalId { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        await LoadTemporalInscriptionAsync();
+        await LoadTrainingSessionInscriptionTemporalAsync();
     }
 
-    private async Task LoadTemporalInscriptionAsync()
+    private async Task LoadTrainingSessionInscriptionTemporalAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<TrainingSessionInscriptionTemporal>($"/api/temporalInscriptions/{TemporalInscriptionId}");
+        var httpResponse = await repository.GetAsync<TrainingSessionInscriptionTemporal>($"/api/TrainingSessionInscriptionTemporals/{TrainingSessionInscriptionTemporalId}");
 
         if (httpResponse.Error)
         {
@@ -93,22 +93,22 @@ else
             return;
         }
 
-        var temporalInscription = httpResponse.Response!;
-        temporalInscriptionDTO = new TemporalInscriptionDTO
+        var trainingSessionInscriptionTemporal = httpResponse.Response!;
+        trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO
             {
-                Id = temporalInscription.Id,
-                trainingCalendarId = temporalInscription.TrainingSessionId,
-                Remarks = temporalInscription.Remarks!
+                Id = trainingSessionInscriptionTemporal.Id,
+                TrainingSessionId = trainingSessionInscriptionTemporal.TrainingSessionId,
+                Remarks = trainingSessionInscriptionTemporal.Remarks!
             };
-        trainingCalendar = temporalInscription.TrainingSession;
-        topics = trainingCalendar!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
-        images = trainingCalendar!.Training!.TrainingImages!.Select(x => x.Image).ToList();
+        trainingSession = trainingSessionInscriptionTemporal.TrainingSession;
+        topics = trainingSession!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
+        images = trainingSession!.Training!.TrainingImages!.Select(x => x.Image).ToList();
         loading = false;
     }
 
     public async Task UpdateCartAsync()
     {
-        var httpResponse = await repository.PutAsync("/api/temporalInscriptions/full", temporalInscriptionDTO);
+        var httpResponse = await repository.PutAsync("/api/TrainingSessionInscriptionTemporals/full", trainingSessionInscriptionTemporalDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -123,7 +123,7 @@ else
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Capacitación modificada en el carrito.");
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Sesión de Capacitación modificada en el carrito.");
         navigationManager.NavigateTo("/");
     }
 

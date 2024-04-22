@@ -1,5 +1,5 @@
-﻿@page "/TrainingCalendars/details/{TrainingId:int}"
-@attribute [Authorize(Roles = "Admin,Manager,Leader,Trainer")]
+﻿@page "/TrainingSessions/details/{TrainingId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -18,9 +18,9 @@
 
 <div class="card widget-inline">
     <div class="card-body">
-        <GenericList MyList="trainingCalendars">
+        <GenericList MyList="trainingSessions">
             <NoRecords>
-                <p>Aun no hay Calendarios registrados.</p>
+                <p>Aun no hay Sesiones registradas.</p>
             </NoRecords>
             <Body>
                 <table class="table table-responsive">
@@ -38,20 +38,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var trainingCalendar in trainingCalendars!)
+                        @foreach (var trainingSession in trainingSessions!)
                         {
                             <tr>
-                                <td>@trainingCalendar.Training!.Description</td>
-                                <td>@trainingCalendar.Training!.Duration</td>
-                                <td>@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
-                                <td>@trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
-                                <td>@trainingCalendar.ExistUser</td>
-                                <td>@trainingCalendar.City!.Name</td>
-                                <td><InputCheckbox @bind-Value=trainingCalendar.Type disabled="true"></InputCheckbox></td>
-                                <td><InputCheckbox @bind-Value=trainingCalendar.Status disabled="true"></InputCheckbox></td>
+                                <td>@trainingSession.Training!.Description</td>
+                                <td>@trainingSession.Training!.Duration</td>
+                                <td>@trainingSession.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                                <td>@trainingSession.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                                <td>@trainingSession.ExistUser</td>
+                                <td>@trainingSession.City!.Name</td>
+                                <td><InputCheckbox @bind-Value=trainingSession.Type disabled="true"></InputCheckbox></td>
+                                <td><InputCheckbox @bind-Value=trainingSession.Status disabled="true"></InputCheckbox></td>
                                 <td>
-                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingCalendar.Id, true))><i class="oi oi-pencil" /> Editar</button>
-                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingCalendar))>Borrar</button>
+                                    <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingSession.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingSession))>Borrar</button>
                                 </td>
                             </tr>
                         }
@@ -69,7 +69,7 @@
 
 @code {
     private Training? training;
-    private List<TrainingSession>? trainingCalendars;
+    private List<TrainingSession>? trainingSessions;
     private int currentPage = 1;
     private int totalPages;
 
@@ -98,11 +98,11 @@
 
         if (!isEdit)
         {
-            modalReference = Modal.Show<TrainingCalendarCreate>(string.Empty, new ModalParameters().Add("TrainingId", TrainingId));
+            modalReference = Modal.Show<TrainingSessionCreate>(string.Empty, new ModalParameters().Add("TrainingId", TrainingId));
         }
         else
         {
-            modalReference = Modal.Show<TrainingCalendarEdit>(string.Empty, new ModalParameters().Add("TrainingCalendarId", id));
+            modalReference = Modal.Show<TrainingSessionEdit>(string.Empty, new ModalParameters().Add("TrainingSessionId", id));
         }
 
         var result = await modalReference.Result;
@@ -128,7 +128,7 @@
         var ok = await LoadTrainingAsync();
         if (ok)
         {
-            ok = await LoadTrainingCalendarsAsync(page);
+            ok = await LoadTrainingSessionsAsync(page);
             if (ok)
             {
                 await LoadPagesAsync();
@@ -141,11 +141,11 @@
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/TrainingCalendars/totalPages?id={TrainingId}";
+            url = $"api/TrainingSessions/totalPages?id={TrainingId}";
         }
         else
         {
-            url = $"api/TrainingCalendars/totalPages?id={TrainingId}&filter={Filter}";
+            url = $"api/TrainingSessions/totalPages?id={TrainingId}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -158,16 +158,16 @@
         totalPages = response.Response;
     }
 
-    private async Task<bool> LoadTrainingCalendarsAsync(int page)
+    private async Task<bool> LoadTrainingSessionsAsync(int page)
     {
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/TrainingCalendars?id={TrainingId}&page={page}";
+            url = $"api/TrainingSessions?id={TrainingId}&page={page}";
         }
         else
         {
-            url = $"api/TrainingCalendars?id={TrainingId}&page={page}&filter={Filter}";
+            url = $"api/TrainingSessions?id={TrainingId}&page={page}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<List<TrainingSession>>(url);
@@ -177,7 +177,7 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return false;
         }
-        trainingCalendars = response.Response;
+        trainingSessions = response.Response;
         return true;
     }
 
@@ -213,12 +213,12 @@
         await SelectedPageAsync(page);
     }
 
-    private async Task DeleteAsync(TrainingSession trainingCalendar)
+    private async Task DeleteAsync(TrainingSession trainingSession)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = $"¿Esta seguro que quieres borrar el calendario: {trainingCalendar.Training!.Description}?",
+                Text = $"¿Esta seguro que quieres borrar el Sessionio: {trainingSession.Training!.Description}?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true
             });
@@ -229,7 +229,7 @@
             return;
         }
 
-        var response = await repository.DeleteAsync($"api/TrainingCalendars/{trainingCalendar.Id}");
+        var response = await repository.DeleteAsync($"api/TrainingSessions/{trainingSession.Id}");
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();

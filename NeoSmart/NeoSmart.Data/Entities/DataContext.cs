@@ -32,7 +32,7 @@ namespace NeoSmart.Data.Entities
         public DbSet<TrainingImage> TrainingImages { get; set; }
         public DbSet<TrainingResource> TrainingResources { get; set; }
         public DbSet<TrainingSession> TrainingSessions { get; set; }
-        public DbSet<TrainingSessionAttend> TrainingSessionAttends { get; set; }
+        public DbSet<TrainingSessionInscriptionAttend> TrainingSessionInscriptionAttends { get; set; }
         public DbSet<TrainingSessionInscription> TrainingSessionInscriptions { get; set; }
         public DbSet<TrainingSessionInscriptionTemporal> TrainingSessionInscriptionTemporals { get; set; }
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
@@ -40,7 +40,7 @@ namespace NeoSmart.Data.Entities
         public DbSet<TrainingStatus> TrainingStatus { get; set; }
         public DbSet<UserTopicExam> UserTopicExams { get; set; }
         public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
-        public DbSet<InscriptionStatus> InscriptionStatus { get; set; }
+        public DbSet<TrainingSessionInscriptionStatus> TrainingSessionInscriptionStatus { get; set; }
         public DbSet<UserTokenReset> AspNetUserTokenReset { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +53,9 @@ namespace NeoSmart.Data.Entities
             modelBuilder.Entity<Topic>().HasIndex(t => new { t.CompanyId, t.Description }).IsUnique();
             modelBuilder.Entity<Training>().HasIndex(t => new { t.ProcessId, t.Cod }).IsUnique();
             modelBuilder.Entity<TrainingStatus>().HasIndex(c => c.Name).IsUnique();
+
+            modelBuilder.Entity<TrainingSessionInscription>().HasIndex(t => new { t.TrainingSessionId, t.UserId }).IsUnique();
+            modelBuilder.Entity<TrainingSessionInscriptionAttend>().HasIndex(t => t.TrainingSessionInscriptionId ).IsUnique();
 
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex(s => new { s.CountryId, s.Name }).IsUnique();

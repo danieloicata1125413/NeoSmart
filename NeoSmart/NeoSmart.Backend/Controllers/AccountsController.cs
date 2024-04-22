@@ -166,8 +166,6 @@ namespace NeoSmart.BackEnd.Controllers
             return NoContent();
         }
 
-
-
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> PutAsync(User user)

@@ -48,20 +48,24 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Display(Name = "Precio")]
         public int? Price { get; set; } = null!;
 
-        public int TrainingStatusId { get; set; }
-        public TrainingStatus? TrainingStatus { get; set; }
-
         [Display(Name = "Observación")]
         [DataType(DataType.MultilineText)]
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Observation { get; set; } = null!;
 
+        public int TrainingStatusId { get; set; }
+        public TrainingStatus? TrainingStatus { get; set; }
+
         public List<int>? TrainingTopicIds { get; set; }
+
+        public ICollection<TrainingTopicDTO>? TrainingTopics { get; set; }
+
+        public ICollection<TrainingSessionDTO>? TrainingSessions { get; set; }
+
+
         public List<string>? NewTrainingImages { get; set; }
         public List<string>? ListTrainingImages { get; set; }
-        public ICollection<TrainingTopicDTO>? TrainingTopics { get; set; }
         public ICollection<TrainingImage>? TrainingImages { get; set; }
-        public ICollection<TrainingSessionDTO>? TrainingSessions { get; set; }
 
     }
 }

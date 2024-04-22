@@ -9,6 +9,8 @@ namespace NeoSmart.ClassLibraries.DTOs
 
         public int InscriptionStatusId { get; set; }
 
-        public InscriptionStatus? InscriptionStatus { get; set; }
+        public TrainingSessionInscriptionStatus? InscriptionStatus { get; set; }
+
+        public string Remarks { get; set; } = string.Empty;
     }
 }

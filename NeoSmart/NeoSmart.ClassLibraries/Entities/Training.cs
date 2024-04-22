@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Training
+    public class Training : ISoftDetete
     {
         public int Id { get; set; }
 
@@ -37,8 +37,6 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int Duration { get; set; }
 
-
-
         [Display(Name = "Interna")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public bool Type { get; set; }
@@ -50,32 +48,19 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Precio")]
         public int? Price { get; set; } = null!;
 
-        public int TrainingStatusId { get; set; }
-        public TrainingStatus? TrainingStatus { get; set; }
-
-        [Display(Name = "Respuesta")]
+        [Display(Name = "Observación")]
         [DataType(DataType.MultilineText)]
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Observation { get; set; } = null!;
 
-        [Display(Name = "Habilitado")]
-        public bool Status { get; set; }
+        public int TrainingStatusId { get; set; }
+        public TrainingStatus? TrainingStatus { get; set; }
+
         public ICollection<TrainingTopic>? TrainingTopics { get; set; }
 
         [Display(Name = "Temas")]
         public int TrainingTopicsNumber => TrainingTopics == null ? 0 : TrainingTopics.Count;
 
-        public ICollection<TrainingImage>? TrainingImages { get; set; }
-
-        [Display(Name = "Imágenes")]
-        public int TrainingImagesNumber => TrainingImages == null ? 0 : TrainingImages.Count;
-
-        [Display(Name = "Imagén")]
-        public string MainImage => TrainingImages == null || TrainingImages.Count == 0 ? "/img/NoImage.png" : TrainingImages.FirstOrDefault()!.Image;
-
-        [Display(Name = "Imagenes")]
-        public List<string> MainImages => TrainingImages == null || TrainingImages.Count == 0 ? new List<string>() { "/img/NoImage.png" } : TrainingImages!.Select(x => x.Image).ToList();
-    
         public ICollection<TrainingSession>? TrainingSessions { get; set; }
 
         [Display(Name = "Sesiones")]
@@ -87,5 +72,16 @@ namespace NeoSmart.ClassLibraries.Entities
         public int TrainingTopicExamsNumber => TrainingTopicExams == null ? 0 : TrainingTopicExams.Count;
 
 
+
+        public ICollection<TrainingImage>? TrainingImages { get; set; }
+
+        [Display(Name = "Imágenes")]
+        public int TrainingImagesNumber => TrainingImages == null ? 0 : TrainingImages.Count;
+
+        [Display(Name = "Imagén")]
+        public string MainImage => TrainingImages == null || TrainingImages.Count == 0 ? "/img/NoImage.png" : TrainingImages.FirstOrDefault()!.Image;
+
+        [Display(Name = "Imagenes")]
+        public List<string> MainImages => TrainingImages == null || TrainingImages.Count == 0 ? new List<string>() { "/img/NoImage.png" } : TrainingImages!.Select(x => x.Image).ToList();
     }
 }

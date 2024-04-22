@@ -39,6 +39,7 @@ namespace NeoSmart.BackEnd.Controllers
                                     .ThenInclude(x => x.Topic!)
                                 .Include(o => o.TrainingImages!)
                                 .Include(o => o.TrainingSessions!)
+                                    .ThenInclude(o => o.User)
                                     .ThenInclude(o => o.City!)
                                 .Include(o => o.TrainingStatus!)
                                 .AsQueryable();
@@ -98,6 +99,7 @@ namespace NeoSmart.BackEnd.Controllers
                                 .ThenInclude(x => x.Topic)
                                 .Include(o => o.TrainingImages)
                                 .Include(o => o.TrainingSessions!)
+                                .ThenInclude(o => o.User)
                                 .ThenInclude(o => o.City!)
                                 .Include(o => o.TrainingStatus!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -115,15 +117,21 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 Training newTraining = new()
                 {
+                    ProcessId = trainingDTO.ProcessId,
                     Cod = trainingDTO.Cod.ToUpper(),
                     Description = trainingDTO.Description,
-                    Type = trainingDTO.Type,
+                    Requirement = trainingDTO.Requirement,
+                    DateStart = trainingDTO.DateStart,
                     Duration = trainingDTO.Duration,
-                    ProcessId = trainingDTO.ProcessId,
+                    Type = trainingDTO.Type,
+                    Entity = trainingDTO.Entity,
+                    Price = trainingDTO.Price,
+                    TrainingStatusId = trainingDTO.TrainingStatusId,
                     TrainingTopics = new List<TrainingTopic>(),
                     TrainingImages = new List<TrainingImage>(),
                     Status = trainingDTO.Status,
                 };
+
                 foreach (var trainingImage in trainingDTO.NewTrainingImages!)
                 {
                     var photoTraining = Convert.FromBase64String(trainingImage);
@@ -168,12 +176,16 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     return NotFound();
                 }
-
+                training.ProcessId = trainingDTO.ProcessId;
                 training.Cod = trainingDTO.Cod.ToUpper();
                 training.Description = trainingDTO.Description;
-                training.Type = trainingDTO.Type;
+                training.Requirement = trainingDTO.Requirement;
+                training.DateStart = trainingDTO.DateStart;
                 training.Duration = trainingDTO.Duration;
-                training.ProcessId = trainingDTO.ProcessId;
+                training.Type = trainingDTO.Type;
+                training.Entity = trainingDTO.Entity;
+                training.Price = trainingDTO.Price;
+                training.TrainingStatusId = trainingDTO.TrainingStatusId;
 
                 if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
                 {

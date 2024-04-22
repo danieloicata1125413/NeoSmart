@@ -78,7 +78,7 @@ else
     [Parameter]
     public int TrainingId { get; set; }
 
-    public TemporalInscriptionDTO TemporalInscriptionDTO { get; set; } = new();
+    public TrainingSessionInscriptionDTO trainingSessionInscriptionDTO { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {

@@ -43,9 +43,11 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public bool Type { get; set; }
 
+        [Display(Name = "Link")]
+        [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        public string? Link { get; set; } = null!;
         public ICollection<TrainingSessionInscriptionTemporal>? TrainingSessionInscriptionTemporals { get; set; }
         public ICollection<TrainingSessionInscription>? TrainingSessionInscriptions { get; set; }
-        public ICollection<TrainingSessionAttend>? TrainingSessionAttends { get; set; }
 
     }
 }

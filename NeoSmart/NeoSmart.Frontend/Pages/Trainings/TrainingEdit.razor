@@ -58,16 +58,23 @@ else
         return new TrainingDTO
             {
                 Id = training.Id,
-                Cod = training.Cod,
-                Description = training.Description,
-                Type = training.Type,
-                Duration = training.Duration,
                 ProcessId = training.ProcessId,
                 Process = training.Process,
-                TrainingImages = training.TrainingImages,
-                ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
+                Cod = training.Cod,
+                Description = training.Description,
+                Requirement = training.Requirement,
+                DateStart = training.DateStart,
+                Duration = training.Duration,
+                Type = training.Type,
+                Entity = training.Entity,
+                Price = training.Price,
+                Observation = training.Observation,
                 Status = training.Status,
+                TrainingStatusId = training.TrainingStatusId,
+                TrainingStatus = training.TrainingStatus,
                 TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
+                TrainingImages = training.TrainingImages,
+                ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(), 
             };
     }
 

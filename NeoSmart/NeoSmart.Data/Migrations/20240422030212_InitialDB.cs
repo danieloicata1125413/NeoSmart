@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NeoSmart.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initalDB : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,24 +57,6 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InscriptionStatus",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InscriptionStatus", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "QuestionTypes",
                 columns: table => new
                 {
@@ -120,6 +102,24 @@ namespace NeoSmart.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sliders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrainingSessionInscriptionStatus",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingSessionInscriptionStatus", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -331,16 +331,19 @@ namespace NeoSmart.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProcessId = table.Column<int>(type: "int", nullable: false),
                     Cod = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Requirement = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
-                    Requirement = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Type = table.Column<bool>(type: "bit", nullable: false),
                     Entity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Price = table.Column<int>(type: "int", nullable: true),
+                    Observation = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TrainingStatusId = table.Column<int>(type: "int", nullable: false),
-                    Observation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -752,6 +755,7 @@ namespace NeoSmart.Data.Migrations
                     TimeEnd = table.Column<TimeSpan>(type: "time", nullable: true),
                     CityId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<bool>(type: "bit", nullable: false),
+                    Link = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -812,43 +816,6 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TrainingSessionAttends",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TrainingSessionId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Signature = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Latitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
-                    Longitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
-                    Altitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
-                    Accuracy = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
-                    AltitudeAccuracy = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrainingSessionAttends", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TrainingSessionAttends_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_TrainingSessionAttends_TrainingSessions_TrainingSessionId",
-                        column: x => x.TrainingSessionId,
-                        principalTable: "TrainingSessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TrainingSessionInscriptions",
                 columns: table => new
                 {
@@ -858,7 +825,7 @@ namespace NeoSmart.Data.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     TrainingSessionId = table.Column<int>(type: "int", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InscriptionStatusId = table.Column<int>(type: "int", nullable: false),
+                    TrainingSessionInscriptionStatusId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -874,9 +841,9 @@ namespace NeoSmart.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TrainingSessionInscriptions_InscriptionStatus_InscriptionStatusId",
-                        column: x => x.InscriptionStatusId,
-                        principalTable: "InscriptionStatus",
+                        name: "FK_TrainingSessionInscriptions_TrainingSessionInscriptionStatus_TrainingSessionInscriptionStatusId",
+                        column: x => x.TrainingSessionInscriptionStatusId,
+                        principalTable: "TrainingSessionInscriptionStatus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -936,6 +903,36 @@ namespace NeoSmart.Data.Migrations
                         name: "FK_UserTopicExamAnswers_UserTopicExams_UserTopicExamId",
                         column: x => x.UserTopicExamId,
                         principalTable: "UserTopicExams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrainingSessionInscriptionAttends",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrainingSessionInscriptionId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Signature = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Latitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
+                    Altitude = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
+                    Accuracy = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
+                    AltitudeAccuracy = table.Column<decimal>(type: "decimal(18,8)", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingSessionInscriptionAttends", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingSessionInscriptionAttends_TrainingSessionInscriptions_TrainingSessionInscriptionId",
+                        column: x => x.TrainingSessionInscriptionId,
+                        principalTable: "TrainingSessionInscriptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1120,24 +1117,22 @@ namespace NeoSmart.Data.Migrations
                 column: "TrainingStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TrainingSessionAttends_TrainingSessionId",
-                table: "TrainingSessionAttends",
-                column: "TrainingSessionId");
+                name: "IX_TrainingSessionInscriptionAttends_TrainingSessionInscriptionId",
+                table: "TrainingSessionInscriptionAttends",
+                column: "TrainingSessionInscriptionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TrainingSessionAttends_UserId",
-                table: "TrainingSessionAttends",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TrainingSessionInscriptions_InscriptionStatusId",
+                name: "IX_TrainingSessionInscriptions_TrainingSessionId_UserId",
                 table: "TrainingSessionInscriptions",
-                column: "InscriptionStatusId");
+                columns: new[] { "TrainingSessionId", "UserId" },
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TrainingSessionInscriptions_TrainingSessionId",
+                name: "IX_TrainingSessionInscriptions_TrainingSessionInscriptionStatusId",
                 table: "TrainingSessionInscriptions",
-                column: "TrainingSessionId");
+                column: "TrainingSessionInscriptionStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrainingSessionInscriptions_UserId",
@@ -1254,10 +1249,7 @@ namespace NeoSmart.Data.Migrations
                 name: "TrainingResources");
 
             migrationBuilder.DropTable(
-                name: "TrainingSessionAttends");
-
-            migrationBuilder.DropTable(
-                name: "TrainingSessionInscriptions");
+                name: "TrainingSessionInscriptionAttends");
 
             migrationBuilder.DropTable(
                 name: "TrainingSessionInscriptionTemporals");
@@ -1281,25 +1273,28 @@ namespace NeoSmart.Data.Migrations
                 name: "ResourceTypes");
 
             migrationBuilder.DropTable(
-                name: "InscriptionStatus");
-
-            migrationBuilder.DropTable(
-                name: "TrainingSessions");
+                name: "TrainingSessionInscriptions");
 
             migrationBuilder.DropTable(
                 name: "UserTopicExams");
 
             migrationBuilder.DropTable(
-                name: "Trainings");
+                name: "TrainingSessionInscriptionStatus");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "TrainingSessions");
 
             migrationBuilder.DropTable(
                 name: "TopicExams");
 
             migrationBuilder.DropTable(
-                name: "TrainingStatus");
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Trainings");
+
+            migrationBuilder.DropTable(
+                name: "Topics");
 
             migrationBuilder.DropTable(
                 name: "DocumentTypes");
@@ -1308,7 +1303,7 @@ namespace NeoSmart.Data.Migrations
                 name: "Occupations");
 
             migrationBuilder.DropTable(
-                name: "Topics");
+                name: "TrainingStatus");
 
             migrationBuilder.DropTable(
                 name: "Processes");

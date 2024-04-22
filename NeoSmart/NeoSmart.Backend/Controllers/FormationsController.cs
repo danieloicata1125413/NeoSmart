@@ -51,7 +51,6 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
-
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {

@@ -24,7 +24,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Comentarios")]
         public string? Remarks { get; set; }
 
-        public int InscriptionStatusId { get; set; }
-        public InscriptionStatus? InscriptionStatus { get; set; }
+        public int TrainingSessionInscriptionStatusId { get; set; }
+        public TrainingSessionInscriptionStatus? TrainingSessionInscriptionStatus { get; set; }
+
+        public ICollection<TrainingSessionInscriptionAttend>? TrainingSessionInscriptionAttends { get; set; }
     }
 }

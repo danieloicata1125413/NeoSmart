@@ -68,7 +68,7 @@ else
                                     <td>@training.TrainingSessionNumber</td>
                                     <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                     <td>
-                                        <a class="btn btn-info btn-sm" href="/TrainingCalendars/details/@training.Id">Agenda</a>
+                                        <a class="btn btn-info btn-sm" href="/TrainingSessions/details/@training.Id">Agenda</a>
                                         <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
                                         <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(training))>Borrar</button>
                                     </td>

@@ -36,5 +36,8 @@ namespace NeoSmart.ClassLibraries.DTOs
 
         [Display(Name = "Presencial")]
         public bool Type { get; set; }
+
+        [Display(Name = "Link")]
+        public string? Link { get; set; } = null!;
     }
 }

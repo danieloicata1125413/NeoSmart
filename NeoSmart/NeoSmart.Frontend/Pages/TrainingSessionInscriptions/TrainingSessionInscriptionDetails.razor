@@ -1,8 +1,8 @@
-﻿@page "/Inscriptions/Details/{InscriptionId:int}"
+﻿@page "/TrainingSessionInscriptions/Details/{TrainingSessionInscriptionId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-@attribute [Authorize(Roles = "Admin,Manager,Leader,Capacitador,Empleado")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Capacitador,Empleado")]
 
 @if (loading)
 {
@@ -15,7 +15,7 @@ else
             <div class="row">
                 <div class="col">
                     <h4 class="float-start">Detalle de inscripción</h4>
-                    <a class="btn btn-danger float-end me-1" href="/Inscriptions"><i class="oi oi-ban" /> Cerrar</a>
+                    <a class="btn btn-danger float-end me-1" href="/TrainingSessionInscriptions"><i class="oi oi-ban" /> Cerrar</a>
                 </div>
             </div>
         </div>
@@ -32,14 +32,14 @@ else
                             <p>Dirección</p>
                         </div>
                         <div class="col-8">
-                            <p><strong>@inscription!.User!.FullName</strong></p>
-                            <p><strong>@inscription!.User!.Document</strong></p>
-                            <p><strong>@inscription!.User!.PhoneNumber</strong></p>
-                            <p><strong>@inscription!.User!.UserName</strong></p>
-                            <p><strong>@inscription!.User!.Address, @inscription!.User!.City!.Name, @inscription!.User!.City!.State!.Name, @inscription!.User!.City.State!.Country!.Name</strong></p>
+                            <p><strong>@trainingSessionInscription!.User!.FullName</strong></p>
+                            <p><strong>@trainingSessionInscription!.User!.Document</strong></p>
+                            <p><strong>@trainingSessionInscription!.User!.PhoneNumber</strong></p>
+                            <p><strong>@trainingSessionInscription!.User!.UserName</strong></p>
+                            <p><strong>@trainingSessionInscription!.User!.Address, @trainingSessionInscription!.User!.City!.Name, @trainingSessionInscription!.User!.City!.State!.Name, @trainingSessionInscription!.User!.City.State!.Country!.Name</strong></p>
                         </div>
                     </div>
-                    @if (inscription!.TrainingSession!.User != null)
+                    @if (trainingSessionInscription!.TrainingSession!.User != null)
                     {
                         <h5><strong>Capacitador</strong></h5>
                         <div class="row">
@@ -50,16 +50,16 @@ else
                                 <p>Email</p>
                             </div>
                             <div class="col-8">
-                                <p><strong>@inscription!.TrainingSession!.User!.FullName</strong></p>
-                                <p><strong>@inscription!.TrainingSession!.User!.Document</strong></p>
-                                <p><strong>@inscription!.TrainingSession!.User!.PhoneNumber</strong></p>
-                                <p><strong>@inscription!.TrainingSession!.User!.UserName</strong></p>
+                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.FullName</strong></p>
+                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.Document</strong></p>
+                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.PhoneNumber</strong></p>
+                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.UserName</strong></p>
                             </div>
                         </div>
                     }
                 </div>
                 <div class="col-6">
-                    <CarouselView Images="@inscription!.TrainingSession!.Training!.MainImages" />
+                    <CarouselView Images="@trainingSessionInscription!.TrainingSession!.Training!.MainImages" />
                     <div class="row">
                         <div class="col-4">
                             @* <p>Imagen</p> *@
@@ -70,15 +70,15 @@ else
                         </div>
                         <div class="col-8">
                             @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
-                            <p>@inscription.TrainingSession!.Training!.Description</p>
-                            <p><strong>@($"{inscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
-                            <p><strong>@inscription.InscriptionStatus!.Description</strong></p>
-                            <p><strong>@(string.IsNullOrEmpty(inscription.Remarks) ? "NA" : inscription.Remarks)</strong></p>
+                            <p>@trainingSessionInscription.TrainingSession!.Training!.Description</p>
+                            <p><strong>@($"{trainingSessionInscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
+                            <p><strong>@trainingSessionInscription.TrainingSessionInscriptionStatus!.Description</strong></p>
+                            <p><strong>@(string.IsNullOrEmpty(trainingSessionInscription.Remarks) ? "NA" : trainingSessionInscription.Remarks)</strong></p>
                         </div>
                     </div>
                     <div class="row">
                         <label>Temas:</label>
-                        @foreach (var trainingTopic in inscription.TrainingSession!.Training!.TrainingTopics!)
+                        @foreach (var trainingTopic in trainingSessionInscription.TrainingSession!.Training!.TrainingTopics!)
                         {
                             <b>@trainingTopic.Topic!.Description</b>
                         }
@@ -89,7 +89,7 @@ else
 
         </div>
         <div class="card-footer">
-            @if (inscription!.InscriptionStatus!.Name.Equals("Registered"))
+            @if (trainingSessionInscription!.TrainingSessionInscriptionStatus!.Name.Equals("Registered"))
             {
                 <CascadingAuthenticationState>
                     <AuthorizeView Roles="Employee">
@@ -112,11 +112,12 @@ else
 }
 
 @code {
-    private TrainingSessionInscription? inscription;
+    private List<TrainingSessionInscriptionStatus>? trainingSessionInscriptionStatus;
+    private TrainingSessionInscription? trainingSessionInscription;
     private bool loading = true;
 
     [Parameter]
-    public int InscriptionId { get; set; }
+    public int TrainingSessionInscriptionId { get; set; }
 
     [CascadingParameter]
     CascadingAuthenticationState CascadingAuthenticationState { get; set; } = default!;
@@ -126,45 +127,71 @@ else
 
     protected async override Task OnInitializedAsync()
     {
+        await LoadTrainingSessionInscriptionStatusAsync();
         await LoadAsync();
+    }
+
+    private async Task LoadTrainingSessionInscriptionStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<TrainingSessionInscriptionStatus>>("/api/TrainingSessionInscriptionStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        trainingSessionInscriptionStatus = responseHttp.Response;
     }
 
     private async Task LoadAsync()
     {
         loading = true;
-        var responseHttp = await repository.GetAsync<TrainingSessionInscription>($"api/Inscriptions/{InscriptionId}");
+        var responseHttp = await repository.GetAsync<TrainingSessionInscription>($"api/TrainingSessionInscriptions/{TrainingSessionInscriptionId}");
         if (responseHttp.Error)
         {
             loading = false;
             if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("/Inscriptions");
+                navigationManager.NavigateTo("/TrainingSessionInscriptions");
                 return;
             }
             var messageError = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
             return;
         }
-        inscription = responseHttp.Response;
+        trainingSessionInscription = responseHttp.Response;
         loading = false;
     }
 
     private async Task CancelInscriptionAsync()
     {
-        // await ModifyTemporalOrder("Cancelar", InscriptionStatus.Cancelled);
+        var status = trainingSessionInscriptionStatus.Where(s => s.Name == "Cancelled").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Cancelar", status);
+        }
     }
 
     private async Task RefusedInscriptionAsync()
     {
-        // await ModifyTemporalOrder("Rechazar", InscriptionStatus.Refused);
+        var status = trainingSessionInscriptionStatus.Where(s => s.Name == "Refused").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Rechazar", status);
+        }
     }
 
     private async Task ConfirmedOrderAsync()
     {
-        // await ModifyTemporalOrder("Confirmar", InscriptionStatus.Confirmed);
+        var status = trainingSessionInscriptionStatus.Where(s => s.Name == "Confirmed").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Confirmar", status);
+        }
     }
 
-    private async Task ModifyTemporalOrder(string message, InscriptionStatus status)
+    private async Task ModifyTemporalOrder(string message, TrainingSessionInscriptionStatus status)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
@@ -180,13 +207,14 @@ else
             return;
         }
 
-        var inscriptionDTO = new TrainingSessionInscriptionDTO
+        var trainingSessionInscriptionDTO = new TrainingSessionInscriptionDTO
             {
-                Id = InscriptionId,
+
+                Id = TrainingSessionInscriptionId,
                 InscriptionStatus = status
             };
 
-        var responseHTTP = await repository.PutAsync("api/Inscriptions", inscriptionDTO);
+        var responseHTTP = await repository.PutAsync("api/TrainingSessionInscriptions", trainingSessionInscriptionDTO);
         if (responseHTTP.Error)
         {
             var mensajeError = await responseHTTP.GetErrorMessageAsync();
@@ -195,7 +223,7 @@ else
         }
 
         await BlazoredModal.CloseAsync(ModalResult.Ok());
-        navigationManager.NavigateTo("/Inscriptions");
+        navigationManager.NavigateTo("/TrainingSessionInscriptions");
     }
 
 }

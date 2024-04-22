@@ -1,26 +1,17 @@
 ﻿using NeoSmart.ClassLibraries.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class TrainingSessionAttend : ISoftDetete
+    public class TrainingSessionInscriptionAttend : ISoftDetete
     {
         public int Id { get; set; }
 
-        [Display(Name = "Sesión")]
+        [Display(Name = "Sesión Inscrita")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int TrainingSessionId { get; set; }
-        public TrainingSession? TrainingSession { get; set; }
-
-        [Display(Name = "Asistente")]
-        public string? UserId { get; set; }
-        public User? User { get; set; }
+        public int TrainingSessionInscriptionId { get; set; }
+        public TrainingSessionInscription? TrainingSessionInscription { get; set; }
 
         [Display(Name = "Fecha y hora")]
         public DateTime? Date { get; set; }

@@ -1,20 +1,21 @@
-﻿@page "/TrainingCalendar/create/{TrainingId:int}"
-@attribute [Authorize(Roles = "Admin,Manager,Leader,Trainer")]
+﻿@page "/TrainingSession/create/{TrainingId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
 
-<TrainingCalendarForm Titulo="Nuevo Calendario"
-                      @ref="trainingCalendarForm"
-                      TrainingCalendar="trainingCalendar"
+<TrainingSessionForm Titulo="Nueva Sessión"
+                      @ref="trainingSessionForm"
+                      TrainingSession="trainingSession"
                       OnValidSubmit="CreateAsync" 
                       ReturnAction="Return" />
 
 @code {
 
-    private TrainingSession trainingCalendar = new()
+    private TrainingSession trainingSession = new()
         {
+            
             DateStart = DateTime.Now,
             DateEnd = DateTime.Now.AddDays(1),
             TrainingId = 1,
@@ -22,7 +23,7 @@
             Type = false,
             Status = true
         };
-    private TrainingCalendarForm? trainingCalendarForm;
+    private TrainingSessionForm? trainingSessionForm;
 
     [Parameter]
     public int TrainingId { get; set; }
@@ -32,8 +33,8 @@
 
     private async Task CreateAsync()
     {
-        trainingCalendar.TrainingId = TrainingId;
-        var response = await repository.PostAsync("/api/TrainingCalendars", trainingCalendar);
+        trainingSession.TrainingId = TrainingId;
+        var response = await repository.PostAsync("/api/TrainingSessions", trainingSession);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -56,8 +57,8 @@
 
     private void Return()
     {
-        trainingCalendarForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/TrainingCalendars/details/{TrainingId}");
+        trainingSessionForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/TrainingSessions/details/{TrainingId}");
     }
 
 }

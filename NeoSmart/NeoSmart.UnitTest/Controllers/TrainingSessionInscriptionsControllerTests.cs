@@ -31,7 +31,7 @@ using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 namespace NeoSmart.UnitTest.Controllers
 {
     [TestClass]
-    public class InscriptionsControllerTests
+    public class TrainingSessionInscriptionsControllerTests
     {
 
         private Mock<IInscriptionsHelper> _mockInscriptionsHelper = null!;
@@ -42,7 +42,7 @@ namespace NeoSmart.UnitTest.Controllers
         private DataContext _context = null!;
         private DataContext _mockDbContext = null!;
 
-        public InscriptionsControllerTests()
+        public TrainingSessionInscriptionsControllerTests()
         {
             _mockInscriptionsHelper = new Mock<IInscriptionsHelper>();
             _mockUserHelper = new Mock<IUserHelper>();

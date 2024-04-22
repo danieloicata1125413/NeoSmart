@@ -29,30 +29,31 @@ else
                             <div class="col-6 p-2">
                                 <div class="form-group mb-2">
                                     <label>Fecha inicio:</label>
-                                    <InputDate Type="InputDateType.Date" class="form-control float-end" style="max-width: 150px;" @bind-Value="@TrainingCalendar.DateStart" />
-                                    @* <ValidationMessage For="@(() => @TrainingCalendar.DateStart)" /> *@
+                                    <InputDate Type="InputDateType.Date" class="form-control float-end" style="max-width: 150px;" @bind-Value="@TrainingSession.DateStart" />
+                                    @* <ValidationMessage For="@(() => @TrainingSession.DateStart)" /> *@
                                 </div>
                             </div>
                             <div class="col-6 p-2">
                                 <div class="form-group mb-2">
                                     <label>Fecha Fin:</label>
-                                    <InputDate Type="InputDateType.Date" class="form-control float-end" style="max-width: 150px;" @bind-Value="@TrainingCalendar.DateEnd" />
-                                    @* <ValidationMessage For="@(() => @TrainingCalendar.DateEnd)" /> *@
+                                    <InputDate Type="InputDateType.Date" class="form-control float-end" style="max-width: 150px;" @bind-Value="@TrainingSession.DateEnd" />
+                                    @* <ValidationMessage For="@(() => @TrainingSession.DateEnd)" /> *@
                                 </div>
                             </div>
+                            
                         </div>
 
                         <div class="form-group mb-2">
                             <label>Capacitador:</label>
-                            <select class="form-select" @bind="TrainingCalendar.UserId">
+                            <select class="form-select" @bind="TrainingSession.UserId">
                                 <option value="0">-- Seleccione un capacitador --</option>
                                 @if (users is not null)
                                 {
                                     @foreach (var user in users)
                                     {
-                                        if (TrainingCalendar.User != null)
+                                        if (TrainingSession.User != null)
                                         {
-                                            <option value="@user.Id" selected="@(user.Id.Equals(TrainingCalendar.User!.Id))">@user.FullName</option>
+                                            <option value="@user.Id" selected="@(user.Id.Equals(TrainingSession.User!.Id))">@user.FullName</option>
                                         }
                                         else
                                         {
@@ -61,7 +62,7 @@ else
                                     }
                                 }
                             </select>
-                            <ValidationMessage For="@(() => TrainingCalendar.UserId)" /> 
+                            <ValidationMessage For="@(() => TrainingSession.UserId)" /> 
                         </div>
                     </div>
                     <div class="col-6 p-2">
@@ -74,9 +75,9 @@ else
                                     {
                                         @foreach (var country in countries)
                                         {
-                                            if (TrainingCalendar.City != null)
+                                            if (TrainingSession.City != null)
                                             {
-                                                <option value="@country.Id" selected="@(country.Id == TrainingCalendar.City!.State!.Country!.Id)">@country.Name</option>
+                                                <option value="@country.Id" selected="@(country.Id == TrainingSession.City!.State!.Country!.Id)">@country.Name</option>
                                             }
                                             else
                                             {
@@ -96,9 +97,9 @@ else
                                     {
                                         @foreach (var state in states)
                                         {
-                                            if (TrainingCalendar.City != null)
+                                            if (TrainingSession.City != null)
                                             {
-                                                <option value="@state.Id" selected="@(state.Id == TrainingCalendar.City!.State!.Id)">@state.Name</option>
+                                                <option value="@state.Id" selected="@(state.Id == TrainingSession.City!.State!.Id)">@state.Name</option>
                                             }
                                             else
                                             {
@@ -112,15 +113,15 @@ else
                         <div class="mb-3">
                             <label>Ciudad:</label>
                             <div>
-                                <select class="form-select" @bind="TrainingCalendar.CityId">
+                                <select class="form-select" @bind="TrainingSession.CityId">
                                     <option value="0">-- Seleccione una ciudad --</option>
                                     @if (cities is not null)
                                     {
                                         @foreach (var city in cities)
                                         {
-                                            if (TrainingCalendar.City! != null)
+                                            if (TrainingSession.City! != null)
                                             {
-                                                <option value="@city.Id" selected="@(city.Id == TrainingCalendar.City!.Id)">@city.Name</option>
+                                                <option value="@city.Id" selected="@(city.Id == TrainingSession.City!.Id)">@city.Name</option>
                                             }
                                             else
                                             {
@@ -129,12 +130,21 @@ else
                                         }
                                     }
                                 </select>
-                                <ValidationMessage For="@(() => TrainingCalendar.CityId)" />
+                                <ValidationMessage For="@(() => TrainingSession.CityId)" />
                             </div>
                         </div>
-                        <div class="form-group mb-2">
-                            <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Virtual</label>
-                        </div>
+                        
+                            <div class="form-group mb-2">
+                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Virtual</label>
+                            </div>
+                        @if (TypeValue)
+                        {
+                            <div class="form-group mb-2">
+                                <label class="control-label">Link:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingSession.Link" />
+                                <ValidationMessage For="@(() => TrainingSession.Link)" />
+                            </div>
+                        }
                         <div class="form-group mb-2">
                             <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
                         </div>
@@ -160,14 +170,14 @@ else
 
     bool TypeValue
     {
-        get => Convert.ToBoolean(TrainingCalendar.Type);
-        set => TrainingCalendar.Type = value;
+        get => Convert.ToBoolean(TrainingSession.Type);
+        set => TrainingSession.Type = value;
     }
 
     bool StatusValue
     {
-        get => Convert.ToBoolean(TrainingCalendar.Status);
-        set => TrainingCalendar.Status = value;
+        get => Convert.ToBoolean(TrainingSession.Status);
+        set => TrainingSession.Status = value;
     }
 
     [EditorRequired]
@@ -176,7 +186,7 @@ else
 
     [EditorRequired]
     [Parameter]
-    public TrainingSession TrainingCalendar { get; set; } = null!;
+    public TrainingSession TrainingSession { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]
@@ -192,12 +202,12 @@ else
     {
         await LoadUsersAsync();
         await LoadCountriesAsync();
-        if (TrainingCalendar!.City != null)
+        if (TrainingSession!.City != null)
         {
-            await LoadStatesAsyn(TrainingCalendar!.City!.State!.Country!.Id);
-            await LoadCitiesAsyn(TrainingCalendar!.City!.State!.Id);
+            await LoadStatesAsyn(TrainingSession!.City!.State!.Country!.Id);
+            await LoadCitiesAsyn(TrainingSession!.City!.State!.Id);
         }
-        editContext = new(TrainingCalendar);
+        editContext = new(TrainingSession);
     }
 
     private async Task LoadUsersAsync()
@@ -221,7 +231,7 @@ else
         var selectedCountry = Convert.ToInt32(e.Value!);
         states = null;
         cities = null;
-        TrainingCalendar.CityId = 0;
+        TrainingSession.CityId = 0;
         await LoadStatesAsyn(selectedCountry);
     }
 
@@ -229,7 +239,7 @@ else
     {
         var selectedState = Convert.ToInt32(e.Value!);
         cities = null;
-        TrainingCalendar.CityId = 0;
+        TrainingSession.CityId = 0;
         await LoadCitiesAsyn(selectedState);
     }
 
