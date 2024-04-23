@@ -24,6 +24,20 @@ namespace NeoSmart.BackEnd.Controllers
             _fileStorage = fileStorage;
         }
 
+        [HttpGet("comboByTrainingId/{trainingId}")]
+        public async Task<ActionResult> GetComboAllAsync(int trainingId)
+        {
+            return Ok(await _context.TrainingSessions
+                .Include(ts => ts.User!)
+                .Include(ts => ts.City!)
+                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
+                .Include(ts => ts.TrainingSessionInscriptions!)
+                .Where(ts => ts.TrainingId == trainingId)
+                .OrderBy(ts => ts.DateStart)
+                .ThenBy(ts => ts.TimeStart)
+                .ToListAsync());
+        }
+
         [AllowAnonymous]
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)

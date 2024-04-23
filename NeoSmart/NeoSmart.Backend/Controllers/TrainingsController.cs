@@ -29,6 +29,16 @@ namespace NeoSmart.BackEnd.Controllers
             _userHelper = userHelper;
         }
 
+        [HttpGet("trainingTopics/{trainingId}")]
+        public async Task<ActionResult> GetTrainingTopicsByTrainingAsync(int trainingId)
+        {
+            return Ok(await _context.TrainingTopics
+                .Include(t => t.Topic!)
+                .Where(t => t.TrainingId == trainingId)
+                .OrderBy(t => t.Topic!.Description)
+                .ToListAsync());
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {

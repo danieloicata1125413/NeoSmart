@@ -37,6 +37,16 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
+        [HttpGet("comboByTrainingId/{trainingId}")]
+        public async Task<ActionResult> GetComboByTrainingAsync(int trainingId)
+        {
+            return Ok(await _context.Topics
+                .Include(t=> t.TrainingTopics!)
+                .Where(t => t.TrainingTopics!.Any(x=>x.TrainingId == trainingId))
+                .OrderBy(t => t.Description)
+                .ToListAsync());
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {

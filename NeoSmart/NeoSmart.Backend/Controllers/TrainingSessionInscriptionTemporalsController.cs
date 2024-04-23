@@ -61,7 +61,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == User.Identity!.Name);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == User.Identity!.Name);
             if (user == null)
             {
                 return NotFound();
