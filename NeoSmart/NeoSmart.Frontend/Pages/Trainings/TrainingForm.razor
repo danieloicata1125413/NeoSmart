@@ -16,12 +16,15 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="Training-tab" data-bs-toggle="tab" data-bs-target="#Training" type="button" role="tab" aria-controls="Training" aria-selected="true">Capacitación</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
+                 @if (!IsReadOnly)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
-                </li>
+                }
             </ul>
         </div>
         <div class="card-body m-2">
@@ -31,7 +34,7 @@
                         <div class="col-6 p-2">
                             <div class="form-group mb-2">
                                 <label>Empresa:</label>
-                                <select class="form-select" @onchange="CompanyChangedAsync">
+                                <select class="form-select" @onchange="CompanyChangedAsync" disabled="@IsReadOnly">
                                     <option value="0">-- Seleccione una empresa --</option>
                                     @if (companies is not null)
                                     {
@@ -51,7 +54,7 @@
                             </div>
                             <div class="form-group mb-2">
                                 <label>Proceso:</label>
-                                <select class="form-select" @bind="TrainingDTO.ProcessId">
+                                <select class="form-select" @bind="TrainingDTO.ProcessId" disabled="@IsReadOnly">
                                     <option value="0">-- Seleccione un proceso --</option>
                                     @if (processes is not null)
                                     {
@@ -72,10 +75,10 @@
                             </div>
                             <div class="form-group mb-2">
                                 <select class="form-select" @bind="@TrainingDTO.TrainingStatusId">
-                                    <option value="0">-- Seleccione un estado --</option>
-                                    @if (trainingStatus is not null)
+                                    @* <option value="0">-- Seleccione un estado --</option> *@
+                                    @if (TrainingStatus is not null)
                                     {
-                                        @foreach (var item in trainingStatus)
+                                        @foreach (var item in TrainingStatus)
                                         {
                                             <option value="@item.Id">@item.Description</option>
                                         }
@@ -86,30 +89,30 @@
 
                             <div class="form-group mb-2">
                                 <label>Fecha inicio:</label>
-                                <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@TrainingDTO.DateStart" />
+                                <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@TrainingDTO.DateStart" disabled="@IsReadOnly" />
                                 <ValidationMessage For="@(() => @TrainingDTO.DateStart)" />
                             </div>
                             <div class="form-group mb-2">
                                 <label class="control-label">Duración:</label>
-                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
+                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" disabled="@IsReadOnly" />
                                 <ValidationMessage For="@(() => TrainingDTO.Duration)" />
                             </div>
-                            <div class="form-group mb-2">
-                                <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@StatusValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Habilitado</label>
                             </div>
-                            <div class="form-group mb-2">
-                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@TypeValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Capacitación Interna</label>
                             </div>
                             @if (!TypeValue)
                             {
                                 <div class="form-group mb-2 @(!TypeValue? "visible": "invisible")">
                                     <label class="control-label">Entidad:</label>
-                                    <InputText class="form-control" @bind-Value="@TrainingDTO.Entity" />
+                                    <InputText class="form-control" @bind-Value="@TrainingDTO.Entity" disabled="@IsReadOnly" />
                                     <ValidationMessage For="@(() => TrainingDTO.Entity)" />
                                 </div>
-                                <div class="form-group mb-2 @(!TypeValue? "visible": "invisible")">
+                                <div class="form-group mb-2">
                                     <label class="control-label">Precio:</label>
-                                    <InputNumber class="form-control" @bind-Value="@TrainingDTO.Price" />
+                                    <InputNumber class="form-control" @bind-Value="@TrainingDTO.Price" disabled="@IsReadOnly" />
                                     <ValidationMessage For="@(() => TrainingDTO.Price)" />
                                 </div>
                             }
@@ -117,25 +120,37 @@
                         <div class="col-6 p-2">
                             <div class="form-group mb-2">
                                 <label class="control-label">Código:</label>
-                                <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
+                                <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" disabled="@IsReadOnly" />
                                 <ValidationMessage For="@(() => TrainingDTO.Cod)" />
                             </div>
                             <div class="form-group mb-2">
                                 <label class="control-label">Descripción:</label>
-                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" disabled="@IsReadOnly" />
                                 <ValidationMessage For="@(() => TrainingDTO.Description)" />
                             </div>
                             <div class="form-group mb-2">
                                 <label class="control-label">Justificación:</label>
-                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Requirement" />
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Requirement" disabled="@IsReadOnly" />
                                 <ValidationMessage For="@(() => TrainingDTO.Requirement)" />
                             </div>
-                            @if (!string.IsNullOrEmpty(TrainingDTO.Observation))
+                            
+                            @if (IsReadOnly)
                             {
                                 <div class="form-group mb-2">
                                     <label class="control-label">Observación:</label>
-                                    <label class="control-label">@TrainingDTO.Observation</label>
+                                    <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Observation" />
+                                    <ValidationMessage For="@(() => TrainingDTO.Observation)" />
                                 </div>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(TrainingDTO.Observation))
+                                {
+                                    <div class="form-group mb-2">
+                                        <label class="control-label">Observación:</label>
+                                        <label class="control-label">@TrainingDTO.Observation</label>
+                                    </div>
+                                }
                             }
                         </div>
                     </div>
@@ -171,7 +186,7 @@
 
 @code {
     private EditContext editContext = null!;
-    private List<TrainingStatus>? trainingStatus;
+
     private List<Company>? companies;
     private List<Process>? processes;
     private List<MultipleSelectorModel> selected { get; set; } = new();
@@ -195,9 +210,16 @@
     [Parameter]
     public bool IsEdit { get; set; } = false;
 
+    [Parameter]
+    public bool IsReadOnly { get; set; } = false;
+
     [EditorRequired]
     [Parameter]
     public TrainingDTO TrainingDTO { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public List<TrainingStatus>? TrainingStatus { get; set; } = new();
 
     [EditorRequired]
     [Parameter]
@@ -229,7 +251,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadTrainingStatusAsync();
         await LoadCompaniesAsync();
         if (TrainingDTO!.Process != null)
         {
@@ -246,19 +267,6 @@
         processes = null;
         TrainingDTO.ProcessId = 0;
         await LoadProcessesAsync(selectedCompany);
-    }
-
-    private async Task LoadTrainingStatusAsync()
-    {
-        var responseHttp = await repository.GetAsync<List<TrainingStatus>>("/api/TrainingStatus/combo");
-        if (responseHttp.Error)
-        {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
-
-        trainingStatus = responseHttp.Response;
     }
 
     private async Task LoadCompaniesAsync()

@@ -47,7 +47,12 @@ namespace NeoSmart.ClassLibraries.Entities
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Link { get; set; } = null!;
         public ICollection<TrainingSessionInscriptionTemporal>? TrainingSessionInscriptionTemporals { get; set; }
+
+        [Display(Name = "Temporales")]
+        public int TrainingSessionInscriptionTemporalsNumber => TrainingSessionInscriptionTemporals == null ? 0 : TrainingSessionInscriptionTemporals.Count;
         public ICollection<TrainingSessionInscription>? TrainingSessionInscriptions { get; set; }
+        [Display(Name = "Inscritos")]
+        public int TrainingSessionInscriptionsNumber => TrainingSessionInscriptions == null ? 0 : TrainingSessionInscriptions.Count;
 
     }
 }

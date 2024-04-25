@@ -53,11 +53,8 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
                 .Include(i => i.TrainingSessionInscriptionStatus!)
+                .Include(i => i.TrainingSessionInscriptionAttends!)
                 .FirstOrDefaultAsync(s => s.Id == id);
-
-
-
-
             if (inscription == null)
             {
                 return NotFound();
@@ -65,8 +62,8 @@ namespace NeoSmart.BackEnd.Controllers
             return Ok(inscription);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        [HttpGet("my")]
+        public async Task<IActionResult> MyGetAsync([FromQuery] PaginationDTO pagination)
         {
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user == null)
@@ -108,8 +105,8 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
-        [HttpGet("totalPages")]
-        public async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        [HttpGet("mytotalPages")]
+        public async Task<IActionResult> MyGetPagesAsync([FromQuery] PaginationDTO pagination)
         {
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user == null)
@@ -124,6 +121,52 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 queryable = queryable.Where(s => s.User!.Email == User.Identity!.Name);
             }
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.TrainingSessionInscriptions
+                .Where(s => s.TrainingSessionId == pagination.Id)
+                .Include(i => i.TrainingSession!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingImages!)
+                .Include(i => i.TrainingSession!)
+                    .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.TrainingTopics!)
+                    .ThenInclude(i => i.Topic!)
+                .Include(i => i.TrainingSession!)
+                  .ThenInclude(i => i.User!)
+                .Include(i => i.TrainingSession!)
+                     .ThenInclude(i => i.City!)
+                     .ThenInclude(i => i.State!)
+                     .ThenInclude(i => i.Country!)
+                .Include(i => i.User!)
+                    .ThenInclude(i => i.City!)
+                    .ThenInclude(i => i.State!)
+                    .ThenInclude(i => i.Country!)
+                .Include(i => i.User!)
+                    .ThenInclude(i => i.Occupation!)
+                .Include(i => i.TrainingSessionInscriptionStatus!)
+                .Include(i => i.TrainingSessionInscriptionAttends!)
+                .AsQueryable();
+
+            return Ok(await queryable
+                .OrderByDescending(x => x.Date)
+                .Paginate(pagination)
+                .ToListAsync());
+        }
+
+        [HttpGet("totalPages")]
+        public async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.TrainingSessionInscriptions
+                   .Where(s => s.TrainingSessionId == pagination.Id)
+                   .AsQueryable();
 
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);

@@ -34,6 +34,7 @@
                             <th>Ciudad</th>
                             <th>Virtual</th>
                             <th>Habilitado</th>
+                            <th>Inscritos</th>
                             <th style="width:170px"></th>
                         </tr>
                     </thead>
@@ -49,7 +50,9 @@
                                 <td>@trainingSession.City!.Name</td>
                                 <td><InputCheckbox @bind-Value=trainingSession.Type disabled="true"></InputCheckbox></td>
                                 <td><InputCheckbox @bind-Value=trainingSession.Status disabled="true"></InputCheckbox></td>
+                                <td>@trainingSession!.TrainingSessionInscriptionsNumber</td>
                                 <td>
+                                    <a class="btn btn-info btn-sm" href="/TrainingSessionInscriptions/@trainingSession.Id">Inscritos</a>
                                     <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingSession.Id, true))><i class="oi oi-pencil" /> Editar</button>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingSession))>Borrar</button>
                                 </td>

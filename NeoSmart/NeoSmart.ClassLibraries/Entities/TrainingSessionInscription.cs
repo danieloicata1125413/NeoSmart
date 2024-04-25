@@ -26,7 +26,6 @@ namespace NeoSmart.ClassLibraries.Entities
 
         public int TrainingSessionInscriptionStatusId { get; set; }
         public TrainingSessionInscriptionStatus? TrainingSessionInscriptionStatus { get; set; }
-
         public ICollection<TrainingSessionInscriptionAttend>? TrainingSessionInscriptionAttends { get; set; }
     }
 }

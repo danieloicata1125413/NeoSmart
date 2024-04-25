@@ -46,6 +46,8 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.User!)
                                 .Include(o => o.Training!)
                                 .Include(u => u.City)
+                                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
+                                .Include(ts => ts.TrainingSessionInscriptions!)
                                 .Where(x => x.Training!.Id == pagination.Id)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -84,6 +86,8 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
                 .ThenInclude(s => s.Country)
+                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
+                .Include(ts => ts.TrainingSessionInscriptions!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (trainingCalendar == null)
             {

@@ -106,11 +106,15 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Process!)
                                 .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
-                                .ThenInclude(x => x.Topic)
+                                .ThenInclude(x => x.Topic!)
                                 .Include(o => o.TrainingImages)
                                 .Include(o => o.TrainingSessions!)
-                                .ThenInclude(o => o.User)
+                                .ThenInclude(o => o.User!)
                                 .ThenInclude(o => o.City!)
+                                .Include(o => o.TrainingSessions!)
+                                .ThenInclude(o => o.City!)
+                                .Include(o => o.TrainingSessions!)
+                                .ThenInclude(o => o.TrainingSessionInscriptions!)
                                 .Include(o => o.TrainingStatus!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)
@@ -141,19 +145,23 @@ namespace NeoSmart.BackEnd.Controllers
                     TrainingImages = new List<TrainingImage>(),
                     Status = trainingDTO.Status,
                 };
-
-                foreach (var trainingImage in trainingDTO.NewTrainingImages!)
+                if (trainingDTO.NewTrainingImages != null)
                 {
-                    var photoTraining = Convert.FromBase64String(trainingImage);
-                    newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
-                }
-
-                foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
-                {
-                    var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
-                    if (topic != null)
+                    foreach (var trainingImage in trainingDTO.NewTrainingImages!)
                     {
-                        newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
+                        var photoTraining = Convert.FromBase64String(trainingImage);
+                        newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
+                    }
+                }
+                if (trainingDTO.TrainingTopicIds != null)
+                {
+                    foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
+                    {
+                        var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
+                        if (topic != null)
+                        {
+                            newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
+                        }
                     }
                 }
 
