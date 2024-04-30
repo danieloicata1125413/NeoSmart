@@ -73,19 +73,7 @@
                                 </select>
                                 <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
                             </div>
-                            <div class="form-group mb-2">
-                                <select class="form-select" @bind="@TrainingDTO.TrainingStatusId">
-                                    @* <option value="0">-- Seleccione un estado --</option> *@
-                                    @if (TrainingStatus is not null)
-                                    {
-                                        @foreach (var item in TrainingStatus)
-                                        {
-                                            <option value="@item.Id">@item.Description</option>
-                                        }
-                                    }
-                                </select>
-                                <ValidationMessage For="@(() => TrainingDTO.TrainingStatusId)" />
-                            </div>
+                            
 
                             <div class="form-group mb-2">
                                 <label>Fecha inicio:</label>
@@ -118,11 +106,6 @@
                             }
                         </div>
                         <div class="col-6 p-2">
-                            <div class="form-group mb-2">
-                                <label class="control-label">Código:</label>
-                                <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" disabled="@IsReadOnly" />
-                                <ValidationMessage For="@(() => TrainingDTO.Cod)" />
-                            </div>
                             <div class="form-group mb-2">
                                 <label class="control-label">Descripción:</label>
                                 <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" disabled="@IsReadOnly" />
@@ -216,10 +199,6 @@
     [EditorRequired]
     [Parameter]
     public TrainingDTO TrainingDTO { get; set; } = null!;
-
-    [EditorRequired]
-    [Parameter]
-    public List<TrainingStatus>? TrainingStatus { get; set; } = new();
 
     [EditorRequired]
     [Parameter]

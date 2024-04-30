@@ -39,7 +39,7 @@ else
                             <p><strong>@trainingSessionInscription!.User!.Address, @trainingSessionInscription!.User!.City!.Name, @trainingSessionInscription!.User!.City!.State!.Name, @trainingSessionInscription!.User!.City.State!.Country!.Name</strong></p>
                         </div>
                     </div>
-                    @if (trainingSessionInscription!.TrainingSession!.User != null)
+                    @if (trainingSessionInscription!.Session!.User != null)
                     {
                         <h5><strong>Capacitador</strong></h5>
                         <div class="row">
@@ -50,16 +50,16 @@ else
                                 <p>Email</p>
                             </div>
                             <div class="col-8">
-                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.FullName</strong></p>
-                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.Document</strong></p>
-                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.PhoneNumber</strong></p>
-                                <p><strong>@trainingSessionInscription!.TrainingSession!.User!.UserName</strong></p>
+                                <p><strong>@trainingSessionInscription!.Session!.User!.FullName</strong></p>
+                                <p><strong>@trainingSessionInscription!.Session!.User!.Document</strong></p>
+                                <p><strong>@trainingSessionInscription!.Session!.User!.PhoneNumber</strong></p>
+                                <p><strong>@trainingSessionInscription!.Session!.User!.UserName</strong></p>
                             </div>
                         </div>
                     }
                 </div>
                 <div class="col-6">
-                    <CarouselView Images="@trainingSessionInscription!.TrainingSession!.Training!.MainImages" />
+                    <CarouselView Images="@trainingSessionInscription!.Session!.Training!.MainImages" />
                     <div class="row">
                         <div class="col-4">
                             @* <p>Imagen</p> *@
@@ -70,7 +70,7 @@ else
                         </div>
                         <div class="col-8">
                             @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
-                            <p>@trainingSessionInscription.TrainingSession!.Training!.Description</p>
+                            <p>@trainingSessionInscription.Session!.Training!.Description</p>
                             <p><strong>@($"{trainingSessionInscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
                             <p><strong>@trainingSessionInscription.TrainingSessionInscriptionStatus!.Description</strong></p>
                             <p><strong>@(string.IsNullOrEmpty(trainingSessionInscription.Remarks) ? "NA" : trainingSessionInscription.Remarks)</strong></p>
@@ -78,7 +78,7 @@ else
                     </div>
                     <div class="row">
                         <label>Temas:</label>
-                        @foreach (var trainingTopic in trainingSessionInscription.TrainingSession!.Training!.TrainingTopics!)
+                        @foreach (var trainingTopic in trainingSessionInscription.Session!.Training!.TrainingTopics!)
                         {
                             <b>@trainingTopic.Topic!.Description</b>
                         }

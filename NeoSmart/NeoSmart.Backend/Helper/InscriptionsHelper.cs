@@ -30,28 +30,33 @@ namespace NeoSmart.BackEnd.Helper
             }
 
             var temporalInscriptions = await _context.TrainingSessionInscriptionTemporals
-                .Include(x => x.TrainingSession)
-                .ThenInclude(x => x.Training)
+                .Include(x => x.User!)
+                .Include(x => x.Session!)
+                .ThenInclude(x => x.Training!)
                 .Where(x => x.User!.Email == email)
                 .ToListAsync();
 
             foreach (var temporalInscription in temporalInscriptions)
             {
-                var trainingStatus = _context.TrainingSessionInscriptionStatus.FirstOrDefaultAsync(x => x.Name.Equals("Registered"));
+                var trainingStatus = await _context.TrainingSessionInscriptionStatus.FirstOrDefaultAsync(x => x.Name.Equals("Registered"));
                 TrainingSessionInscription inscription = new()
                 {
                     Date = DateTime.UtcNow,
-                    User = user,
                     Remarks = temporalInscription.Remarks,
-                    TrainingSessionId = temporalInscription.TrainingSessionId,
-                    TrainingSessionInscriptionStatusId = trainingStatus.Id
+                    UserId = user.Id,
+                    Certificate = null,
+                    SessionId = temporalInscription.SessionId,
+                    TrainingSessionInscriptionStatusId = trainingStatus!.Id,
+                    Status = true, 
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
                 };
-                _context.TrainingSessionInscriptions.Add(inscription);
+                 _context.TrainingSessionInscriptions.Add(inscription);
                 //Enviar email
                 var response = _mailHelper.SendMail(user.FullName, user.Email!,
                     $"NeoSmart - Nueva inscripción",
-                    $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-                    $"<p>Se ha realizado una inscripción a la capacitación: {inscription.TrainingSession!.Training!.Description}</p>" +
+                    $"<h4>Hola {temporalInscription.User!.FirstName},</h4>" +
+                    $"<p>Se ha realizado una inscripción a la capacitación: {temporalInscription.Session!.Training!.Description}</p>" +
                     $"<b>Muchas gracias!</b>");
                 _context.TrainingSessionInscriptionTemporals.Remove(temporalInscription);
             }

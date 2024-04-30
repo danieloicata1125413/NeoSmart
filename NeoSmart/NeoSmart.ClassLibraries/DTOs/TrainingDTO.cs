@@ -14,10 +14,6 @@ namespace NeoSmart.ClassLibraries.DTOs
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
-        [Display(Name = "Código")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Cod { get; set; }
-
         [Display(Name = "Descripción")]
         [DataType(DataType.MultilineText)]
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
@@ -53,14 +49,11 @@ namespace NeoSmart.ClassLibraries.DTOs
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Observation { get; set; } = null!;
 
-        public int TrainingStatusId { get; set; }
-        public TrainingStatus? TrainingStatus { get; set; }
-
         public List<int>? TrainingTopicIds { get; set; }
 
         public ICollection<TrainingTopicDTO>? TrainingTopics { get; set; }
 
-        public ICollection<TrainingSessionDTO>? TrainingSessions { get; set; }
+        public ICollection<SessionDTO>? TrainingSessions { get; set; }
 
 
         public List<string>? NewTrainingImages { get; set; }

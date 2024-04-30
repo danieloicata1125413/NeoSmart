@@ -1,0 +1,53 @@
+﻿@page "/TrainingExamQuestions/create/{TrainingExamId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<TrainingExamQuestionForm Titulo="Nuevo ExamQuestionen" @ref="TrainingExamQuestionForm" trainingExamQuestion="TrainingExamQuestion" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private TrainingExamQuestion TrainingExamQuestion = new()
+        {
+            TrainingExamId = 0,
+            Status = true
+        };
+
+    [Parameter]
+    public int TrainingExamId { get; set; }
+
+    private TrainingExamQuestionForm? TrainingExamQuestionForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task CreateAsync()
+    {
+        TrainingExamQuestion.TrainingExamId = TrainingExamId;
+        var response = await repository.PostAsync("/api/TrainingExamQuestions", TrainingExamQuestion);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        TrainingExamQuestionForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/TrainingExamQuestions/{TrainingExamQuestion.TrainingExamId}");
+    }
+}

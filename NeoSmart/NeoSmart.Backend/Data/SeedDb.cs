@@ -34,6 +34,7 @@ namespace NeoSmart.BackEnd.Data
             await CheckOccupationsAsync();
             await CheckFormationsAsync();
             await CheckTopicsAsync();
+            await CheckRequestStatusAsync();
             await CheckTrainingStatusAsync();
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
@@ -80,7 +81,6 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-
         private async Task CheckCountriesAsync()
         {
             if (!_context.Countries.Any())
@@ -1368,16 +1368,16 @@ namespace NeoSmart.BackEnd.Data
                 var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
                 if (company != null)
                 {
-                    _context.Processes.Add(new Process { Cod = "I-P001", Description = "Gestion Humana", Status = true, CompanyId = company.Id, Company = company });
-                    _context.Processes.Add(new Process { Cod = "I-P002", Description = "Planta pinturas", Status = true, CompanyId = company.Id, Company = company });
-                    _context.Processes.Add(new Process { Cod = "I-P003", Description = "Planta agroquimicos", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "Talento Humano", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "Planta pinturas", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "Planta agroquimicos", Status = true, CompanyId = company.Id, Company = company });
                 }
                 company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "830118667-1");
                 if (company != null)
                 {
-                    _context.Processes.Add(new Process { Cod = "ATI-P001", Description = "Gestion Humana", Status = true, CompanyId = company.Id, Company = company });
-                    _context.Processes.Add(new Process { Cod = "ATI-P002", Description = "HSEQ", Status = true, CompanyId = company.Id, Company = company });
-                    _context.Processes.Add(new Process { Cod = "ATI-P003", Description = "Financiera", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "Gestion Humana", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "HSEQ", Status = true, CompanyId = company.Id, Company = company });
+                    _context.Processes.Add(new Process { Description = "Financiera", Status = true, CompanyId = company.Id, Company = company });
                 }
                 await _context.SaveChangesAsync();
             }
@@ -1386,34 +1386,34 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Occupations.Any())
             {
-                var process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P001"));
+                var process = await _context.Processes.FirstOrDefaultAsync(p => p.Description.Equals("Talento Humano"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA001", Description = "Analista Gestion Humana", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Analista Gestion Humana", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P002"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Description.Equals("Planta pinturas"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA002", Description = "Operario pinturas", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA003", Description = "Coordinador Pinturas", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Operario pinturas", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Coordinador Pinturas", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("I-P003"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Description.Equals("Planta agroquimicos"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA004", Description = "Auxiliar Pinturas", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA005", Description = "Operario Agroquimicos", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Auxiliar Pinturas", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Operario Agroquimicos", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P001"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Description.Equals("Gestion Humana"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA006", Description = "Lider Gestión Humana", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA007", Description = "Lider Administrativo", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Lider Gestión Humana", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Lider Administrativo", ProcessId = process.Id, Process = process, Status = true });
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(p => p.Cod.Equals("ATI-P002"));
+                process = await _context.Processes.FirstOrDefaultAsync(p => p.Description.Equals("HSEQ"));
                 if (process != null)
                 {
-                    _context.Occupations.Add(new Occupation { Cod = "CA008", Description = "Coordinador Hseq", ProcessId = process.Id, Process = process, Status = true });
-                    _context.Occupations.Add(new Occupation { Cod = "CA009", Description = "Coordinador Psev", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Coordinador Hseq", ProcessId = process.Id, Process = process, Status = true });
+                    _context.Occupations.Add(new Occupation { Description = "Coordinador Psev", ProcessId = process.Id, Process = process, Status = true });
                 }
                 await _context.SaveChangesAsync();
             }
@@ -1422,20 +1422,20 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Formations.Any())
             {
-                var occupation = await _context.Occupations.FirstOrDefaultAsync(o => o.Cod.Equals("CA001"));
+                var occupation = await _context.Occupations.FirstOrDefaultAsync(o => o.Description.Equals("Analista Gestion Humana"));
                 if (occupation != null)
                 {
                     var company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "890900652-3");
                     if (company != null)
                     {
-                        _context.Formations.Add(new Formation { Cod = "E001", Description = "Inducción del personal.", Status = true, CompanyId = company.Id, Company = company }); ;
-                        _context.Formations.Add(new Formation { Cod = "E002", Description = "Formación en seguridad.", Status = true, CompanyId = company.Id, Company = company });
+                        _context.Formations.Add(new Formation { Description = "Inducción del personal.", Status = true, CompanyId = company.Id, Company = company }); ;
+                        _context.Formations.Add(new Formation { Description = "Formación en seguridad.", Status = true, CompanyId = company.Id, Company = company });
                     }
                     company = await _context.Companies.FirstOrDefaultAsync(x => x.Nit == "830118667-1");
                     if (company != null)
                     {
-                        _context.Formations.Add(new Formation { Cod = "A001", Description = "Riesgo Biológico.", Status = true, CompanyId = company.Id, Company = company }); ;
-                        _context.Formations.Add(new Formation { Cod = "A002", Description = "Manejo de Extintores.", Status = true, CompanyId = company.Id, Company = company });
+                        _context.Formations.Add(new Formation { Description = "Riesgo Biológico.", Status = true, CompanyId = company.Id, Company = company }); ;
+                        _context.Formations.Add(new Formation { Description = "Manejo de Extintores.", Status = true, CompanyId = company.Id, Company = company });
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -1498,35 +1498,41 @@ namespace NeoSmart.BackEnd.Data
         {
             if (!_context.Trainings.Any())
             {
-                var trainingStatus = await _context.TrainingStatus.FirstOrDefaultAsync(x => x.Name.Equals("Scheduled"));
-                var process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("I-P001"));
+                var process = await _context.Processes.FirstOrDefaultAsync(o => o.Description.Equals("Talento Humano"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "ICA001", Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
-                    _context.Trainings.Add(new Training { Cod = "ICA002", Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
+                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
-                process = await _context.Processes.FirstOrDefaultAsync(o => o.Cod.Equals("ATI-P002"));
+                process = await _context.Processes.FirstOrDefaultAsync(o => o.Description.Equals("HSEQ"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Cod = "ATICA001", Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true, });
-                    _context.Trainings.Add(new Training { Cod = "ATICA002", Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, TrainingStatusId = trainingStatus!.Id, TrainingStatus = trainingStatus, Status = true });
+                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
             }
         }
+        private async Task CheckRequestStatusAsync()
+        {
+            if (!_context.RequestStatus.Any())
+            {
+                _context.RequestStatus.Add(new RequestStatus { Name = "Registered", Description = "Registrada", Status = true });
+                _context.RequestStatus.Add(new RequestStatus { Name = "Authorized", Description = "Autorizada", Status = true });
+                _context.RequestStatus.Add(new RequestStatus { Name = "Refused", Description = "Rechazada", Status = true });
+                await _context.SaveChangesAsync();
+            }
+        }
         private async Task CheckTrainingStatusAsync()
         {
-            if (!_context.TrainingStatus.Any())
+            if (!_context.SessionStatus.Any())
             {
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Request", Description = "En Autorización", Status = true });
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Authorized", Description = "Autorizada", Status = true });
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Refused", Description = "Rechazada", Status = true });
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Scheduled", Description = "Programada", Status = true });
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Cancelled", Description = "Cancelada", Status = true });
-                _context.TrainingStatus.Add(new TrainingStatus { Name = "Complete", Description = "Completada", Status = true });
+                _context.SessionStatus.Add(new SessionStatus { Name = "Scheduled", Description = "Programada", Status = true });
+                _context.SessionStatus.Add(new SessionStatus { Name = "Cancelled", Description = "Cancelada", Status = true });
+                _context.SessionStatus.Add(new SessionStatus { Name = "Complete", Description = "Completada", Status = true });
                 await _context.SaveChangesAsync();
             }
         }
@@ -1549,7 +1555,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, string? occupationCod, UserType userType, string pass)
+        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, int? occupationId, UserType userType, string pass)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)
@@ -1576,12 +1582,12 @@ namespace NeoSmart.BackEnd.Data
                         user.Company = company;
                     }
                 }
-                if (!string.IsNullOrEmpty(occupationCod))
+                if (occupationId != null)
                 {
-                    var occupation = await _context.Occupations.FirstOrDefaultAsync(x => x.Cod == occupationCod);
+                    var occupation = await _context.Occupations.FirstOrDefaultAsync(x => x.Id == occupationId);
                     if (occupation != null)
                     {
-                        user.OccupationId = occupation.Id;
+                        user.OccupationId = occupationId;
                         user.Occupation = occupation;
                     }
                 }

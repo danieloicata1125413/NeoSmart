@@ -127,12 +127,10 @@ namespace NeoSmart.UnitTest.Controllers
             _mockDbContext.Occupations.Add(new Occupation
             {
                 Id = 1,
-                Cod = "O01",
                 Status = true,
                 Process = new Process
                 {
                     Id = 1,
-                    Cod = "P01",
                     Status = true,
                     Description = "Some"
                 },

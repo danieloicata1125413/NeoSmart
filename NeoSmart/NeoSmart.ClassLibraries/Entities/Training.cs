@@ -14,10 +14,6 @@ namespace NeoSmart.ClassLibraries.Entities
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
-        [Display(Name = "Código")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Cod { get; set; }
-
         [Display(Name = "Descripción")]
         [DataType(DataType.MultilineText)]
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
@@ -53,23 +49,20 @@ namespace NeoSmart.ClassLibraries.Entities
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Observation { get; set; } = null!;
 
-        public int TrainingStatusId { get; set; }
-        public TrainingStatus? TrainingStatus { get; set; }
-
         public ICollection<TrainingTopic>? TrainingTopics { get; set; }
 
         [Display(Name = "Temas")]
         public int TrainingTopicsNumber => TrainingTopics == null ? 0 : TrainingTopics.Count;
 
-        public ICollection<TrainingSession>? TrainingSessions { get; set; }
+        public ICollection<Session>? Sessions { get; set; }
 
         [Display(Name = "Sesiones")]
-        public int TrainingSessionNumber => TrainingSessions == null ? 0 : TrainingSessions.Count;
+        public int SessionNumber => Sessions == null ? 0 : Sessions.Count;
 
-        public ICollection<TrainingTopicExam>? TrainingTopicExams { get; set; }
+        public ICollection<SessionExam>? TrainingSessionExams { get; set; }
 
         [Display(Name = "Mediciones")]
-        public int TrainingTopicExamsNumber => TrainingTopicExams == null ? 0 : TrainingTopicExams.Count;
+        public int TrainingSessionExamsNumber => TrainingSessionExams == null ? 0 : TrainingSessionExams.Count;
 
         public ICollection<TrainingImage>? TrainingImages { get; set; }
 

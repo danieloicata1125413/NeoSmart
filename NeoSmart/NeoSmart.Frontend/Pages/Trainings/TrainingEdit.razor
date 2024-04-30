@@ -10,7 +10,7 @@
 }
 else
 {
-    <TrainingForm Titulo="Editar Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" TrainingStatus="trainingStatus" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true AddImageAction="AddImageAsync" RemoveImageAction="RemoveImageAsyc" />
+    <TrainingForm Titulo="Editar Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true AddImageAction="AddImageAsync" RemoveImageAction="RemoveImageAsyc" />
 }
 
 @code {
@@ -19,7 +19,7 @@ else
         {
             TrainingTopicIds = new List<int>()
         };
-    private List<TrainingStatus>? trainingStatus;
+
     private TrainingForm? trainingForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
@@ -33,24 +33,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadTrainingStatusAsync();
         await LoadTrainingAsync();
         await LoadTopicsAsync();
     }
 
-    private async Task LoadTrainingStatusAsync()
-    {
-        var responseHttp = await repository.GetAsync<List<TrainingStatus>>("/api/TrainingStatus/combo");
-        if (responseHttp.Error)
-        {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
-
-        var _trainingStatus = responseHttp.Response;
-        trainingStatus = _trainingStatus!.Where(x => x.Name == "Scheduled" || x.Name == "Complete" || x.Name == "Cancelled").ToList();
-    }
 
     private async Task LoadTrainingAsync()
     {
@@ -76,7 +62,6 @@ else
                 Id = training.Id,
                 ProcessId = training.ProcessId,
                 Process = training.Process,
-                Cod = training.Cod,
                 Description = training.Description,
                 Requirement = training.Requirement,
                 DateStart = training.DateStart,
@@ -86,8 +71,6 @@ else
                 Price = training.Price,
                 Observation = training.Observation,
                 Status = training.Status,
-                TrainingStatusId = 4,
-                TrainingStatus = training.TrainingStatus,
                 TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
                 TrainingImages = training.TrainingImages,
                 ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(), 

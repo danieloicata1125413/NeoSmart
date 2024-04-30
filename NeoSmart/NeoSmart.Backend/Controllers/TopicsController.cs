@@ -42,7 +42,21 @@ namespace NeoSmart.BackEnd.Controllers
         {
             return Ok(await _context.Topics
                 .Include(t=> t.TrainingTopics!)
+                .ThenInclude(t => t.Training!)
                 .Where(t => t.TrainingTopics!.Any(x=>x.TrainingId == trainingId))
+                .OrderBy(t => t.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("comboBySesionId/{SesionId}")]
+        public async Task<ActionResult> GetComboByTrainingSesionAsync(int sesionId)
+        {
+            var trainingSesion = await _context.Sessions
+                .FirstOrDefaultAsync(x=>x.Id == sesionId);
+            return Ok(await _context.Topics
+                .Include(t => t.TrainingTopics!)
+                .ThenInclude(t => t.Training!)
+                .Where(t => t.TrainingTopics!.Any(x => x.TrainingId == trainingSesion!.TrainingId))
                 .OrderBy(t => t.Description)
                 .ToListAsync());
         }

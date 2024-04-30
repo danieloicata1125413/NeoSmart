@@ -94,7 +94,7 @@ namespace NeoSmart.UnitTest.Controllers
 
             _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo ="", UserName = userName, CityId = 1 }); ;
 
-            _mockDbContext.Trainings.Add(new Training { Id = 1, Cod="", Description="", Duration=1, Type=false });
+            _mockDbContext.Trainings.Add(new Training { Id = 1, Description="", Duration=1, Type=false });
 
             _mockDbContext.TrainingImages.Add(new TrainingImage { Id = 1, TrainingId = 1, Image =""});
 
@@ -104,10 +104,10 @@ namespace NeoSmart.UnitTest.Controllers
 
             var dat1 = new DateTime();
             TimeSpan interval = new TimeSpan();
-            _mockDbContext.TrainingSessions.Add(new TrainingSession { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
+            _mockDbContext.Sessions.Add(new Session { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
 
             var datime1 = new DateTime();
-            _mockDbContext.TrainingSessionInscriptions.Add(new TrainingSessionInscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", TrainingSessionId = 1, Remarks="Hola mundo" });
+            _mockDbContext.TrainingSessionInscriptions.Add(new TrainingSessionInscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", SessionId = 1, Remarks="Hola mundo" });
 
             _mockDbContext.SaveChanges();
 

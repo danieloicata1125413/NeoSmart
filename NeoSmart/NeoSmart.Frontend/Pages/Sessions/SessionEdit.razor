@@ -1,0 +1,89 @@
+﻿@page "/Session/edit/{SessionId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<SessionForm Titulo="Editar Sessión"
+                      @ref="SessionForm"
+                    Session="session"
+                        SessionStatus="sessionStatus"
+                      OnValidSubmit="SaveAsync"
+                      ReturnAction="Return" />
+
+@code {
+    private List<SessionStatus>? sessionStatus;
+    public Session? session;
+    public SessionForm? SessionForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int SessionId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSessionStatusAsync();
+        await LoadSessionAsync();
+    }
+
+    private async Task LoadSessionAsync()
+    {
+        var httpResponse = await repository.GetAsync<Session>($"/api/Sessions/{SessionId}");
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        session = httpResponse.Response!;
+    }
+
+    private async Task LoadSessionStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<SessionStatus>>("/api/SessionStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var _sessionStatus = responseHttp.Response;
+        sessionStatus = _sessionStatus!.Where(x => x.Name == "Scheduled" || x.Name == "Complete" || x.Name == "Cancelled").ToList();
+    }
+
+    private async Task SaveAsync()
+    {
+        session!.User = null;
+        session!.City = null;
+        session!.Training = null;
+        var response = await repository.PutAsync($"/api/Sessions", session);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private void Return()
+    {
+        SessionForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Sessions/details/{session!.Id}");
+    }
+
+}

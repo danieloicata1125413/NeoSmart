@@ -1,0 +1,150 @@
+﻿@page "/session/details/{sessionId:int},{Return}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h6 class="float-start">@session!.Id</h6>
+                    <a class="btn btn-danger btn-sm float-end me-1" href="@Return"><i class="oi oi-ban" /> Cerrar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    @if (images is not null)
+                    {
+                        <CarouselView Images="images" />
+                    }
+                    <MudRating SelectedValue="4" />
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>@session.Description</label>
+                    </div>
+                    <div class="mb-3">
+                        <label>@session.Requirement</label>
+                    </div>
+                    <div class="mb-3">
+                        <label><b>@session.Observation</b></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    @if (!@session.Type)
+                    {
+                        <div class="form-group mb-2">
+                            <label class="control-label">Capacitación externa</label>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="control-label">Entidad: @session.Entity</label>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="control-label">Precio: @session.Price</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label>Capacitación interna</label>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label>Fecha: @session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</label>
+                    </div>
+                    <div class="mb-3">
+                        <label>Duración: @session.Duration</label>
+                    </div>
+                    <div class="mb-3">
+                    </div>
+                    <div class="mb-3">
+                        <label>Estado: <b>@session.SessionStatus!.Description</b></label>
+                    </div>
+                    @if (topics is not null)
+                    {
+                        @if (topics!.Count > 0)
+                        {
+                            <div class="mb-3">
+                                <label><b>Temas relacionados:</b></label>
+                            </div>
+                            @foreach (var topic in topics!)
+                            {
+                                <div class="mb-3">
+                                    <label>@topic</label>
+                                </div>
+                            }
+                        }
+                    }
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<string>? topics = null;
+    private List<string>? images = null;
+    private bool loading = true;
+    private Session? session;
+    private bool isAuthenticated;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int sessionId { get; set; }
+    [Parameter]
+    public string Return { get; set; } = "Grid";
+
+    public SessionInscriptionDTO sessionInscriptionDTO { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadSessionAsync();
+    }
+
+    private async Task LoadSessionAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<Session>($"/api/sessions/{sessionId}");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        session = httpResponse.Response!;
+        if (session.Training!.TrainingTopics != null)
+        {
+            topics = session.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
+        }
+        if (session.Training!.TrainingImages != null)
+        {
+            images = session.Training!.TrainingImages!.Select(x => x.Image).ToList();
+            if (images!.Count() == 0)
+            {
+                if (session.MainImage != null)
+                {
+                    images!.Add(session.MainImage);
+                }
+            }
+        }
+
+        loading = false;
+    }
+}

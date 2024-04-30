@@ -35,16 +35,16 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<ActionResult> GetAsync(int id)
         {
             var inscription = await _context.TrainingSessionInscriptions
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingImages!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingTopics!)
                     .ThenInclude(i => i.Topic!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                      .ThenInclude(i => i.City!)
                      .ThenInclude(i => i.State!)
                      .ThenInclude(i => i.Country!)
@@ -72,16 +72,16 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             var queryable = _context.TrainingSessionInscriptions
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingImages!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingTopics!)
                     .ThenInclude(i => i.Topic!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                      .ThenInclude(i => i.City!)
                      .ThenInclude(i => i.State!)
                      .ThenInclude(i => i.Country!)
@@ -131,17 +131,17 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.TrainingSessionInscriptions
-                .Where(s => s.TrainingSessionId == pagination.Id)
-                .Include(i => i.TrainingSession!)
+                .Where(s => s.SessionId == pagination.Id)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingImages!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingTopics!)
                     .ThenInclude(i => i.Topic!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
-                .Include(i => i.TrainingSession!)
+                .Include(i => i.Session!)
                      .ThenInclude(i => i.City!)
                      .ThenInclude(i => i.State!)
                      .ThenInclude(i => i.Country!)
@@ -165,7 +165,7 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.TrainingSessionInscriptions
-                   .Where(s => s.TrainingSessionId == pagination.Id)
+                   .Where(s => s.SessionId == pagination.Id)
                    .AsQueryable();
 
             double count = await queryable.CountAsync();
@@ -190,7 +190,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             var inscription = await _context.TrainingSessionInscriptions
                 .Include(s => s.User)
-                .Include(s => s.TrainingSession!)
+                .Include(s => s.Session!)
                 .ThenInclude(s => s.Training)
                 .FirstOrDefaultAsync(s => s.Id == inscriptionDTO.Id);
 
@@ -205,7 +205,7 @@ namespace NeoSmart.BackEnd.Controllers
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
                 $"NeoSmart - Confirmación de inscripción",
                 $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-                $"<p>Se ha confirmado tu inscripción a la capacitación: {inscription.TrainingSession!.Training!.Description}</p>" +
+                $"<p>Se ha confirmado tu inscripción a la capacitación: {inscription.Session!.Training!.Description}</p>" +
                 $"<b>Muchas gracias!</b>");
             }
 
@@ -215,7 +215,7 @@ namespace NeoSmart.BackEnd.Controllers
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
                 $"NeoSmart - Rechazo de inscripción",
                $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.TrainingSession!.Training!.Description}</p>" +
+               $"<p>Lamentablemente se ha rezachado tu inscripción a la capacitación: {inscription.Session!.Training!.Description}</p>" +
                $"<b>Será en una nueva oportunidad!</b>");
             }
 
@@ -225,7 +225,7 @@ namespace NeoSmart.BackEnd.Controllers
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
                 $"NeoSmart - Inscripción cancelada",
                 $"<h4>Hola {inscription.User!.FirstName},</h4>" +
-                $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.TrainingSession!.Training!.Description}</p>" +
+                $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.Session!.Training!.Description}</p>" +
                 $"<b>Será en una nueva oportunidad!</b>");
             }
 

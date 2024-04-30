@@ -54,10 +54,16 @@ namespace NeoSmart.BackEnd.Helper
             var currentUser = await _userManager.FindByIdAsync(user.Id);
             return await _userManager.DeleteAsync(currentUser!);
         }
+
+        public async Task<List<User>> GetUserByRoleAsync(string roleName)
+        {
+            return (List<User>)await _userManager.GetUsersInRoleAsync(roleName);
+        }
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
+
         public async Task<IdentityResult> AddUserToRoleAsync(User user, List<string> rolesName)
         {
             return await _userManager.AddToRolesAsync(user, rolesName);

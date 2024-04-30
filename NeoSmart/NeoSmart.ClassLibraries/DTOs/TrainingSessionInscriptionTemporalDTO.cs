@@ -6,7 +6,7 @@ namespace NeoSmart.ClassLibraries.DTOs
     {
         public int Id { get; set; }
 
-        public int TrainingSessionId { get; set; }
+        public int SessionId { get; set; }
 
         public string Remarks { get; set; } = string.Empty;
     }

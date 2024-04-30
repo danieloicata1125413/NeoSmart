@@ -42,11 +42,9 @@ else
                             <tr>
                                 <th>Empresa</th>
                                 <th>Proceso</th>
-                                <th>Código</th>
                                 <th>Capacitación</th>
                                 <th>Duración</th>
                                 <th>Interna</th>
-                                <th>Estado</th>
                                 <th>Temas</th>
                                 <th>Programación</th>
                                 <th>Habilitado</th>
@@ -59,38 +57,23 @@ else
                                 <tr>
                                     <td>@training.Process!.Company!.Name</td>
                                     <td>@training.Process!.Description</td>
-                                    <td>@training.Cod</td>
                                     <td>@training.Description</td>
                                     <td>@training.Duration</td>
                                     <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
-                                    <td>@training.TrainingStatus!.Description</td>
+
                                     <td>@training.TrainingTopicsNumber</td>
-                                    <td>@training.TrainingSessionNumber</td>
+                                    <td>@training.SessionNumber</td>
                                     <td><InputCheckbox @bind-Value=training.Status disabled="true"></InputCheckbox></td>
                                     <td>
-                                        @if (training.TrainingStatus!.Name.Equals("Request"))
-                                        {
-                                            <button class="btn btn-primary btn-sm mx-1" @onclick=@(() => ShowAuthorizedModalAsync(training.Id))>Autorizar</button>
-                                        }
 
-                                        @if (training.TrainingStatus!.Name.Equals("Request") || training.TrainingStatus!.Name.Equals("Refused") || training.TrainingStatus!.Name.Equals("Complete") || training.TrainingStatus!.Name.Equals("Cancelled"))
-                                        {
-                                            <button class="btn btn-success btn-sm mx-1" @onclick=@(() => ShowInfoModalAsync(training.Id))>Info</button>
-                                        } 
+                                        
 
-                                        @if (training.TrainingStatus!.Name.Equals("Authorized") || training.TrainingStatus!.Name.Equals("Scheduled"))
-                                        {
-                                            <a class="btn btn-info btn-sm mx-1" href="/TrainingSessions/details/@training.Id">Agenda</a>
-                                        }
+                                        <a class="btn btn-info btn-sm mx-1" href="/Sessions/details/@training.Id">Agenda</a>
 
-                                        @if (training.TrainingStatus!.Name.Equals("Authorized") || training.TrainingStatus!.Name.Equals("Scheduled"))
-                                        {
-                                            <button class="btn btn-warning btn-sm mx-1" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
-                                        }
-                                        @if (training.TrainingStatus!.Name.Equals("Request"))
-                                        {
-                                            <button class="btn btn-danger btn-sm mx-1" @onclick=@(() => DeleteAsync(training))>Borrar</button>
-                                        }
+                                        <button class="btn btn-warning btn-sm mx-1" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
+
+                                        <button class="btn btn-danger btn-sm mx-1" @onclick=@(() => DeleteAsync(training))>Borrar</button>
+
                                     </td>
                                 </tr>
                             }
@@ -107,7 +90,7 @@ else
 }
 
 @code {
-    private List<TrainingStatus>? trainingStatus;
+    private List<SessionStatus>? trainingStatus;
     private int trainingStatusId;
     private List<Training>? trainings;
     private int currentPage = 1;
@@ -140,7 +123,7 @@ else
 
     private async Task LoadTrainingStatusAsync()
     {
-        var responseHttp = await repository.GetAsync<List<TrainingStatus>>("/api/TrainingStatus/combo");
+        var responseHttp = await repository.GetAsync<List<SessionStatus>>("/api/TrainingStatus/combo");
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -171,27 +154,7 @@ else
         }
     }
 
-    private async Task ShowInfoModalAsync(int id = 0)
-    {
-        IModalReference modalReference;
-        modalReference = Modal.Show<TrainingDetails>(string.Empty, new ModalParameters().Add("TrainingId", id).Add("Return", "/trainings"));
-        var result = await modalReference.Result;
-        if (result.Confirmed)
-        {
-
-        }
-    }
-
-    private async Task ShowAuthorizedModalAsync(int id = 0)
-    {
-        IModalReference modalReference;
-        modalReference = Modal.Show<TrainingAuthorized>(string.Empty, new ModalParameters().Add("TrainingId", id));
-        var result = await modalReference.Result;
-        if (result.Confirmed)
-        {
-            await LoadAsync();
-        }
-    }
+    
 
     private async Task SelectedPageAsync(int page)
     {
@@ -218,7 +181,7 @@ else
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings/totalPages?Id={trainingStatusId}";
+            url = $"api/trainings/totalPages?id={trainingStatusId}";
         }
         else
         {

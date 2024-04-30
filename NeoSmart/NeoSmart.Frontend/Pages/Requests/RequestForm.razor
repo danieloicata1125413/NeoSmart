@@ -1,0 +1,184 @@
+﻿@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigationAsync"></NavigationLock>
+<EditForm EditContext="editContext">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">@Titulo</h4>
+                    <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
+                </div>
+            </div>
+            <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="Request-tab" data-bs-toggle="tab" data-bs-target="#Request" type="button" role="tab" aria-controls="Request" aria-selected="true">Capacitación</button>
+                </li>
+                
+            </ul>
+        </div>
+        <div class="card-body m-2">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="Request" role="tabpanel" aria-labelledby="Request-tab">
+                    <div class="row">
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <select class="form-select" @bind="@RequestDTO.RequestStatusId">
+                                    @* <option value="0">-- Seleccione un estado --</option> *@
+                                    @if (RequestStatus is not null)
+                                    {
+                                        @foreach (var item in RequestStatus)
+                                        {
+                                            <option value="@item.Id">@item.Description</option>
+                                        }
+                                    }
+                                </select>
+                                <ValidationMessage For="@(() => RequestDTO.RequestStatusId)" />
+                            </div>
+
+                            <div class="form-group mb-2">
+                                <label>Fecha inicio:</label>
+                                <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@RequestDTO.DateStart" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => @RequestDTO.DateStart)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Duración:</label>
+                                <InputNumber class="form-control" @bind-Value="@RequestDTO.Duration" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => RequestDTO.Duration)" />
+                            </div>
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@StatusValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Habilitado</label>
+                            </div>
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@TypeValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Capacitación Interna</label>
+                            </div>
+                            @if (!TypeValue)
+                            {
+                                <div class="form-group mb-2 @(!TypeValue? "visible": "invisible")">
+                                    <label class="control-label">Entidad:</label>
+                                    <InputText class="form-control" @bind-Value="@RequestDTO.Entity" disabled="@IsReadOnly" />
+                                    <ValidationMessage For="@(() => RequestDTO.Entity)" />
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="control-label">Precio:</label>
+                                    <InputNumber class="form-control" @bind-Value="@RequestDTO.Price" disabled="@IsReadOnly" />
+                                    <ValidationMessage For="@(() => RequestDTO.Price)" />
+                                </div>
+                            }
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <label class="control-label">Descripción:</label>
+                                <InputTextArea class="form-control" @bind-Value="@RequestDTO.Description" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => RequestDTO.Description)" />
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="control-label">Justificación:</label>
+                                <InputTextArea class="form-control" @bind-Value="@RequestDTO.Requirement" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => RequestDTO.Requirement)" />
+                            </div>
+                            
+                            @if (IsReadOnly)
+                            {
+                                <div class="form-group mb-2">
+                                    <label class="control-label">Observación:</label>
+                                    <InputTextArea class="form-control" @bind-Value="@RequestDTO.Observation" />
+                                    <ValidationMessage For="@(() => RequestDTO.Observation)" />
+                                </div>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(RequestDTO.Observation))
+                                {
+                                    <div class="form-group mb-2">
+                                        <label class="control-label">Observación:</label>
+                                        <label class="control-label">@RequestDTO.Observation</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+    bool TypeValue
+    {
+        get => Convert.ToBoolean(RequestDTO.Type);
+        set => RequestDTO.Type = value;
+    }
+    bool StatusValue
+    {
+        get => Convert.ToBoolean(RequestDTO.Status);
+        set => RequestDTO.Status = value;
+    }
+    [EditorRequired]
+    [Parameter]
+    public string Titulo { get; set; } = null!;
+
+    [Parameter]
+    public bool IsEdit { get; set; } = false;
+
+    [Parameter]
+    public bool IsReadOnly { get; set; } = false;
+
+    [EditorRequired]
+    [Parameter]
+    public RequestDTO RequestDTO { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public List<RequestStatus>? RequestStatus { get; set; } = new();
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+
+    private async Task OnBeforeInternalNavigationAsync(LocationChangingContext context)
+    {
+        var formWasEdited = editContext.IsModified();
+
+        if (!formWasEdited)
+        {
+            return;
+        }
+
+        if (FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+}

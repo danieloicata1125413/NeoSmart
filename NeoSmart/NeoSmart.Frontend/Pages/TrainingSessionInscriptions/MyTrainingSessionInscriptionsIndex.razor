@@ -49,27 +49,36 @@ else
                                         @trainingSessionInscription.User!.FullName
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.TrainingSession!.Training!.Description
+                                        @trainingSessionInscription.Session!.Training!.Description
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.TrainingSession!.DateStart
+                                        @trainingSessionInscription.Session!.DateStart
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.TrainingSession!.DateEnd
+                                        @trainingSessionInscription.Session!.DateEnd
                                     </td>
                                     <td>
-                                        @if (@trainingSessionInscription.TrainingSession!.User != null)
+                                        @if (@trainingSessionInscription.Session!.User != null)
                                         {
-                                            @trainingSessionInscription.TrainingSession!.User!.FullName
+                                            @trainingSessionInscription.Session!.User!.FullName
                                         }
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.Remarks
+                                        <label>@trainingSessionInscription.Remarks</label>
+                                        @if (trainingSessionInscription.TrainingSessionInscriptionAttendsExist == true)
+                                        {
+
+                                            <label>Asistencia completada</label>
+                                        }
                                     </td>
                                     <td>
                                         @trainingSessionInscription.TrainingSessionInscriptionStatus!.Description
                                     </td>
                                     <td>
+                                        @if (trainingSessionInscription.Certificate != null)
+                                        {
+                                            <a class="btn btn-info btn-sm mx-1" href="@trainingSessionInscription.Certificate">Certificado</a>
+                                        }
                                         <button @onclick=@(() => ShowModalAsync(trainingSessionInscription.Id)) class="btn btn-info btn-sm"><i class="oi oi-info" /> Detalles</button>
                                     </td>
                                 </tr>

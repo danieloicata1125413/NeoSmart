@@ -46,18 +46,35 @@ else
                                         @trainingSessionInscription.User!.FullName
                                     </td>
                                     <td>
-                                        @if (@trainingSessionInscription.User!.Occupation != null){
+                                        @if (@trainingSessionInscription.User!.Occupation != null)
+                                        {
                                             @trainingSessionInscription.User!.Occupation!.Description
                                         }
                                     </td>
                                     <td>
                                         @trainingSessionInscription.Remarks
+                                        @if (trainingSessionInscription.TrainingSessionInscriptionAttendsExist == true)
+                                        {
+                                            <label>Asistencia completada</label>
+                                        }
                                     </td>
                                     <td>
                                         @trainingSessionInscription.TrainingSessionInscriptionStatus!.Description
                                     </td>
                                     <td>
-                                        @* <button @onclick=@(() => ShowModalAsync(trainingSessionInscription.Id)) class="btn btn-info btn-sm"><i class="oi oi-info" /> Detalles</button> *@
+                                        @if (trainingSessionInscription.Certificate != null)
+                                        {
+                                            <a class="btn btn-info btn-sm mx-1" href="@trainingSessionInscription.Certificate">Certificado</a>
+                                        }
+                                        @if (trainingSessionInscription.TrainingSessionInscriptionStatus!.Name.Equals("Registered"))
+                                        {
+                                            <button class="btn btn-danger btn-sm mx-1" @onclick=@(() => ShowRefusedAsync(trainingSessionInscription))><i class="oi oi-pencil" />Rechazar</button>
+                                            <button class="btn btn-success btn-sm mx-1" @onclick=@(() => ShowConfirmedAsync(trainingSessionInscription))><i class="oi oi-pencil" />Confirmado</button>
+                                        }
+                                        @if (trainingSessionInscription.TrainingSessionInscriptionStatus!.Name.Equals("Confirmed"))
+                                        {
+                                            <button class="btn btn-warning btn-sm mx-1" @onclick=@(() => ShowCancelledAsync(trainingSessionInscription))><i class="oi oi-pencil" />Cancelar</button>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -148,15 +165,45 @@ else
         loading = false;
     }
 
-    private async Task ShowModalAsync(int id = 0)
+    private async Task ShowRefusedAsync(TrainingSessionInscription model)
     {
-        IModalReference modalReference;
-        modalReference = Modal.Show<TrainingSessionInscriptionDetails>(string.Empty, new ModalParameters().Add("TrainingSessionInscriptionId", id));
-
-        var result = await modalReference.Result;
-        if (result.Confirmed)
+        model.TrainingSessionInscriptionStatusId = 2;
+        model.TrainingSessionInscriptionStatus = null;
+        var response = await repository.PutAsync($"/api/TrainingSessionInscriptions", model);
+        if (response.Error)
         {
-            await LoadAsync();
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
         }
+        await LoadAsync();
+    }
+
+    private async Task ShowConfirmedAsync(TrainingSessionInscription model)
+    {
+        model.TrainingSessionInscriptionStatusId = 3;
+        model.TrainingSessionInscriptionStatus = null;
+        var response = await repository.PutAsync($"/api/TrainingSessionInscriptions", model);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        await LoadAsync();
+    }
+
+    private async Task ShowCancelledAsync(TrainingSessionInscription model)
+    {
+        model.TrainingSessionInscriptionStatusId = 4;
+        model.TrainingSessionInscriptionStatus = null;
+        var response = await repository.PutAsync($"/api/TrainingSessionInscriptions", model);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        await LoadAsync();
     }
 }

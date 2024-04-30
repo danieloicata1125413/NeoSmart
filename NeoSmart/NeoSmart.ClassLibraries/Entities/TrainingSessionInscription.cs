@@ -17,15 +17,25 @@ namespace NeoSmart.ClassLibraries.Entities
 
         public string? UserId { get; set; }
 
-        public int TrainingSessionId { get; set; }
-        public TrainingSession? TrainingSession { get; set; }
+        public int SessionId { get; set; }
+        public Session? Session { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Comentarios")]
         public string? Remarks { get; set; }
 
+        [Display(Name = "Certificado")]
+        public string? Certificate { get; set; } = null!;
+
         public int TrainingSessionInscriptionStatusId { get; set; }
         public TrainingSessionInscriptionStatus? TrainingSessionInscriptionStatus { get; set; }
         public ICollection<TrainingSessionInscriptionAttend>? TrainingSessionInscriptionAttends { get; set; }
+
+        [Display(Name = "Asistencia")]
+        public bool TrainingSessionInscriptionAttendsExist => TrainingSessionInscriptionAttends == null || TrainingSessionInscriptionAttends.Count == 0 ? false : true;
+        public ICollection<TrainingSessionInscriptionExam>? TrainingSessionInscriptionExams { get; set; }
+
+        [Display(Name = "Diligenciados")]
+        public int TrainingSessionInscriptionExamsNumber => TrainingSessionInscriptionExams == null ? 0 : TrainingSessionInscriptionExams.Count;
     }
 }

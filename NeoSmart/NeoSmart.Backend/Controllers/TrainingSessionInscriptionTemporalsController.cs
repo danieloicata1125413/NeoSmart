@@ -55,8 +55,8 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpPost("full")]
         public async Task<IActionResult> PostAsync(TrainingSessionInscriptionTemporalDTO trainingSessionInscriptionTemporalDTO)
         {
-            var trainingSession = await _context.TrainingSessions.FirstOrDefaultAsync(x => x.Id == trainingSessionInscriptionTemporalDTO.TrainingSessionId);
-            if (trainingSession == null)
+            var session = await _context.Sessions.FirstOrDefaultAsync(x => x.Id == trainingSessionInscriptionTemporalDTO.SessionId);
+            if (session == null)
             {
                 return NotFound();
             }
@@ -69,7 +69,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             var trainingSessionInscriptionTemporal = new TrainingSessionInscriptionTemporal
             {
-                TrainingSessionId = trainingSession.Id,
+                SessionId = session.Id,
                 Remarks = trainingSessionInscriptionTemporalDTO.Remarks,
                 User = user
             };
@@ -90,7 +90,7 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<IActionResult> GetAsync()
         {
             var result = await _context.TrainingSessionInscriptionTemporals
-                .Include(x => x.TrainingSession!)
+                .Include(x => x.Session!)
                 .ThenInclude(tc => tc.Training!)
                 .ThenInclude(i => i.TrainingImages!)
                 .Include(x => x.User!)

@@ -1,0 +1,80 @@
+﻿@page "/Requests/create"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Leader")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <RequestForm Titulo="Nueva Solicitud" @ref="RequestForm" RequestDTO="RequestDTO" RequestStatus="RequestStatus" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+}
+
+@code {
+    private RequestDTO RequestDTO = new()
+        {
+            RequestStatusId = 1,
+            Type = true,
+            DateStart = DateTime.Now,
+            Duration = 60,
+            Status = true
+        };
+    private List<RequestStatus>? RequestStatus;
+    private RequestForm? RequestForm;
+    private List<Topic> selectedTopics = new();
+    private List<Topic> nonSelectedTopics = new();
+    private bool loading = true;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadRequestStatusAsync();
+    }
+    private async Task LoadRequestStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<RequestStatus>>("/api/RequestStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var _RequestStatus = responseHttp.Response;
+        RequestStatus = _RequestStatus!.Where(x => x.Name == "Request").ToList();
+    }
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/Requests/full", RequestDTO);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        RequestForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Requests");
+    }
+}

@@ -1,0 +1,211 @@
+﻿@page "/TrainingSessionExams/{TrainingSesionId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="row mb-3">
+        <div class="col-7">
+            <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
+            <h3>Mediciones de la sesión</h3>
+        </div>
+        <div class="col-5">
+        </div>
+    </div>
+    <div class="card widget-inline">
+        <div class="card-body">
+            <GenericList MyList="TrainingSessionExams">
+                <NoRecords>
+                    <p>Aun no hay inscripciones registradas.</p>
+                </NoRecords>
+                <Body>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Medición</th>
+                                <th>Desde</th>
+                                <th>Hasta</th>
+                                <th>Usuario</th>
+                                <th>Inicio</th>
+                                <th>Hasta</th>
+                                <th>Intentos</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var trainingSessionExam in TrainingSessionExams!)
+                            {
+                                <tr>
+                                    <td>
+                                        @trainingSessionExam.TrainingExam!.Description
+                                    </td>
+                                    <td>
+                                        @($"{trainingSessionExam.DateStart:yyyy/MM/dd hh:mm tt}")
+                                    </td>
+                                    <td>
+                                        @($"{trainingSessionExam.DateEnd:yyyy/MM/dd hh:mm tt}")
+                                    </td>
+                                    <td>
+                                        @trainingSessionExam.TimeStart
+                                    </td>
+                                    <td>
+                                        @trainingSessionExam.TimeEnd
+                                    </td>
+                                    <td>
+                                        @trainingSessionExam.Attempt
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingSessionExam.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingSessionExam))><i class="oi oi-trash" /> Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <Pagination CurrentPage="currentPage"
+                                TotalPages="totalPages"
+                                SelectedPage="SelectedPageAsync" />
+                </Body>
+            </GenericList>
+        </div>
+    </div>
+}
+
+@code {
+
+    private int currentPage = 1;
+    private int totalPages;
+    private bool loading = true;
+
+    [Parameter]
+    public int TrainingSesionId { get; set; }
+
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+    public List<SessionExam>? TrainingSessionExams { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task SelectedPageAsync(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        var ok = await LoadListAsync(page);
+        if (ok)
+        {
+            await LoadPagesAsync();
+        }
+    }
+
+    private async Task<bool> LoadListAsync(int page)
+    {
+        loading = true;
+        var url = $"api/TrainingSessionExams?id={TrainingSesionId}&page={page}";
+        var response = await repository.GetAsync<List<SessionExam>>(url);
+        if (response.Error)
+        {
+            loading = false;
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return false;
+        }
+        TrainingSessionExams = response.Response;
+        loading = false;
+        return true;
+    }
+
+    private async Task LoadPagesAsync()
+    {
+        loading = true;
+        var url = $"api/TrainingSessionExams/totalPages?id={TrainingSesionId}";
+        var response = await repository.GetAsync<int>(url);
+        if (response.Error)
+        {
+            loading = false;
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        totalPages = response.Response;
+        loading = false;
+    }
+
+    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<TrainingSessionExamEdit>(string.Empty, new ModalParameters().Add("TrainingSessionExamId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<TrainingSessionExamCreate>(string.Empty, new ModalParameters().Add("TrainingSesionId", TrainingSesionId));
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
+    private async Task DeleteAsync(SessionExam trainingSessionExam)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var response = await repository.DeleteAsync($"api/TrainingSessionExams/{trainingSessionExam.Id}");
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
+    }
+}

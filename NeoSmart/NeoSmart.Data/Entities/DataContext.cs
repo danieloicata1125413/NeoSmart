@@ -26,20 +26,27 @@ namespace NeoSmart.Data.Entities
         public DbSet<Slider> Sliders { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Topic> Topics { get; set; }
-        public DbSet<TopicExam> TopicExams { get; set; }
-        public DbSet<TopicExamQuestion> TopicExamQuestions { get; set; }
+
+
+        public DbSet<Request> Requests { get; set; }
+        public DbSet<RequestStatus> RequestStatus { get; set; }
+        public DbSet<RequestUser> RequestUsers { get; set; }
         public DbSet<Training> Trainings { get; set; }
         public DbSet<TrainingImage> TrainingImages { get; set; }
         public DbSet<TrainingResource> TrainingResources { get; set; }
-        public DbSet<TrainingSession> TrainingSessions { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        public DbSet<SessionStatus> SessionStatus { get; set; }
+        public DbSet<TrainingExam> TrainingExams { get; set; }
+        public DbSet<TrainingExamQuestion> TrainingExamQuestions { get; set; }
+        public DbSet<SessionExam> SessionExams { get; set; }
         public DbSet<TrainingSessionInscriptionAttend> TrainingSessionInscriptionAttends { get; set; }
         public DbSet<TrainingSessionInscription> TrainingSessionInscriptions { get; set; }
         public DbSet<TrainingSessionInscriptionTemporal> TrainingSessionInscriptionTemporals { get; set; }
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
-        public DbSet<TrainingTopicExam> TrainingTopicExams { get; set; }
-        public DbSet<TrainingStatus> TrainingStatus { get; set; }
-        public DbSet<UserTopicExam> UserTopicExams { get; set; }
-        public DbSet<UserTopicExamAnswer> UserTopicExamAnswers { get; set; }
+
+        
+        public DbSet<TrainingSessionInscriptionExam> TrainingSessionInscriptionExams { get; set; }
+        public DbSet<TrainingSessionInscriptionExamAnswer> TrainingSessionInscriptionExamAnswers { get; set; }
         public DbSet<TrainingSessionInscriptionStatus> TrainingSessionInscriptionStatus { get; set; }
         public DbSet<UserTokenReset> AspNetUserTokenReset { get; set; }
 
@@ -47,14 +54,14 @@ namespace NeoSmart.Data.Entities
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Company>().HasIndex(c => c.Nit).IsUnique();
-            modelBuilder.Entity<Process>().HasIndex(p => new { p.CompanyId, p.Cod }).IsUnique();
-            modelBuilder.Entity<Occupation>().HasIndex(o => new { o.ProcessId, o.Cod }).IsUnique();
-            modelBuilder.Entity<Formation>().HasIndex(f => new { f.CompanyId, f.Cod }).IsUnique();
+            modelBuilder.Entity<Process>().HasIndex(p => new { p.CompanyId, p.Description }).IsUnique();
+            modelBuilder.Entity<Occupation>().HasIndex(o => new { o.ProcessId, o.Description }).IsUnique();
+            modelBuilder.Entity<Formation>().HasIndex(f => new { f.CompanyId, f.Description }).IsUnique();
             modelBuilder.Entity<Topic>().HasIndex(t => new { t.CompanyId, t.Description }).IsUnique();
-            modelBuilder.Entity<Training>().HasIndex(t => new { t.ProcessId, t.Cod }).IsUnique();
-            modelBuilder.Entity<TrainingStatus>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Training>().HasIndex(t => new { t.ProcessId, t.Description }).IsUnique();
+            modelBuilder.Entity<SessionStatus>().HasIndex(c => c.Name).IsUnique();
 
-            modelBuilder.Entity<TrainingSessionInscription>().HasIndex(t => new { t.TrainingSessionId, t.UserId }).IsUnique();
+            modelBuilder.Entity<TrainingSessionInscription>().HasIndex(t => new { t.SessionId, t.UserId }).IsUnique();
             modelBuilder.Entity<TrainingSessionInscriptionAttend>().HasIndex(t => t.TrainingSessionInscriptionId ).IsUnique();
 
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();

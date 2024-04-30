@@ -13,7 +13,7 @@ else
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h6 class="float-start">@training!.Cod</h6>
+                    <h6 class="float-start">@training!.Id</h6>
                     <a class="btn btn-danger btn-sm float-end me-1" href="@Return"><i class="oi oi-ban" /> Cerrar</a>
                 </div>
             </div>
@@ -72,7 +72,7 @@ else
                     </div>
                     @if (topics is not null)
                     {
-                        @if (training!.TrainingSessions!.Count > 0)
+                        @if (training!.Sessions!.Count > 0)
                         {
                             <div class="mb-3">
                                 <label><b>Temas relacionados:</b></label>
@@ -89,26 +89,26 @@ else
                 </div>
                 <div class="col-6">
                     <div class="form-group mb-2">
-                        @if (training!.TrainingSessions!.Count > 0)
+                        @if (training!.Sessions!.Count > 0)
                         {
                             <div class="mb-3">
                                 <label><b>Agenda disponible:</b></label>
                             </div>
 
-                            @foreach (var trainingSession in training!.TrainingSessions!)
+                            @foreach (var session in training!.Sessions!)
                             {
                                 <div class="mb-3" style="background-color: #f1f1f1; padding: 5px;">
                                     <div class="mb-3">
-                                        <label>Capacitador: @trainingSession!.ExistUser</label>
+                                        <label>Capacitador: @session!.ExistUser</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Ciudad: @trainingSession.City!.Name</label>
+                                        <label>Ciudad: @session.City!.Name</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Fecha: @trainingSession.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) Horario: @trainingSession.TimeStart - @trainingSession.TimeEnd</label>
+                                        <label>Fecha: @session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) Horario: @session.TimeStart - @session.TimeEnd</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Inscritos: @trainingSession!.TrainingSessionInscriptionsNumber</label>
+                                        <label>Inscritos: @session!.TrainingSessionInscriptionsNumber</label>
                                     </div>
                                 </div>
                             }

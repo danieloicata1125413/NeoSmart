@@ -34,7 +34,7 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Formaciones")]
         public int FormationTopicsNumber => FormationTopics == null ? 0 : FormationTopics.Count;
 
-        public ICollection<TopicExam>? TopicExams { get; set; }
+        public ICollection<TrainingExam>? TopicExams { get; set; }
 
         [Display(Name = "Mediciones")]
         public int TopicExamsNumber => TopicExams == null ? 0 : TopicExams.Count;

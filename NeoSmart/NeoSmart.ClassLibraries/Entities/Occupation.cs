@@ -12,10 +12,6 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
-        [Display(Name = "Código")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Cod { get; set; }
-
         [Display(Name = "Descripción")]
         [DataType(DataType.MultilineText)]
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]

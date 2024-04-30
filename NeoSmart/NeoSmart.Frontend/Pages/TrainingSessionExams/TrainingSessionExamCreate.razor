@@ -1,0 +1,56 @@
+﻿@page "/TrainingSessionExams/create/{TrainingSesionId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<TrainingSessionExamForm Titulo="Nuevo Examen" @ref="TrainingSessionExamForm" TrainingSesionId="TrainingSesionId" TrainingSessionExam="TrainingSessionExam" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private SessionExamDTO TrainingSessionExam = new SessionExamDTO()
+        {
+            TrainingExamId = 0,
+            TrainingSessionId = 0,
+            DateStart = DateTime.Now,
+            DateEnd = DateTime.Now.AddDays(1),
+            TimeStart = DateTime.Now.TimeOfDay,
+            TimeEnd = DateTime.Now.TimeOfDay,
+            Attempt = 1,
+        };
+    private TrainingSessionExamForm? TrainingSessionExamForm;
+
+    [Parameter]
+    public int TrainingSesionId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/TrainingSessionExams/full", TrainingSessionExam);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        TrainingSessionExamForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/TrainingSessionExams/{TrainingSesionId}");
+    }
+}

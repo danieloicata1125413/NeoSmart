@@ -51,10 +51,10 @@ namespace NeoSmart.BackEnd.Controllers
                 var trainingSessionInscriptionAttend = await _context.TrainingSessionInscriptionAttends
                     .Where(x => x.Id == _trainingSessionInscriptionAttend.Id!)
                     .Include(x => x.TrainingSessionInscription!)
-                    .ThenInclude(x => x.TrainingSession!)
+                    .ThenInclude(x => x.Session!)
                     .ThenInclude(x => x.Training!)
                     .Include(x => x.TrainingSessionInscription!)
-                    .ThenInclude(x => x.TrainingSession!)
+                    .ThenInclude(x => x.Session!)
                     .ThenInclude(x => x.User!)
                     .FirstOrDefaultAsync();
                 if (trainingSessionInscriptionAttend != null)
@@ -67,9 +67,9 @@ namespace NeoSmart.BackEnd.Controllers
                             $"NeoSmart - Confirmación de asistencia a la capacitación",
                             $"<h4>Hola {user!.FirstName},</h4>" +
                             $"<p>A las : {trainingSessionInscriptionAttend!.Created!}</p>" +
-                            $"<p>Se ha completado la asistencia a la capacitación: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.TrainingSession!.Training!.Description}</p>" +
-                            $"<p>Sesión programada: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.TrainingSession!.DateStart} {trainingSessionInscriptionAttend!.TrainingSessionInscription!.TrainingSession!.TimeStart}</p>" +
-                            $"<p>Capacitador: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.TrainingSession!.ExistUser!}</p>" +
+                            $"<p>Se ha completado la asistencia a la capacitación: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.Session!.Training!.Description}</p>" +
+                            $"<p>Sesión programada: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.Session!.DateStart} {trainingSessionInscriptionAttend!.TrainingSessionInscription!.Session!.TimeStart}</p>" +
+                            $"<p>Capacitador: {trainingSessionInscriptionAttend!.TrainingSessionInscription!.Session!.ExistUser!}</p>" +
                             $"<b>Muchas gracias!</b>");
                     }
                 }

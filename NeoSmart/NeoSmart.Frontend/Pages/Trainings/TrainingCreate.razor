@@ -17,14 +17,13 @@ else
     private TrainingDTO trainingDTO = new()
         {
             ProcessId = 0,
-            TrainingStatusId = 1,
             Type = true,
             DateStart = DateTime.Now,
             Duration = 60,
             TrainingTopicIds = new List<int>(),
             Status = true
         };
-    private List<TrainingStatus>? trainingStatus;
+    
     private TrainingForm? trainingForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
@@ -35,22 +34,9 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        await LoadTrainingStatusAsync();
         await LoadTopicsAsync();
     }
-    private async Task LoadTrainingStatusAsync()
-    {
-        var responseHttp = await repository.GetAsync<List<TrainingStatus>>("/api/TrainingStatus/combo");
-        if (responseHttp.Error)
-        {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
 
-        var _trainingStatus = responseHttp.Response;
-        trainingStatus = _trainingStatus!.Where(x => x.Name == "Request" || x.Name == "Scheduled").ToList();
-    }
 
     private async Task LoadTopicsAsync()
     {

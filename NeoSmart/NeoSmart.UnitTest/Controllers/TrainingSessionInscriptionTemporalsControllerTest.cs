@@ -107,11 +107,10 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldAddTemporalInscription_WhenDataIsValid()
         {
             // Arrange
-            var trainingSession = new TrainingSession { Id = 1, 
+            var session = new Session { Id = 1, 
                 DateStart = DateTime.Now,
                 DateEnd = DateTime.Now,
                 Training = new Training { Id = 1,
-                    Cod = "T001",
                     Description = "Test",
                     Duration = 60,
                     Type = true,
@@ -121,11 +120,11 @@ namespace NeoSmart.UnitTest.Controllers
                 Status = true
             };
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
-            _context.TrainingSessions.Add(trainingSession);
+            _context.Sessions.Add(session);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { TrainingSessionId = 1, Remarks = "New Remarks"};
+            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1, Remarks = "New Remarks"};
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -138,7 +137,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldReturnNotFound_WhenTrainingSessionDoesNotExistAsync()
         {
             // Arrange
-            var dto = new TrainingSessionInscriptionTemporalDTO { TrainingSessionId = 1 };
+            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1 };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -151,7 +150,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldReturnNotFound_WhenUserDoesNotExistAsync()
         {
             // Arrange
-            var trainingSession = new TrainingSession
+            var session = new Session
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -159,7 +158,6 @@ namespace NeoSmart.UnitTest.Controllers
                 Training = new Training
                 {
                     Id = 1,
-                    Cod = "T001",
                     Description = "Test",
                     Duration = 60,
                     Type = true,
@@ -168,10 +166,10 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingSessions.Add(trainingSession);
+            _context.Sessions.Add(session);
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { TrainingSessionId = 1 };
+            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1 };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -184,7 +182,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PostAsync_ShouldAddTemporalInscription_WhenTrainingSessionAndUserExistAsync()
         {
             // Arrange
-            var trainingSession = new TrainingSession
+            var session = new Session
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -192,7 +190,6 @@ namespace NeoSmart.UnitTest.Controllers
                 Training = new Training
                 {
                     Id = 1,
-                    Cod = "T001",
                     Description = "Test",
                     Duration = 60,
                     Type = true,
@@ -201,14 +198,14 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingSessions.Add(trainingSession);
+            _context.Sessions.Add(session);
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { TrainingSessionId = 1, Remarks = "Test Remarks" };
+            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1, Remarks = "Test Remarks" };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -231,8 +228,8 @@ namespace NeoSmart.UnitTest.Controllers
             var exceptionalContext = new ExceptionalDataContext(options);
             var email = "test@example.com";
 
-            exceptionalContext.TrainingSessions.Add(
-                new TrainingSession
+            exceptionalContext.Sessions.Add(
+                new Session
                 {
                     Id = 1,
                     DateStart = DateTime.Now,
@@ -240,7 +237,6 @@ namespace NeoSmart.UnitTest.Controllers
                     Training = new Training
                     {
                         Id = 1,
-                        Cod = "T001",
                         Description = "Test",
                         Duration = 60,
                         Type = true,
@@ -254,7 +250,7 @@ namespace NeoSmart.UnitTest.Controllers
 
             var controller = CreateControllerWithMockedUserEmail(email, exceptionalContext);
 
-            var trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO {  TrainingSessionId = 1, Remarks = "TestRemarks" };
+            var trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO {  SessionId = 1, Remarks = "TestRemarks" };
 
             // Act
             var result = await controller.PostAsync(trainingSessionInscriptionTemporalDTO);
@@ -286,7 +282,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetAsync_WithUserHavingData_ReturnsCorrectData()
         {
             // Arrange
-            var trainingSession = new TrainingSession
+            var session = new Session
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -294,7 +290,6 @@ namespace NeoSmart.UnitTest.Controllers
                 Training = new Training
                 {
                     Id = 1,
-                    Cod = "T001",
                     Description = "Test",
                     Duration = 60,
                     Type = true,
@@ -303,14 +298,14 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingSessions.Add(trainingSession);
+            _context.Sessions.Add(session);
             await _context.SaveChangesAsync();
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var temporalInscription = new TrainingSessionInscriptionTemporal { TrainingSession = trainingSession, Remarks = "Some", User = user };
+            var temporalInscription = new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Some", User = user };
             _context.TrainingSessionInscriptionTemporals.Add(temporalInscription);
             await _context.SaveChangesAsync();
 
@@ -328,7 +323,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetCountAsync_WithUserHavingData_ReturnsCorrectCount()
         {
             // Arrange
-            var trainingSession = new TrainingSession
+            var session = new Session
             {
                 Id = 1,
                 DateStart = DateTime.Now,
@@ -336,7 +331,6 @@ namespace NeoSmart.UnitTest.Controllers
                 Training = new Training
                 {
                     Id = 1,
-                    Cod = "T001",
                     Description = "Test",
                     Duration = 60,
                     Type = true,
@@ -345,15 +339,15 @@ namespace NeoSmart.UnitTest.Controllers
                 Type = false,
                 Status = true
             };
-            _context.TrainingSessions.Add(trainingSession);
+            _context.Sessions.Add(session);
             await _context.SaveChangesAsync();
 
             var user = new User { Email = "test@example.com", Address = "Some", Document = "Some", FirstName = "John", LastName = "Doe" };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { TrainingSession = trainingSession, Remarks = "Some", User = user });
-            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { TrainingSession = trainingSession, Remarks = "Any", User = user });
+            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Some", User = user });
+            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Any", User = user });
             await _context.SaveChangesAsync();
 
             // Act
