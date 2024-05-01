@@ -10,7 +10,7 @@
 }
 else
 {
-    <RequestForm Titulo="Editar Capacitación" @ref="RequestForm" RequestDTO="RequestDTO" RequestStatus="RequestStatus" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
+    <RequestForm Titulo="Editar Capacitación" @ref="RequestForm" RequestDTO="RequestDTO" IsReadOnly="false" RequestStatus="RequestStatus" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
 }
 
 @code {
@@ -37,16 +37,19 @@ else
 
     private async Task LoadRequestStatusAsync()
     {
+        loading = true;
         var responseHttp = await repository.GetAsync<List<RequestStatus>>("/api/RequestStatus/combo");
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            loading = false;
             return;
         }
 
         var _RequestStatus = responseHttp.Response;
-        RequestStatus = _RequestStatus!.Where(x => x.Name == "Request").ToList();
+        RequestStatus = _RequestStatus!.Where(x => x.Name == "Registered").ToList();
+        loading = false;
     }
 
     private async Task LoadRequestAsync()

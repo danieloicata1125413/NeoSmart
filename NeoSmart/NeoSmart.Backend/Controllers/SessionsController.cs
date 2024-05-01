@@ -29,10 +29,9 @@ namespace NeoSmart.BackEnd.Controllers
         {
             return Ok(await _context.Sessions
                 .Include(ts => ts.User!)
-                .Include(ts => ts.City!)
                 .Include(s => s.SessionStatus!)
-                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
-                .Include(ts => ts.TrainingSessionInscriptions!)
+                .Include(ts => ts.SessionInscriptionTemporals!)
+                .Include(ts => ts.SessionInscriptions!)
                 .Where(ts => ts.TrainingId == trainingId)
                 .OrderBy(ts => ts.DateStart)
                 .ThenBy(ts => ts.TimeStart)
@@ -46,11 +45,9 @@ namespace NeoSmart.BackEnd.Controllers
             var queryable = _context.Sessions
                                 .Include(s => s.User!)
                                 .Include(s => s.Training!)
-                                .Include(s => s.City!)
                                 .Include(s => s.SessionStatus!)
-                                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
-                                .Include(ts => ts.TrainingSessionInscriptions!)
-                                .Where(x => x.Training!.Id == pagination.Id)
+                                .Include(ts => ts.SessionInscriptionTemporals!)
+                                .Include(ts => ts.SessionInscriptions!)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -72,7 +69,6 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Sessions
-                .Where(x => x.Training!.Id == pagination.Id)
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -94,11 +90,8 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(o => o.User!)
                 .Include(o => o.Training!)
                 .Include(s => s.SessionStatus!)
-                .Include(u => u.City!)
-                .ThenInclude(c => c.State!)
-                .ThenInclude(s => s.Country)
-                .Include(ts => ts.TrainingSessionInscriptionTemporals!)
-                .Include(ts => ts.TrainingSessionInscriptions!)
+                .Include(ts => ts.SessionInscriptionTemporals!)
+                .Include(ts => ts.SessionInscriptions!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (trainingCalendar == null)
             {

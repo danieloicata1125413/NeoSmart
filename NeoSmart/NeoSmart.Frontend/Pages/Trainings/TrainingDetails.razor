@@ -32,9 +32,6 @@ else
                         <label>@training.Description</label>
                     </div>
                     <div class="mb-3">
-                        <label>@training.Requirement</label>
-                    </div>
-                    <div class="mb-3">
                         <label><b>@training.Observation</b></label>
                     </div>
                 </div>
@@ -46,12 +43,6 @@ else
                         <div class="form-group mb-2">
                             <label class="control-label">Capacitación externa</label>
                         </div>
-                        <div class="form-group mb-2">
-                            <label class="control-label">Entidad: @training.Entity</label>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="control-label">Precio: @training.Price</label>
-                        </div>
                     }
                     else
                     {
@@ -60,19 +51,12 @@ else
                         </div>
                     }
                     <div class="mb-3">
-                        <label>Fecha: @training.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</label>
-                    </div>
-                    <div class="mb-3">
                         <label>Duración: @training.Duration</label>
                     </div>
-                    <div class="mb-3">
-                    </div>
-                    <div class="mb-3">
-                        <label>Estado: <b>@training.TrainingStatus!.Description</b></label>
-                    </div>
+                    
                     @if (topics is not null)
                     {
-                        @if (training!.Sessions!.Count > 0)
+                        @if (training!.TrainingTopics! is not null)
                         {
                             <div class="mb-3">
                                 <label><b>Temas relacionados:</b></label>
@@ -89,7 +73,7 @@ else
                 </div>
                 <div class="col-6">
                     <div class="form-group mb-2">
-                        @if (training!.Sessions!.Count > 0)
+                        @if (training!.Sessions! is not null)
                         {
                             <div class="mb-3">
                                 <label><b>Agenda disponible:</b></label>
@@ -102,13 +86,13 @@ else
                                         <label>Capacitador: @session!.ExistUser</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Ciudad: @session.City!.Name</label>
-                                    </div>
-                                    <div class="mb-3">
                                         <label>Fecha: @session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) Horario: @session.TimeStart - @session.TimeEnd</label>
                                     </div>
                                     <div class="mb-3">
-                                        <label>Inscritos: @session!.TrainingSessionInscriptionsNumber</label>
+                                        <label>Inscritos: @session!.SessionInscriptionsNumber</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Estado: <b>@session.SessionStatus!.Description</b></label>
                                     </div>
                                 </div>
                             }
@@ -134,8 +118,6 @@ else
     public int TrainingId { get; set; }
     [Parameter]
     public string Return { get; set; } = "Grid";
-
-    public TrainingSessionInscriptionDTO trainingSessionInscriptionDTO { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {

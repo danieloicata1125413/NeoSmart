@@ -10,7 +10,7 @@
 }
 else
 {
-    <TrainingForm Titulo="Nueva Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" TrainingStatus="trainingStatus" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+    <TrainingForm Titulo="Nueva Capacitación" @ref="trainingForm" TrainingDTO="trainingDTO" SelectedTopics="selectedTopics" NonSelectedTopics="nonSelectedTopics" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
 }
 
 @code {
@@ -18,7 +18,6 @@ else
         {
             ProcessId = 0,
             Type = true,
-            DateStart = DateTime.Now,
             Duration = 60,
             TrainingTopicIds = new List<int>(),
             Status = true

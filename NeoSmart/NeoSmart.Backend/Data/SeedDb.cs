@@ -39,10 +39,14 @@ namespace NeoSmart.BackEnd.Data
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
             await CheckSlider();
-            await CheckInscriptionStatusAsync();
+            await CheckSessionInscriptionStatusAsync();
             await CheckUserAsync(null, "1090388348", "Daniel", "Oicata Hernandez", "danieloicata1125413@correo.itm.edu.co", "3177457755", "CARRERA", "DUITAMA", null, UserType.SuperAdmin, "1090Jeep$");
             await CheckUserAsync(null, "43993064", "Elizabet", "Loaiza Garcia", "elizabetloaiza1125440@correo.itm.edu.co", "3104995761", "CARRERA", "MEDELLÍN", null, UserType.SuperAdmin, "Inicio123*");
             await CheckUserAsync(null, "15374665", "Henry Alonso", "Muñoz Carvajal", "henrymunoz1125401@correo.itm.edu.co", "3218399637", "CARRERA", "MEDELLÍN", null, UserType.SuperAdmin, "Inicio123*");
+            await CheckUserAsync("890900652-3", "12345", "Gerente", "Interno", "gerente@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Admin, "Inicio123*");
+            await CheckUserAsync("890900652-3", "123456", "Coordinador", "Interno", "coordinador@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Manager, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1234567", "Lider", "Interno", "lider@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Leader, "Inicio123*");
+            await CheckUserAsync("890900652-3", "12345678", "Capacitador", "Interno", "capacitador@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Trainer, "Inicio123*");
         }
         private async Task CheckRolesAsycn()
         {
@@ -1501,16 +1505,16 @@ namespace NeoSmart.BackEnd.Data
                 var process = await _context.Processes.FirstOrDefaultAsync(o => o.Description.Equals("Talento Humano"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
-                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(5), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Observation = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Observation = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
                 process = await _context.Processes.FirstOrDefaultAsync(o => o.Description.Equals("HSEQ"));
                 if (process != null)
                 {
-                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
-                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Requirement = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", DateStart = DateTime.Now.AddDays(7), Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
+                    _context.Trainings.Add(new Training { Description = "Inducción al sistema integrado de gestión.", Observation = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true, });
+                    _context.Trainings.Add(new Training { Description = "Manejo integral de residuos solidos.", Observation = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas \"Letraset\", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.", Type = true, Duration = 60, ProcessId = process.Id, Process = process, Status = true });
 
                     await _context.SaveChangesAsync();
                 }
@@ -1536,14 +1540,14 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckInscriptionStatusAsync()
+        private async Task CheckSessionInscriptionStatusAsync()
         {
-            if (!_context.TrainingSessionInscriptionStatus.Any())
+            if (!_context.SessionInscriptionStatus.Any())
             {
-                _context.TrainingSessionInscriptionStatus.Add(new TrainingSessionInscriptionStatus { Name = "Registered", Description = "Matriculado", Status = true });
-                _context.TrainingSessionInscriptionStatus.Add(new TrainingSessionInscriptionStatus { Name = "Refused", Description = "Rechazado", Status = true });
-                _context.TrainingSessionInscriptionStatus.Add(new TrainingSessionInscriptionStatus { Name = "Confirmed", Description = "Confirmado", Status = true });
-                _context.TrainingSessionInscriptionStatus.Add(new TrainingSessionInscriptionStatus { Name = "Cancelled", Description = "Cancelado", Status = true });
+                _context.SessionInscriptionStatus.Add(new SessionInscriptionStatus { Name = "Registered", Description = "Matriculado", Status = true });
+                _context.SessionInscriptionStatus.Add(new SessionInscriptionStatus { Name = "Refused", Description = "Rechazado", Status = true });
+                _context.SessionInscriptionStatus.Add(new SessionInscriptionStatus { Name = "Confirmed", Description = "Confirmado", Status = true });
+                _context.SessionInscriptionStatus.Add(new SessionInscriptionStatus { Name = "Cancelled", Description = "Cancelado", Status = true });
                 await _context.SaveChangesAsync();
             }
         }
@@ -1555,7 +1559,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string phoneNumber, string address, string city, int? occupationId, UserType userType, string pass)
+        private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string? phoneNumber, string address, string city, int? occupationId, UserType userType, string pass)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)

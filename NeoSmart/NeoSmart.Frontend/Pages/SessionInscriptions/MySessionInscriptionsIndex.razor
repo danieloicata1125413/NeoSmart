@@ -1,4 +1,4 @@
-﻿@page "/TrainingSessionInscriptions/My"
+﻿@page "/SessionInscriptions/My"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -19,7 +19,7 @@ else
     </div>
     <div class="card widget-inline">
         <div class="card-body">
-            <GenericList MyList="TrainingSessionInscriptions">
+            <GenericList MyList="SessionInscriptions">
                 <NoRecords>
                     <p>Aun no hay inscripciones registradas.</p>
                 </NoRecords>
@@ -39,47 +39,44 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var trainingSessionInscription in TrainingSessionInscriptions!)
+                            @foreach (var SessionInscription in SessionInscriptions!)
                             {
                                 <tr>
                                     <td>
-                                        @($"{trainingSessionInscription.Date:yyyy/MM/dd hh:mm tt}")
+                                        @($"{SessionInscription.Date:yyyy/MM/dd hh:mm tt}")
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.User!.FullName
+                                        @SessionInscription.User!.FullName
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.Session!.Training!.Description
+                                        @SessionInscription.Session!.Training!.Description
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.Session!.DateStart
+                                        @SessionInscription.Session!.DateStart
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.Session!.DateEnd
-                                    </td>
-                                    <td>
-                                        @if (@trainingSessionInscription.Session!.User != null)
+                                        @if (@SessionInscription.Session!.User != null)
                                         {
-                                            @trainingSessionInscription.Session!.User!.FullName
+                                            @SessionInscription.Session!.User!.FullName
                                         }
                                     </td>
                                     <td>
-                                        <label>@trainingSessionInscription.Remarks</label>
-                                        @if (trainingSessionInscription.TrainingSessionInscriptionAttendsExist == true)
+                                        <label>@SessionInscription.Remarks</label>
+                                        @if (SessionInscription.SessionInscriptionAttendsExist == true)
                                         {
 
                                             <label>Asistencia completada</label>
                                         }
                                     </td>
                                     <td>
-                                        @trainingSessionInscription.TrainingSessionInscriptionStatus!.Description
+                                        @SessionInscription.SessionInscriptionStatus!.Description
                                     </td>
                                     <td>
-                                        @if (trainingSessionInscription.Certificate != null)
+                                        @if (SessionInscription.Certificate != null)
                                         {
-                                            <a class="btn btn-info btn-sm mx-1" href="@trainingSessionInscription.Certificate">Certificado</a>
+                                            <a class="btn btn-info btn-sm mx-1" href="@SessionInscription.Certificate">Certificado</a>
                                         }
-                                        <button @onclick=@(() => ShowModalAsync(trainingSessionInscription.Id)) class="btn btn-info btn-sm"><i class="oi oi-info" /> Detalles</button>
+                                        <button @onclick=@(() => ShowModalAsync(SessionInscription.Id)) class="btn btn-info btn-sm"><i class="oi oi-info" /> Detalles</button>
                                     </td>
                                 </tr>
                             }
@@ -102,7 +99,7 @@ else
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
 
-    public List<TrainingSessionInscription>? TrainingSessionInscriptions { get; set; }
+    public List<SessionInscription>? SessionInscriptions { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -136,8 +133,8 @@ else
     private async Task<bool> LoadListAsync(int page)
     {
         loading = true;
-        var url = $"api/TrainingSessionInscriptions/My?page={page}";
-        var response = await repository.GetAsync<List<TrainingSessionInscription>>(url);
+        var url = $"api/SessionInscriptions/My?page={page}";
+        var response = await repository.GetAsync<List<SessionInscription>>(url);
         if (response.Error)
         {
             loading = false;
@@ -145,7 +142,7 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return false;
         }
-        TrainingSessionInscriptions = response.Response;
+        SessionInscriptions = response.Response;
         loading = false;
         return true;
     }
@@ -153,7 +150,7 @@ else
     private async Task LoadPagesAsync()
     {
         loading = true;
-        var url = $"api/TrainingSessionInscriptions/mytotalPages";
+        var url = $"api/SessionInscriptions/mytotalPages";
         var response = await repository.GetAsync<int>(url);
         if (response.Error)
         {
@@ -169,7 +166,7 @@ else
     private async Task ShowModalAsync(int id = 0)
     {
         IModalReference modalReference;
-        modalReference = Modal.Show<TrainingSessionInscriptionDetails>(string.Empty, new ModalParameters().Add("TrainingSessionInscriptionId", id));
+        modalReference = Modal.Show<SessionInscriptionDetails>(string.Empty, new ModalParameters().Add("SessionInscriptionId", id));
 
         var result = await modalReference.Result;
         if (result.Confirmed)

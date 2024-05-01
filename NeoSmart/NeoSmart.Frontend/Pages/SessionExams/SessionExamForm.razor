@@ -24,36 +24,16 @@ else
                 <div class="row">
                     <div class="col-12 p-2">
                         <div class="form-group mb-2">
-                            <label>Tema:</label>
-                            <select class="form-select" @onchange="TrainingChangedAsync">
-                                <option value="0">-- Seleccione un tema --</option>
-                                @if (Trainings is not null)
-                                {
-                                    @foreach (var Training in Trainings)
-                                    {
-                                        if (TrainingSessionExam.TrainingExam is not null)
-                                        {
-                                            <option value="@Training.Id" selected="@(Training.Id == TrainingSessionExam.TrainingExam.Training!.Id)">@Training.Description</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@Training.Id">@Training.Description</option>
-                                        }
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="form-group mb-2">
                             <label>Medición:</label>
-                            <select class="form-select" @bind="TrainingSessionExam.TrainingExamId">
+                            <select class="form-select" @bind="SessionExam.TrainingExamId">
                                 <option value="0">-- Seleccione una medición --</option>
                                 @if (trainingExams is not null)
                                 {
                                     @foreach (var trainingExam in trainingExams)
                                     {
-                                        if (TrainingSessionExam.TrainingExam is not null)
+                                        if (SessionExam.TrainingExam is not null)
                                         {
-                                            <option value="@trainingExam.Id" selected="@(trainingExam.Id == TrainingSessionExam.TrainingExam!.Id)">@trainingExam.Description</option>
+                                            <option value="@trainingExam.Id" selected="@(trainingExam.Id == SessionExam.TrainingExam!.Id)">@trainingExam.Description</option>
                                         }
                                         else
                                         {
@@ -62,32 +42,32 @@ else
                                     }
                                 }
                             </select>
-                            <ValidationMessage For="@(() => TrainingSessionExam.TrainingExamId)" />
+                            <ValidationMessage For="@(() => SessionExam.TrainingExamId)" />
                         </div>
                         <div class="form-group mb-2">
                             <label>Fecha inicio:</label>
-                            <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@TrainingSessionExam.DateStart"/>
-                            <ValidationMessage For="@(() => @TrainingSessionExam.DateStart)" />
+                            <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@SessionExam.DateStart"/>
+                            <ValidationMessage For="@(() => @SessionExam.DateStart)" />
                         </div>
                         <div class="form-group mb-2">
                             <label>Fecha fin:</label>
-                            <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@TrainingSessionExam.DateEnd" />
-                            <ValidationMessage For="@(() => @TrainingSessionExam.DateEnd)" />
+                            <InputDate Type="InputDateType.Date" class="form-control float-end" @bind-Value="@SessionExam.DateEnd" />
+                            <ValidationMessage For="@(() => @SessionExam.DateEnd)" />
                         </div>
                         @* <div class="form-group mb-2">
                             <label>Hora inicio:</label>
-                            <InputDate Type="InputDateType.Time" class="form-control float-end" @bind-Value="@TrainingSessionExam.TimeStart" />
-                            <ValidationMessage For="@(() => @TrainingSessionExam.TimeStart)" />
+                            <InputDate Type="InputDateType.Time" class="form-control float-end" @bind-Value="@SessionExam.TimeStart" />
+                            <ValidationMessage For="@(() => @SessionExam.TimeStart)" />
                         </div>
                         <div class="form-group mb-2">
                             <label>Hora fin:</label>
-                            <InputDate Type="InputDateType.Time" class="form-control float-end" @bind-Value="@TrainingSessionExam.TimeEnd" />
-                            <ValidationMessage For="@(() => @TrainingSessionExam.TimeEnd)" />
+                            <InputDate Type="InputDateType.Time" class="form-control float-end" @bind-Value="@SessionExam.TimeEnd" />
+                            <ValidationMessage For="@(() => @SessionExam.TimeEnd)" />
                         </div> *@
                         <div class="form-group mb-2">
                             <label class="control-label">Intentos:</label>
-                            <InputNumber class="form-control" @bind-Value="@TrainingSessionExam.Attempt" />
-                            <ValidationMessage For="@(() => TrainingSessionExam.Attempt)" />
+                            <InputNumber class="form-control" @bind-Value="@SessionExam.Attempt" />
+                            <ValidationMessage For="@(() => SessionExam.Attempt)" />
                         </div>
                     </div>
                 </div>
@@ -100,40 +80,29 @@ else
 }
 
 @code {
+    private Session? Session { get; set; }
     private EditContext editContext = null!;
-    private List<Training>? Trainings;
     private List<TrainingExam>? trainingExams;
     private bool loading;
 
     protected override async Task OnInitializedAsync()
     {
-        TrainingSessionExam.TrainingSessionId = TrainingSesionId;
-        await LoadTrainingAsync();
-        if (TrainingSessionExam!.TrainingExam != null)
-        {
-            await LoadTrainingExamsAsync(TrainingSessionExam!.TrainingExam!.Training!.Id);
-        }
-        editContext = new(TrainingSessionExam);
+        SessionExam.SessionId = SessionId;
+        await LoadSessionAsync();
+        editContext = new(SessionExam);
     }
 
-    private async Task TrainingChangedAsync(ChangeEventArgs e)
+    private async Task LoadSessionAsync()
     {
-        var selectedTraining = Convert.ToInt32(e.Value!);
-        Trainings = null;
-        TrainingSessionExam.TrainingExamId = 0;
-        await LoadTrainingExamsAsync(selectedTraining);
-    }
-
-    private async Task LoadTrainingAsync()
-    {
-        var responseHttp = await repository.GetAsync<List<Training>>($"/api/Trainings/comboByTrainingSesionId/{TrainingSesionId}");
+        var responseHttp = await repository.GetAsync<Session>($"/api/Sessions/{SessionId}");
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        Trainings = responseHttp.Response;
+        Session = responseHttp.Response;
+        await LoadTrainingExamsAsync(Session!.TrainingId);
     }
 
     private async Task LoadTrainingExamsAsync(int TrainingId)
@@ -154,11 +123,11 @@ else
 
     [EditorRequired]
     [Parameter]
-    public int TrainingSesionId { get; set; }
+    public int SessionId { get; set; }
 
     [EditorRequired]
     [Parameter]
-    public SessionExamDTO TrainingSessionExam { get; set; } = null!;
+    public SessionExamDTO SessionExam { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

@@ -29,13 +29,10 @@ else
                 </div>
                 <div class="col-6">
                     <div class="mb-3">
-                        <label>@session.Description</label>
+                        <label>@session.Training!.Description</label>
                     </div>
                     <div class="mb-3">
-                        <label>@session.Requirement</label>
-                    </div>
-                    <div class="mb-3">
-                        <label><b>@session.Observation</b></label>
+                        <label><b>@session.Training!.Observation</b></label>
                     </div>
                 </div>
             </div>
@@ -45,12 +42,6 @@ else
                     {
                         <div class="form-group mb-2">
                             <label class="control-label">Capacitación externa</label>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="control-label">Entidad: @session.Entity</label>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="control-label">Precio: @session.Price</label>
                         </div>
                     }
                     else
@@ -63,7 +54,7 @@ else
                         <label>Fecha: @session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</label>
                     </div>
                     <div class="mb-3">
-                        <label>Duración: @session.Duration</label>
+                        <label>Duración: @session.Training!.Duration</label>
                     </div>
                     <div class="mb-3">
                     </div>
@@ -85,9 +76,7 @@ else
                             }
                         }
                     }
-
                 </div>
-                
             </div>
         </div>
     </div>
@@ -138,9 +127,9 @@ else
             images = session.Training!.TrainingImages!.Select(x => x.Image).ToList();
             if (images!.Count() == 0)
             {
-                if (session.MainImage != null)
+                if (session.Training!.MainImage != null)
                 {
-                    images!.Add(session.MainImage);
+                    images!.Add(session.Training!.MainImage);
                 }
             }
         }

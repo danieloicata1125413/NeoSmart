@@ -52,6 +52,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         public string? Observation { get; set; } = null!;
 
+        [Display(Name = "Estado")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un {0}.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int RequestStatusId { get; set; }
         public RequestStatus? RequestStatus { get; set; }
         

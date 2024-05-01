@@ -8,9 +8,12 @@ namespace NeoSmart.ClassLibraries.Entities
     {
         public int Id { get; set; }
 
+        [Display(Name = "Interna")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public bool Type { get; set; }
+
         [Display(Name = "Proceso")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
@@ -20,29 +23,9 @@ namespace NeoSmart.ClassLibraries.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; } = null!;
 
-        [Display(Name = "Justifiación")]
-        [DataType(DataType.MultilineText)]
-        [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
-        public string? Requirement { get; set; } = null!;
-
-        [Display(Name = "Fecha tentativa")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public DateTime DateStart { get; set; }
-
         [Display(Name = "Duración")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int Duration { get; set; }
-
-        [Display(Name = "Interna")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public bool Type { get; set; }
-
-        [Display(Name = "Entidad")]
-        [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
-        public string? Entity { get; set; } = null!;
-
-        [Display(Name = "Precio")]
-        public int? Price { get; set; } = null!;
 
         [Display(Name = "Observación")]
         [DataType(DataType.MultilineText)]
@@ -59,10 +42,15 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Sesiones")]
         public int SessionNumber => Sessions == null ? 0 : Sessions.Count;
 
-        public ICollection<SessionExam>? TrainingSessionExams { get; set; }
+        public ICollection<TrainingExam>? TrainingExams { get; set; }
 
         [Display(Name = "Mediciones")]
-        public int TrainingSessionExamsNumber => TrainingSessionExams == null ? 0 : TrainingSessionExams.Count;
+        public int TrainingExamsNumber => TrainingExams == null ? 0 : TrainingExams.Count;
+
+
+
+
+
 
         public ICollection<TrainingImage>? TrainingImages { get; set; }
 

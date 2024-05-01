@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class TrainingSessionInscriptionTemporal
+    public class SessionInscriptionTemporal
     {
         public int Id { get; set; }
 
@@ -12,7 +12,6 @@ namespace NeoSmart.ClassLibraries.Entities
         public string? UserId { get; set; }
 
         public int SessionId { get; set; }
-
         public Session? Session { get; set; }
 
         [DataType(DataType.MultilineText)]

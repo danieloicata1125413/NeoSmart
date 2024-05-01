@@ -1,48 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NeoSmart.BackEnd.Controllers;
-using NeoSmart.BackEnd.Helper;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using NeoSmart.ClassLibraries.Responses;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using NeoSmart.ClassLibraries.Enum;
-using NeoSmart.ClassLibraries.Helpers;
-using Microsoft.AspNetCore.Http;
+using NeoSmart.ClassLibraries.Responses;
+using NeoSmart.Data.Entities;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Routing;
-using NeoSmart.ClassLibraries.Interfaces;
-using Microsoft.Extensions.Options;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace NeoSmart.UnitTest.Controllers
 {
     [TestClass]
-    public class TrainingSessionInscriptionsControllerTests
+    public class SessionInscriptionsControllerTests
     {
 
         private Mock<IInscriptionsHelper> _mockInscriptionsHelper = null!;
         private readonly DbContextOptions<DataContext> _options;
         private Mock<IUserHelper> _mockUserHelper = null!;
         private Mock<IMailHelper> _mockMailHelper = null!;
-        private TrainingSessionInscriptionsController _controller = null!;
+        private SessionInscriptionsController _controller = null!;
         private DataContext _context = null!;
         private DataContext _mockDbContext = null!;
 
-        public TrainingSessionInscriptionsControllerTests()
+        public SessionInscriptionsControllerTests()
         {
             _mockInscriptionsHelper = new Mock<IInscriptionsHelper>();
             _mockUserHelper = new Mock<IUserHelper>();
@@ -54,7 +37,7 @@ namespace NeoSmart.UnitTest.Controllers
 
             _mockDbContext = new DataContext(_options);
 
-            _controller = new TrainingSessionInscriptionsController(_mockInscriptionsHelper.Object, _mockDbContext, _mockUserHelper.Object, _mockMailHelper.Object);
+            _controller = new SessionInscriptionsController(_mockInscriptionsHelper.Object, _mockDbContext, _mockUserHelper.Object, _mockMailHelper.Object);
 
         }
 
@@ -67,12 +50,12 @@ namespace NeoSmart.UnitTest.Controllers
 
             var userName = "test@example.com";
             var user = new User { Document = "3435354", UserName = userName, CityId = 1 };
-             _mockUserHelper.Setup(x => x.GetUserAsync(userName))
-                  .ReturnsAsync(user);
-              _mockUserHelper.Setup(x => x.IsUserInRoleAsync(user, UserType.Admin.ToString()))
-                  .ReturnsAsync(true);
+            _mockUserHelper.Setup(x => x.GetUserAsync(userName))
+                 .ReturnsAsync(user);
+            _mockUserHelper.Setup(x => x.IsUserInRoleAsync(user, UserType.Admin.ToString()))
+                .ReturnsAsync(true);
 
-             
+
             _mockDbContext.Countries.Add(new Country
             {
                 Name = "Colombia",
@@ -92,22 +75,22 @@ namespace NeoSmart.UnitTest.Controllers
             });
 
 
-            _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo ="", UserName = userName, CityId = 1 }); ;
+            _mockDbContext.Users.Add(new User { Id = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", Document = "3435354", FirstName = "Henry", LastName = "Muñoz", DocumentTypeId = 1, Address = "Boston", Photo = "", UserName = userName, CityId = 1 }); ;
 
-            _mockDbContext.Trainings.Add(new Training { Id = 1, Description="", Duration=1, Type=false });
+            _mockDbContext.Trainings.Add(new Training { Id = 1, Description = "", Duration = 1, Type = false });
 
-            _mockDbContext.TrainingImages.Add(new TrainingImage { Id = 1, TrainingId = 1, Image =""});
+            _mockDbContext.TrainingImages.Add(new TrainingImage { Id = 1, TrainingId = 1, Image = "" });
 
-            _mockDbContext.Topics.Add(new Topic { Id = 1,Description="prueba" });
+            _mockDbContext.Topics.Add(new Topic { Id = 1, Description = "prueba" });
 
-            _mockDbContext.TrainingTopics.Add(new TrainingTopic {Id=1, TrainingId = 1, TopicId = 1 });
+            _mockDbContext.TrainingTopics.Add(new TrainingTopic { Id = 1, TrainingId = 1, TopicId = 1 });
 
             var dat1 = new DateTime();
             TimeSpan interval = new TimeSpan();
-            _mockDbContext.Sessions.Add(new Session { Id = 1, DateStart = dat1, DateEnd = dat1, TimeStart= interval, TimeEnd= interval, TrainingId = 1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
+            _mockDbContext.Sessions.Add(new Session { Id = 1, DateStart = dat1, TimeStart = interval, TimeEnd = interval, TrainingId = 1, UserId = "ccefa08a-ec19-4035-8543-3b5cc844d8b1" });
 
             var datime1 = new DateTime();
-            _mockDbContext.TrainingSessionInscriptions.Add(new TrainingSessionInscription { Id = 1, Date= datime1, UserId= "ccefa08a-ec19-4035-8543-3b5cc844d8b1", SessionId = 1, Remarks="Hola mundo" });
+            _mockDbContext.SessionInscriptions.Add(new SessionInscription { Id = 1, Date = datime1, UserId = "ccefa08a-ec19-4035-8543-3b5cc844d8b1", SessionId = 1, Remarks = "Hola mundo" });
 
             _mockDbContext.SaveChanges();
 
@@ -130,7 +113,7 @@ namespace NeoSmart.UnitTest.Controllers
             using var context = new DataContext(_options);
             var Id = 67;
 
-            var controller = new TrainingSessionInscriptionsController(
+            var controller = new SessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),
@@ -157,7 +140,7 @@ namespace NeoSmart.UnitTest.Controllers
             var userName = "testuser";
             var mockUser = new User();
 
-            var controller = new TrainingSessionInscriptionsController(
+            var controller = new SessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),
@@ -188,7 +171,7 @@ namespace NeoSmart.UnitTest.Controllers
             var userName = "testuser";
             var mockUser = new User();
 
-            var controller = new TrainingSessionInscriptionsController(
+            var controller = new SessionInscriptionsController(
                 Mock.Of<IInscriptionsHelper>(),
                 context,
                 Mock.Of<IUserHelper>(),

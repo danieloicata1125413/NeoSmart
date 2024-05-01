@@ -1,4 +1,4 @@
-﻿@page "/Session/create/{Id:int}"
+﻿@page "/Session/create/{TrainingId:int}"
 @attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
@@ -16,18 +16,15 @@
     private List<SessionStatus>? sessionStatus;
     private Session Session = new()
         {
-            
+            TrainingId = 0,
             DateStart = DateTime.Now,
-            DateEnd = DateTime.Now.AddDays(1),
-            Id = 1,
-            CityId = 0,
             Type = false,
             Status = true
         };
     private SessionForm? SessionForm;
 
     [Parameter]
-    public int Id { get; set; }
+    public int TrainingId { get; set; }
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
@@ -54,7 +51,6 @@
 
     private async Task CreateAsync()
     {
-        Session.Id = Id;
         var response = await repository.PostAsync("/api/Sessions", Session);
         if (response.Error)
         {
@@ -79,7 +75,7 @@
     private void Return()
     {
         SessionForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/Sessions/details/{Id}");
+        navigationManager.NavigateTo($"/Sessions");
     }
 
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class TrainingSessionInscriptionStatus : ISoftDetete
+    public class SessionInscriptionStatus : ISoftDetete
     {
         [Key]
         public int Id { get; set; }

@@ -1,4 +1,4 @@
-﻿@page "/TrainingSessionExams/{TrainingSesionId:int}"
+﻿@page "/SessionExams/{SessionId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -12,6 +12,7 @@ else
 {
     <div class="row mb-3">
         <div class="col-7">
+            <a class="btn btn-outline-success float-start me-1" href="/Sessions"><i class="oi oi-arrow-thick-left" /> Regresar</a>
             <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
             <h3>Mediciones de la sesión</h3>
         </div>
@@ -20,49 +21,52 @@ else
     </div>
     <div class="card widget-inline">
         <div class="card-body">
-            <GenericList MyList="TrainingSessionExams">
+            <GenericList MyList="SessionExams">
                 <NoRecords>
-                    <p>Aun no hay inscripciones registradas.</p>
+                    <p>Aun no hay mediciones registradas.</p>
                 </NoRecords>
                 <Body>
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Id</th>
                                 <th>Medición</th>
                                 <th>Desde</th>
+                                <th>Hora</th>
                                 <th>Hasta</th>
-                                <th>Usuario</th>
-                                <th>Inicio</th>
-                                <th>Hasta</th>
+                                <th>Hora</th>
                                 <th>Intentos</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var trainingSessionExam in TrainingSessionExams!)
+                            @foreach (var SessionExam in SessionExams!)
                             {
                                 <tr>
                                     <td>
-                                        @trainingSessionExam.TrainingExam!.Description
+                                        @SessionExam.Id
                                     </td>
                                     <td>
-                                        @($"{trainingSessionExam.DateStart:yyyy/MM/dd hh:mm tt}")
+                                        @SessionExam.TrainingExam!.Description
                                     </td>
                                     <td>
-                                        @($"{trainingSessionExam.DateEnd:yyyy/MM/dd hh:mm tt}")
+                                        @($"{SessionExam.DateStart:yyyy/MM/dd}")
                                     </td>
                                     <td>
-                                        @trainingSessionExam.TimeStart
+                                        @SessionExam.TimeStart
                                     </td>
                                     <td>
-                                        @trainingSessionExam.TimeEnd
+                                        @($"{SessionExam.DateEnd:yyyy/MM/dd}")
                                     </td>
                                     <td>
-                                        @trainingSessionExam.Attempt
+                                        @SessionExam.TimeEnd
                                     </td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(trainingSessionExam.Id, true))><i class="oi oi-pencil" /> Editar</button>
-                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(trainingSessionExam))><i class="oi oi-trash" /> Borrar</button>
+                                        @SessionExam.Attempt
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(SessionExam.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(SessionExam))><i class="oi oi-trash" /> Borrar</button>
                                     </td>
                                 </tr>
                             }
@@ -84,12 +88,12 @@ else
     private bool loading = true;
 
     [Parameter]
-    public int TrainingSesionId { get; set; }
+    public int SessionId { get; set; }
 
     [CascadingParameter]
     IModalService Modal { get; set; } = default!;
 
-    public List<SessionExam>? TrainingSessionExams { get; set; }
+    public List<SessionExam>? SessionExams { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -123,7 +127,7 @@ else
     private async Task<bool> LoadListAsync(int page)
     {
         loading = true;
-        var url = $"api/TrainingSessionExams?id={TrainingSesionId}&page={page}";
+        var url = $"api/SessionExams?id={SessionId}&page={page}";
         var response = await repository.GetAsync<List<SessionExam>>(url);
         if (response.Error)
         {
@@ -132,7 +136,7 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return false;
         }
-        TrainingSessionExams = response.Response;
+        SessionExams = response.Response;
         loading = false;
         return true;
     }
@@ -140,7 +144,7 @@ else
     private async Task LoadPagesAsync()
     {
         loading = true;
-        var url = $"api/TrainingSessionExams/totalPages?id={TrainingSesionId}";
+        var url = $"api/SessionExams/totalPages?id={SessionId}";
         var response = await repository.GetAsync<int>(url);
         if (response.Error)
         {
@@ -159,11 +163,11 @@ else
 
         if (isEdit)
         {
-            modalReference = Modal.Show<TrainingSessionExamEdit>(string.Empty, new ModalParameters().Add("TrainingSessionExamId", id));
+            modalReference = Modal.Show<SessionExamEdit>(string.Empty, new ModalParameters().Add("SessionExamId", id));
         }
         else
         {
-            modalReference = Modal.Show<TrainingSessionExamCreate>(string.Empty, new ModalParameters().Add("TrainingSesionId", TrainingSesionId));
+            modalReference = Modal.Show<SessionExamCreate>(string.Empty, new ModalParameters().Add("SessionId", SessionId));
         }
 
         var result = await modalReference.Result;
@@ -173,7 +177,7 @@ else
         }
     }
 
-    private async Task DeleteAsync(SessionExam trainingSessionExam)
+    private async Task DeleteAsync(SessionExam SessionExam)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
@@ -189,7 +193,7 @@ else
             return;
         }
 
-        var response = await repository.DeleteAsync($"api/TrainingSessionExams/{trainingSessionExam.Id}");
+        var response = await repository.DeleteAsync($"api/SessionExams/{SessionExam.Id}");
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();

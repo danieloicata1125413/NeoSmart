@@ -16,14 +16,14 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TrainingSessionInscriptionsController : ControllerBase
+    public class SessionInscriptionsController : ControllerBase
     {
         private readonly IInscriptionsHelper _inscriptionsHelper;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
 
-        public TrainingSessionInscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper, IMailHelper mailHelper)
+        public SessionInscriptionsController(IInscriptionsHelper inscriptionsHelper, DataContext context, IUserHelper userHelper, IMailHelper mailHelper)
         {
             _inscriptionsHelper = inscriptionsHelper;
             _context = context;
@@ -34,7 +34,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetAsync(int id)
         {
-            var inscription = await _context.TrainingSessionInscriptions
+            var inscription = await _context.SessionInscriptions
                 .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingImages!)
@@ -45,15 +45,12 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
-                     .ThenInclude(i => i.City!)
-                     .ThenInclude(i => i.State!)
-                     .ThenInclude(i => i.Country!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
-                .Include(i => i.TrainingSessionInscriptionStatus!)
-                .Include(i => i.TrainingSessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionStatus!)
+                .Include(i => i.SessionInscriptionAttends!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (inscription == null)
             {
@@ -71,7 +68,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return BadRequest("User not valid.");
             }
 
-            var queryable = _context.TrainingSessionInscriptions
+            var queryable = _context.SessionInscriptions
                 .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
                     .ThenInclude(i => i.TrainingImages!)
@@ -82,15 +79,12 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
-                     .ThenInclude(i => i.City!)
-                     .ThenInclude(i => i.State!)
-                     .ThenInclude(i => i.Country!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
-                .Include(i => i.TrainingSessionInscriptionStatus!)
-                .Include(i => i.TrainingSessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionStatus!)
+                .Include(i => i.SessionInscriptionAttends!)
                 .AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
@@ -114,7 +108,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return BadRequest("User not valid.");
             }
 
-            var queryable = _context.TrainingSessionInscriptions.AsQueryable();
+            var queryable = _context.SessionInscriptions.AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
             if (!isAdmin)
@@ -130,7 +124,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingSessionInscriptions
+            var queryable = _context.SessionInscriptions
                 .Where(s => s.SessionId == pagination.Id)
                 .Include(i => i.Session!)
                     .ThenInclude(i => i.Training!)
@@ -142,17 +136,14 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
-                     .ThenInclude(i => i.City!)
-                     .ThenInclude(i => i.State!)
-                     .ThenInclude(i => i.Country!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.Occupation!)
-                .Include(i => i.TrainingSessionInscriptionStatus!)
-                .Include(i => i.TrainingSessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionStatus!)
+                .Include(i => i.SessionInscriptionAttends!)
                 .AsQueryable();
 
             return Ok(await queryable
@@ -164,7 +155,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public async Task<IActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingSessionInscriptions
+            var queryable = _context.SessionInscriptions
                    .Where(s => s.SessionId == pagination.Id)
                    .AsQueryable();
 
@@ -174,7 +165,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(TrainingSessionInscriptionDTO inscriptionDTO)
+        public async Task<ActionResult> PutAsync(SessionInscriptionDTO inscriptionDTO)
         {
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user == null)
@@ -183,12 +174,12 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
-            if (!isAdmin && inscriptionDTO.InscriptionStatus!.Name.Equals("Cancelled"))
+            if (!isAdmin && inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Cancelled"))
             {
                 return BadRequest("Solo permitido para trabajadores.");
             }
 
-            var inscription = await _context.TrainingSessionInscriptions
+            var inscription = await _context.SessionInscriptions
                 .Include(s => s.User)
                 .Include(s => s.Session!)
                 .ThenInclude(s => s.Training)
@@ -199,7 +190,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Confirmed"))
+            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Confirmed"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -209,7 +200,7 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Muchas gracias!</b>");
             }
 
-            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Refused"))
+            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Refused"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -219,7 +210,7 @@ namespace NeoSmart.BackEnd.Controllers
                $"<b>Será en una nueva oportunidad!</b>");
             }
 
-            if (inscriptionDTO.InscriptionStatus!.Name.Equals("Cancelled"))
+            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Cancelled"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -229,7 +220,7 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Será en una nueva oportunidad!</b>");
             }
 
-            inscription.TrainingSessionInscriptionStatus = inscriptionDTO.InscriptionStatus;
+            inscription.SessionInscriptionStatus = inscriptionDTO.SessionInscriptionStatus;
             _context.Update(inscription);
             await _context.SaveChangesAsync();
             return Ok(inscription);

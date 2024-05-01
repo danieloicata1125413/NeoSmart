@@ -17,7 +17,7 @@
     }
 </style>
 
-@if (Trainings is null)
+@if (trainings is null)
 {
     <Loading />
 }
@@ -48,9 +48,9 @@ else
                 SelectedPage="SelectedPageAsync" />
 
     <div class="row row-cols-1 row-cols-md-4 g-2 mt-1 mb-3">
-        @if (Trainings is not null)
+        @if (trainings is not null)
         {
-            @foreach (var training in Trainings!)
+            @foreach (var training in trainings!)
             {
                 <div class="col">
                     <div class="card h-100">
@@ -74,11 +74,8 @@ else
                                 @foreach (var trainingSession in training!.Sessions!)
                                 {
                                     <div class="row">
-                                        <p>@trainingSession.City!.Name</p>
-                                    </div>
-                                    <div class="row">
                                         <div class="col">
-                                            <p class="float-start">@trainingSession.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) - @trainingSession.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+                                            <p class="float-start">@trainingSession.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
                                             <button class="btn btn-sm btn-outline-primary mb-2 float-end" @onclick=@(() => AddToCartAsync(trainingSession.Id))><i class="oi oi-plus" /> Add</button>
                                         </div>
                                     </div>
@@ -102,7 +99,7 @@ else
     private int counter = 0;
     private bool isAuthenticated;
 
-    public List<Training>? Trainings { get; set; }
+    public List<Training>? trainings { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
@@ -137,7 +134,7 @@ else
             return;
         }
 
-        var responseHttp = await repository.GetAsync<int>("/api/TemporalInscriptions/count");
+        var responseHttp = await repository.GetAsync<int>("/api/SessionInscriptionTemporals/count");
         if (responseHttp.Error)
         {
             return;
@@ -181,7 +178,7 @@ else
         {
             var responseHppt = await repository.GetAsync<List<Training>>(url1);
             var responseHppt2 = await repository.GetAsync<int>(url2);
-            Trainings = responseHppt.Response!;
+            trainings = responseHppt.Response!;
             totalPages = responseHppt2.Response!;
         }
         catch (Exception ex)
@@ -226,12 +223,12 @@ else
             return;
         }
 
-        var trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO
+        var sessionInscriptionTemporalDTO = new SessionInscriptionTemporalDTO
             {
                 SessionId = trainingSessionId
             };
 
-        var httpResponse = await repository.PostAsync("/api/TrainingSessionInscriptionTemporals/full", trainingSessionInscriptionTemporalDTO);
+        var httpResponse = await repository.PostAsync("/api/SessionInscriptionTemporals/full", sessionInscriptionTemporalDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

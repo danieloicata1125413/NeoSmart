@@ -1,4 +1,4 @@
-﻿@page "/TrainingSessionInscriptions/ModifyTrainingSessionInscriptionTemporal/{TrainingSessionInscriptionTemporalId:int}"
+﻿@page "/SessionInscriptions/ModifySessionInscriptionTemporal/{SessionInscriptionTemporalId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -46,13 +46,13 @@ else
                     </div>
                 </div>
                 <div class="col-6">
-                    <EditForm Model="trainingSessionInscriptionTemporalDTO" OnValidSubmit="UpdateCartAsync">
+                    <EditForm Model="SessionInscriptionTemporalDTO" OnValidSubmit="UpdateCartAsync">
                         <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label>Comentarios:</label>
                             <div>
-                                <InputTextArea class="form-control" @bind-Value="@trainingSessionInscriptionTemporalDTO!.Remarks" />
-                                <ValidationMessage For="@(() => trainingSessionInscriptionTemporalDTO.Remarks)" />
+                                <InputTextArea class="form-control" @bind-Value="@SessionInscriptionTemporalDTO!.Remarks" />
+                                <ValidationMessage For="@(() => SessionInscriptionTemporalDTO.Remarks)" />
                             </div>
                         </div>
                         <button class="btn btn-primary" type="submit"><i class="oi oi-check" /> Actualizar Carro</button>
@@ -70,20 +70,20 @@ else
     private bool loading = true;
     private Session? session;
     private bool isAuthenticated;
-    private TrainingSessionInscriptionTemporalDTO? trainingSessionInscriptionTemporalDTO;
+    private SessionInscriptionTemporalDTO? SessionInscriptionTemporalDTO;
 
     [Parameter]
-    public int TrainingSessionInscriptionTemporalId { get; set; }
+    public int SessionInscriptionTemporalId { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        await LoadTrainingSessionInscriptionTemporalAsync();
+        await LoadSessionInscriptionTemporalAsync();
     }
 
-    private async Task LoadTrainingSessionInscriptionTemporalAsync()
+    private async Task LoadSessionInscriptionTemporalAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<TrainingSessionInscriptionTemporal>($"/api/TrainingSessionInscriptionTemporals/{TrainingSessionInscriptionTemporalId}");
+        var httpResponse = await repository.GetAsync<SessionInscriptionTemporal>($"/api/SessionInscriptionTemporals/{SessionInscriptionTemporalId}");
 
         if (httpResponse.Error)
         {
@@ -93,14 +93,14 @@ else
             return;
         }
 
-        var trainingSessionInscriptionTemporal = httpResponse.Response!;
-        trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO
+        var SessionInscriptionTemporal = httpResponse.Response!;
+        SessionInscriptionTemporalDTO = new SessionInscriptionTemporalDTO
             {
-                Id = trainingSessionInscriptionTemporal.Id,
-                SessionId = trainingSessionInscriptionTemporal.SessionId,
-                Remarks = trainingSessionInscriptionTemporal.Remarks!
+                Id = SessionInscriptionTemporal.Id,
+                SessionId = SessionInscriptionTemporal.SessionId,
+                Remarks = SessionInscriptionTemporal.Remarks!
             };
-        session = trainingSessionInscriptionTemporal.Session;
+        session = SessionInscriptionTemporal.Session;
         topics = session!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
         images = session!.Training!.TrainingImages!.Select(x => x.Image).ToList();
         loading = false;
@@ -108,7 +108,7 @@ else
 
     public async Task UpdateCartAsync()
     {
-        var httpResponse = await repository.PutAsync("/api/TrainingSessionInscriptionTemporals/full", trainingSessionInscriptionTemporalDTO);
+        var httpResponse = await repository.PutAsync("/api/SessionInscriptionTemporals/full", SessionInscriptionTemporalDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

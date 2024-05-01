@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 namespace NeoSmart.UnitTest.Controllers
 {
     [TestClass]
-    public class TrainingSessionInscriptionTemporalsControllerTest
+    public class SessionInscriptionTemporalsControllerTest
     {
-        private TrainingSessionInscriptionTemporalsController _controller = null!;
+        private SessionInscriptionTemporalsController _controller = null!;
         private DataContext _context = null!;
         private DbContextOptions<DataContext> _options = null!;
-        private Mock<IGenericUnitOfWork<TrainingSessionInscriptionTemporal>> _mockUnitOfWork = null!;
+        private Mock<IGenericUnitOfWork<SessionInscriptionTemporal>> _mockUnitOfWork = null!;
 
         [TestInitialize]
         public void SetUp()
@@ -33,8 +33,8 @@ namespace NeoSmart.UnitTest.Controllers
                 .Options;
 
             _context = new DataContext(_options);
-            _mockUnitOfWork = new Mock<IGenericUnitOfWork<TrainingSessionInscriptionTemporal>>();
-            _controller = new TrainingSessionInscriptionTemporalsController(_mockUnitOfWork.Object, _context);
+            _mockUnitOfWork = new Mock<IGenericUnitOfWork<SessionInscriptionTemporal>>();
+            _controller = new SessionInscriptionTemporalsController(_mockUnitOfWork.Object, _context);
 
             var claims = new List<Claim>
             {
@@ -59,8 +59,8 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task GetAsync_ShouldReturnTemporalInscription_WhenIdExists()
         {
             // Arrange
-            var expectedInscription = new TrainingSessionInscriptionTemporal { Id = 1 };
-            _context.TrainingSessionInscriptionTemporals.Add(expectedInscription);
+            var expectedInscription = new SessionInscriptionTemporal { Id = 1 };
+            _context.SessionInscriptionTemporals.Add(expectedInscription);
             await _context.SaveChangesAsync();
 
             // Act
@@ -74,11 +74,11 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PutAsync_ShouldUpdateTemporalInscription_WhenOrderExists()
         {
             // Arrange
-            var expectedInscription = new TrainingSessionInscriptionTemporal { Id = 1, Remarks = "Initial Remarks"};
-            _context.TrainingSessionInscriptionTemporals.Add(expectedInscription);
+            var expectedInscription = new SessionInscriptionTemporal { Id = 1, Remarks = "Initial Remarks"};
+            _context.SessionInscriptionTemporals.Add(expectedInscription);
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { Id = 1, Remarks = "Updated Remarks"};
+            var dto = new SessionInscriptionTemporalDTO { Id = 1, Remarks = "Updated Remarks"};
 
             // Act
             var result = await _controller.PutAsync(dto);
@@ -86,7 +86,7 @@ namespace NeoSmart.UnitTest.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
-            var returnedDto = okResult!.Value as TrainingSessionInscriptionTemporalDTO;
+            var returnedDto = okResult!.Value as SessionInscriptionTemporalDTO;
             Assert.AreEqual(dto.Remarks, returnedDto!.Remarks);
         }
 
@@ -94,7 +94,7 @@ namespace NeoSmart.UnitTest.Controllers
         public async Task PutAsync_ShouldReturnNotFound_WhenTemporalInscriptionDoesNotExistAsync()
         {
             // Arrange
-            var dto = new TrainingSessionInscriptionTemporalDTO { Id = 1, Remarks = "Some Remarks" };
+            var dto = new SessionInscriptionTemporalDTO { Id = 1, Remarks = "Some Remarks" };
 
             // Act
             var result = await _controller.PutAsync(dto);
@@ -109,7 +109,6 @@ namespace NeoSmart.UnitTest.Controllers
             // Arrange
             var session = new Session { Id = 1, 
                 DateStart = DateTime.Now,
-                DateEnd = DateTime.Now,
                 Training = new Training { Id = 1,
                     Description = "Test",
                     Duration = 60,
@@ -124,7 +123,7 @@ namespace NeoSmart.UnitTest.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1, Remarks = "New Remarks"};
+            var dto = new SessionInscriptionTemporalDTO { SessionId = 1, Remarks = "New Remarks"};
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -134,10 +133,10 @@ namespace NeoSmart.UnitTest.Controllers
         }
 
         [TestMethod]
-        public async Task PostAsync_ShouldReturnNotFound_WhenTrainingSessionDoesNotExistAsync()
+        public async Task PostAsync_ShouldReturnNotFound_WhenSessionDoesNotExistAsync()
         {
             // Arrange
-            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1 };
+            var dto = new SessionInscriptionTemporalDTO { SessionId = 1 };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -154,7 +153,6 @@ namespace NeoSmart.UnitTest.Controllers
             {
                 Id = 1,
                 DateStart = DateTime.Now,
-                DateEnd = DateTime.Now,
                 Training = new Training
                 {
                     Id = 1,
@@ -169,7 +167,7 @@ namespace NeoSmart.UnitTest.Controllers
             _context.Sessions.Add(session);
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1 };
+            var dto = new SessionInscriptionTemporalDTO { SessionId = 1 };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -179,14 +177,13 @@ namespace NeoSmart.UnitTest.Controllers
         }
 
         [TestMethod]
-        public async Task PostAsync_ShouldAddTemporalInscription_WhenTrainingSessionAndUserExistAsync()
+        public async Task PostAsync_ShouldAddTemporalInscription_WhenSessionAndUserExistAsync()
         {
             // Arrange
             var session = new Session
             {
                 Id = 1,
                 DateStart = DateTime.Now,
-                DateEnd = DateTime.Now,
                 Training = new Training
                 {
                     Id = 1,
@@ -205,7 +202,7 @@ namespace NeoSmart.UnitTest.Controllers
 
             await _context.SaveChangesAsync();
 
-            var dto = new TrainingSessionInscriptionTemporalDTO { SessionId = 1, Remarks = "Test Remarks" };
+            var dto = new SessionInscriptionTemporalDTO { SessionId = 1, Remarks = "Test Remarks" };
 
             // Act
             var result = await _controller.PostAsync(dto);
@@ -213,7 +210,7 @@ namespace NeoSmart.UnitTest.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
-            var returnedDto = okResult!.Value as TrainingSessionInscriptionDTO;
+            var returnedDto = okResult!.Value as SessionInscriptionDTO;
             Assert.AreEqual(dto.Remarks, returnedDto!.Remarks);
         }
 
@@ -233,7 +230,6 @@ namespace NeoSmart.UnitTest.Controllers
                 {
                     Id = 1,
                     DateStart = DateTime.Now,
-                    DateEnd = DateTime.Now,
                     Training = new Training
                     {
                         Id = 1,
@@ -250,17 +246,17 @@ namespace NeoSmart.UnitTest.Controllers
 
             var controller = CreateControllerWithMockedUserEmail(email, exceptionalContext);
 
-            var trainingSessionInscriptionTemporalDTO = new TrainingSessionInscriptionTemporalDTO {  SessionId = 1, Remarks = "TestRemarks" };
+            var SessionInscriptionTemporalDTO = new SessionInscriptionTemporalDTO {  SessionId = 1, Remarks = "TestRemarks" };
 
             // Act
-            var result = await controller.PostAsync(trainingSessionInscriptionTemporalDTO);
+            var result = await controller.PostAsync(SessionInscriptionTemporalDTO);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             Assert.AreEqual("Test Exception", ((BadRequestObjectResult)result).Value);
         }
 
-        private TrainingSessionInscriptionTemporalsController CreateControllerWithMockedUserEmail(string email, DataContext context)
+        private SessionInscriptionTemporalsController CreateControllerWithMockedUserEmail(string email, DataContext context)
         {
             var claims = new List<Claim>
             {
@@ -270,7 +266,7 @@ namespace NeoSmart.UnitTest.Controllers
             var identity = new ClaimsIdentity(claims, "TestAuthType");
             var user = new ClaimsPrincipal(identity);
 
-            var controller = new TrainingSessionInscriptionTemporalsController(null, context);
+            var controller = new SessionInscriptionTemporalsController(null, context);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext { User = user }
@@ -286,7 +282,6 @@ namespace NeoSmart.UnitTest.Controllers
             {
                 Id = 1,
                 DateStart = DateTime.Now,
-                DateEnd = DateTime.Now,
                 Training = new Training
                 {
                     Id = 1,
@@ -305,8 +300,8 @@ namespace NeoSmart.UnitTest.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var temporalInscription = new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Some", User = user };
-            _context.TrainingSessionInscriptionTemporals.Add(temporalInscription);
+            var temporalInscription = new SessionInscriptionTemporal { Session = session, Remarks = "Some", User = user };
+            _context.SessionInscriptionTemporals.Add(temporalInscription);
             await _context.SaveChangesAsync();
 
             // Act
@@ -315,7 +310,7 @@ namespace NeoSmart.UnitTest.Controllers
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
-            var data = okResult!.Value as List<TrainingSessionInscriptionTemporal>;
+            var data = okResult!.Value as List<SessionInscriptionTemporal>;
             Assert.AreEqual(1, data!.Count);
         }
 
@@ -327,7 +322,6 @@ namespace NeoSmart.UnitTest.Controllers
             {
                 Id = 1,
                 DateStart = DateTime.Now,
-                DateEnd = DateTime.Now,
                 Training = new Training
                 {
                     Id = 1,
@@ -346,8 +340,8 @@ namespace NeoSmart.UnitTest.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Some", User = user });
-            _context.TrainingSessionInscriptionTemporals.Add(new TrainingSessionInscriptionTemporal { Session = session, Remarks = "Any", User = user });
+            _context.SessionInscriptionTemporals.Add(new SessionInscriptionTemporal { Session = session, Remarks = "Some", User = user });
+            _context.SessionInscriptionTemporals.Add(new SessionInscriptionTemporal { Session = session, Remarks = "Any", User = user });
             await _context.SaveChangesAsync();
 
             // Act

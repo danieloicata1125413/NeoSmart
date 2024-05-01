@@ -1,16 +1,16 @@
 ﻿using NeoSmart.ClassLibraries.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-namespace NeoSmart.ClassLibraries.DTOs
+namespace NeoSmart.ClassLibraries.Entities
 {
-    public class TrainingSessionInscriptionExamAnswerDTO : ISoftDetete
+    public class SessionInscriptionExamAnswer : ISoftDetete
     {
         public int Id { get; set; }
 
         [Display(Name = "Medición")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int TrainingSessionInscriptionExamId { get; set; }
-        public TrainingSessionInscriptionExamDTO? TrainingSessionInscriptionExam { get; set; }
+        public int SessionInscriptionExamId { get; set; }
+        public SessionInscriptionExam? SessionInscriptionExam { get; set; }
 
         [Display(Name = "Pregunta")]
         [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]

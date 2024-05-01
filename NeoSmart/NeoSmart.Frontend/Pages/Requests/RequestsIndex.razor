@@ -40,15 +40,12 @@ else
                     <table class="table table-responsive">
                         <thead>
                             <tr>
-                                <th>Empresa</th>
-                                <th>Proceso</th>
-                                <th>Código</th>
-                                <th>Capacitación</th>
+                                <th>Id</th>
+                                <th>Líder</th>
+                                <th>Solicitud</th>
                                 <th>Duración</th>
                                 <th>Interna</th>
                                 <th>Estado</th>
-                                <th>Temas</th>
-                                <th>Programación</th>
                                 <th>Habilitado</th>
                                 <th style="width:220px"></th>
                             </tr>
@@ -65,22 +62,22 @@ else
                                     <td>@request.RequestStatus!.Description</td>
                                     <td><InputCheckbox @bind-Value=request.Status disabled="true"></InputCheckbox></td>
                                     <td>
-                                        @if (request.RequestStatus!.Name.Equals("Request"))
+                                        @if (request.RequestStatus!.Name.Equals("Registered"))
                                         {
-                                            <button class="btn btn-primary btn-sm mx-1" @onclick=@(() => ShowModalAsync(request.Id))>Edit</button>
+                                            <button class="btn btn-primary btn-sm mx-1" @onclick=@(() => ShowModalAsync(request.Id, true))>Edit</button>
                                         }
 
-                                        @if (request.RequestStatus!.Name.Equals("Request"))
+                                        @if (request.RequestStatus!.Name.Equals("Registered"))
                                         {
-                                            <button class="btn btn-primary btn-sm mx-1" @onclick=@(() => ShowAuthorizedModalAsync(request.Id))>Autorizar</button>
+                                            <button class="btn btn-warning btn-sm mx-1" @onclick=@(() => ShowAuthorizedModalAsync(request.Id))>Autorizar</button>
                                         }
 
-                                        @if (request.RequestStatus!.Name.Equals("Request") || request.RequestStatus!.Name.Equals("Refused") || request.RequestStatus!.Name.Equals("Authorized"))
+                                        @if (request.RequestStatus!.Name.Equals("Registered") || request.RequestStatus!.Name.Equals("Refused") || request.RequestStatus!.Name.Equals("Authorized"))
                                         {
                                             <button class="btn btn-success btn-sm mx-1" @onclick=@(() => ShowInfoModalAsync(request.Id))>Info</button>
                                         }
 
-                                        @if (request.RequestStatus!.Name.Equals("Request"))
+                                        @if (request.RequestStatus!.Name.Equals("Registered"))
                                         {
                                             <button class="btn btn-danger btn-sm mx-1" @onclick=@(() => DeleteAsync(request))>Borrar</button>
                                         }
@@ -101,7 +98,7 @@ else
 
 @code {
     private List<RequestStatus>? requestStatus;
-    private int requestStatusId;
+    private int requestStatusId { get; set; } = 0;
     private List<Request>? requests;
     private int currentPage = 1;
     private int totalPages;
@@ -211,11 +208,11 @@ else
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/requests/totalPages?id={requestStatusId}";
+            url = $"api/Requests/totalPages?Id={requestStatusId}";
         }
         else
         {
-            url = $"api/requests/totalPages?id={requestStatusId}&filter={Filter}";
+            url = $"api/Requests/totalPages?Id={requestStatusId}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<int>(url);
@@ -235,11 +232,11 @@ else
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/requests?page={page}&id={requestStatusId}";
+            url = $"api/Requests?page={page}&id={requestStatusId}";
         }
         else
         {
-            url = $"api/requests?page={page}&id={requestStatusId}&filter={Filter}";
+            url = $"api/Requests?page={page}&id={requestStatusId}&filter={Filter}";
         }
 
         var response = await repository.GetAsync<List<Request>>(url);

@@ -57,7 +57,6 @@
     private async Task SaveAsync()
     {
         session!.User = null;
-        session!.City = null;
         session!.Training = null;
         var response = await repository.PutAsync($"/api/Sessions", session);
         if (response.Error)
@@ -83,7 +82,7 @@
     private void Return()
     {
         SessionForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/Sessions/details/{session!.Id}");
+        navigationManager.NavigateTo($"/Sessions");
     }
 
 }

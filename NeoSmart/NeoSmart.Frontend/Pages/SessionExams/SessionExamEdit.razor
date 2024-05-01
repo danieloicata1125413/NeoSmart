@@ -1,33 +1,33 @@
-﻿@page "/TrainingSessionExams/edit/{TrainingSessionExamId:int}"
+﻿@page "/SessionExams/edit/{SessionExamId:int}"
 @attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-@if (TrainingSessionExam is null)
+@if (SessionExam is null)
 {
     <Loading/>
 }
 else
 {
-    <TrainingSessionExamForm Titulo="Editar Examen" @ref="TrainingSessionExamForm" TrainingSesionId="TrainingSesionId" TrainingSessionExam="TrainingSessionExam" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+    <SessionExamForm Titulo="Editar Examen" @ref="SessionExamForm" SessionId="SessionId" SessionExam="SessionExam" OnValidSubmit="SaveAsync" ReturnAction="Return" />
 }
 
 @code {
-    private SessionExamDTO? TrainingSessionExam;
-    private TrainingSessionExamForm? TrainingSessionExamForm;
+    private SessionExamDTO? SessionExam;
+    private SessionExamForm? SessionExamForm;
 
-    public int TrainingSesionId { get; set; }
+    public int SessionId { get; set; }
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
-    public int TrainingSessionExamId { get; set; }
+    public int SessionExamId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        var response = await repository.GetAsync<SessionExamDTO>($"/api/TrainingSessionExams/{TrainingSessionExamId}");
+        var response = await repository.GetAsync<SessionExamDTO>($"/api/SessionExams/{SessionExamId}");
         if (response.Error)
         {
             if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -38,15 +38,15 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-        TrainingSessionExam = response.Response;
-        TrainingSesionId = TrainingSessionExam!.TrainingSessionId;
+        SessionExam = response.Response;
+        SessionId = SessionExam!.SessionId;
     }
 
     private async Task SaveAsync()
     {
-        TrainingSessionExam!.TrainingSession = null;
-        TrainingSessionExam!.TrainingExam = null;
-        var response = await repository.PutAsync($"/api/TrainingSessionExams", TrainingSessionExam);
+        SessionExam!.Session = null;
+        SessionExam!.TrainingExam = null;
+        var response = await repository.PutAsync($"/api/SessionExams", SessionExam);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -69,7 +69,7 @@ else
 
     private void Return()
     {
-        TrainingSessionExamForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/TrainingSessionExams/{TrainingSesionId}");
+        SessionExamForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/SessionExams/{SessionId}");
     }
 }

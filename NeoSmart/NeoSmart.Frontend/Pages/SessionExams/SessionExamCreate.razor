@@ -1,33 +1,31 @@
-﻿@page "/TrainingSessionExams/create/{TrainingSesionId:int}"
+﻿@page "/SessionExams/create/{SessionId:int}"
 @attribute [Authorize(Roles = "SuperAdmin,Admin")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 
-<TrainingSessionExamForm Titulo="Nuevo Examen" @ref="TrainingSessionExamForm" TrainingSesionId="TrainingSesionId" TrainingSessionExam="TrainingSessionExam" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<SessionExamForm Titulo="Nuevo Examen" @ref="SessionExamForm" SessionId="SessionId" SessionExam="SessionExam" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
-    private SessionExamDTO TrainingSessionExam = new SessionExamDTO()
+    private SessionExamDTO SessionExam = new SessionExamDTO()
         {
-            TrainingExamId = 0,
-            TrainingSessionId = 0,
             DateStart = DateTime.Now,
             DateEnd = DateTime.Now.AddDays(1),
             TimeStart = DateTime.Now.TimeOfDay,
             TimeEnd = DateTime.Now.TimeOfDay,
             Attempt = 1,
         };
-    private TrainingSessionExamForm? TrainingSessionExamForm;
+    private SessionExamForm? SessionExamForm;
 
     [Parameter]
-    public int TrainingSesionId { get; set; }
+    public int SessionId { get; set; }
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     private async Task CreateAsync()
     {
-        var response = await repository.PostAsync("/api/TrainingSessionExams/full", TrainingSessionExam);
+        var response = await repository.PostAsync("/api/SessionExams/full", SessionExam);
         if (response.Error)
         {
             var message = await response.GetErrorMessageAsync();
@@ -50,7 +48,7 @@
 
     private void Return()
     {
-        TrainingSessionExamForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo($"/TrainingSessionExams/{TrainingSesionId}");
+        SessionExamForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/SessionExams/{SessionId}");
     }
 }

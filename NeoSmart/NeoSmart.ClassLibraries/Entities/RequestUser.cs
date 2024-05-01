@@ -11,8 +11,8 @@ namespace NeoSmart.ClassLibraries.Entities
         public int RequestId { get; set; }
         public Request? Request { get; set; }
 
-        [Display(Name = "Trabajandor")]
-        public string? UserId { get; set; }
+        [Display(Name = "Trabajador")]
+        public string UserId { get; set; }
         public User? User { get; set; }
     }
 }

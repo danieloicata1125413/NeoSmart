@@ -13,7 +13,7 @@ else
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h6 class="float-start">@Request!.Id</h6>
+                    <h6 class="float-start">Información</h6>
                     <a class="btn btn-danger btn-sm float-end me-1" href="/Requests"><i class="oi oi-ban" /> Cerrar</a>
                 </div>
             </div>
@@ -21,6 +21,9 @@ else
         <div class="card-body">
             <div class="row">
                 <div class="col-6">
+                    <div class="mb-3">
+                        <label>@Request!.Id</label>
+                    </div>
                     <div class="mb-3">
                         <label>@Request!.Description</label>
                     </div>

@@ -10,22 +10,23 @@
 }
 else
 {
-    <RequestForm Titulo="Nueva Solicitud" @ref="RequestForm" RequestDTO="RequestDTO" RequestStatus="RequestStatus" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
+    <RequestForm Titulo="Nueva Solicitud" @ref="RequestForm" RequestDTO="RequestDTO" IsReadOnly="false" RequestStatus="RequestStatus" OnValidSubmit="CreateAsync" ReturnAction="Return" IsEdit=false />
 }
 
 @code {
     private RequestDTO RequestDTO = new()
         {
-            RequestStatusId = 1,
+            RequestStatusId = 0, 
             Type = true,
-            DateStart = DateTime.Now,
-            Duration = 60,
-            Status = true
+            DateStart = DateTime.Now,   
+            Duration = 60, 
+            Status = true,  
+            Created = DateTime.Now,
+            Updated = DateTime.Now,
+  
         };
     private List<RequestStatus>? RequestStatus;
     private RequestForm? RequestForm;
-    private List<Topic> selectedTopics = new();
-    private List<Topic> nonSelectedTopics = new();
     private bool loading = true;
 
     [CascadingParameter]
@@ -37,16 +38,19 @@ else
     }
     private async Task LoadRequestStatusAsync()
     {
+        loading = true;
         var responseHttp = await repository.GetAsync<List<RequestStatus>>("/api/RequestStatus/combo");
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            loading = false;
             return;
         }
 
         var _RequestStatus = responseHttp.Response;
-        RequestStatus = _RequestStatus!.Where(x => x.Name == "Request").ToList();
+        RequestStatus = _RequestStatus!.Where(x => x.Name == "Registered").ToList();
+        loading = false;
     }
 
     private async Task CreateAsync()

@@ -10,8 +10,6 @@ using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
-using System.Net;
-using System.Net.Mail;
 
 namespace NeoSmart.BackEnd.Controllers
 {
@@ -24,9 +22,9 @@ namespace NeoSmart.BackEnd.Controllers
         private readonly IFileStorage _fileStorage;
         private readonly IUserHelper _userHelper;
         private readonly IMapper _mapper;
-        private readonly MailHelper _mailHelper;
+        private readonly IMailHelper _mailHelper;
 
-        public RequestsController(IGenericUnitOfWork<Request> unitOfWork, DataContext context, IFileStorage fileStorage, IUserHelper userHelper, IMapper mapper, MailHelper mailHelper) : base(unitOfWork, context)
+        public RequestsController(IGenericUnitOfWork<Request> unitOfWork, DataContext context, IFileStorage fileStorage, IUserHelper userHelper, IMapper mapper, IMailHelper mailHelper) : base(unitOfWork, context)
         {
             _context = context;
             _fileStorage = fileStorage;
@@ -128,7 +126,7 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 Request newRequest = _mapper.Map<Request>(RequestDTO);
                 var userLider = await _userHelper.GetUserAsync(User.Identity!.Name!);
-                if (userLider != null)
+                if (userLider == null)
                 {
                     return NotFound();
                 }
@@ -230,12 +228,12 @@ namespace NeoSmart.BackEnd.Controllers
                 Request.RequestStatusId = RequestDTO.RequestStatusId;
                 Request.Observation = RequestDTO.Observation;
                 var userLider = await _userHelper.GetUserAsync(Guid.Parse(RequestDTO.UserLeaderId!.ToString()));
-                if (userLider != null)
+                if (userLider == null)
                 {
                     return NotFound();
                 }
                 var userAdmin = await _userHelper.GetUserAsync(User.Identity!.Name!);
-                if (userAdmin != null)
+                if (userAdmin == null)
                 {
                     return NotFound();
                 }

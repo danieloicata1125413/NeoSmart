@@ -1,4 +1,4 @@
-﻿@page "/TrainingSessionInscriptions/ShowCart"
+﻿@page "/SessionInscriptions/ShowCart"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -10,7 +10,7 @@
 }
 else
 {
-    <GenericList MyList="trainingSessionInscriptionTemporals">
+    <GenericList MyList="SessionInscriptionTemporals">
         <Body>
             <div class="card">
                 <div class="card-header">
@@ -32,27 +32,27 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var trainingSessionInscriptionTemporal in trainingSessionInscriptionTemporals!)
+                            @foreach (var SessionInscriptionTemporal in SessionInscriptionTemporals!)
                             {
                                 <tr>
                                     <td>
-                                        <img src="@trainingSessionInscriptionTemporal.Session!.Training!.MainImage" style="width:50px;" />
+                                        <img src="@SessionInscriptionTemporal.Session!.Training!.MainImage" style="width:50px;" />
                                     </td>
                                     <td>
-                                        @trainingSessionInscriptionTemporal.Session!.Training!.Description
+                                        @SessionInscriptionTemporal.Session!.Training!.Description
                                     </td>
                                     <td>
-                                        @trainingSessionInscriptionTemporal.Remarks
+                                        @SessionInscriptionTemporal.Remarks
                                     </td>
                                     <td>
-                                        <a href="/TrainingSessionInscriptions/ModifyTrainingSessionInscriptionTemporal/@trainingSessionInscriptionTemporal.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
-                                        <button class="btn btn-danger btn-sm" @onclick=@(() => Delete(trainingSessionInscriptionTemporal.Id))><i class="oi oi-trash" /> Borrar</button>
+                                        <a href="/SessionInscriptions/ModifySessionInscriptionTemporal/@SessionInscriptionTemporal.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => Delete(SessionInscriptionTemporal.Id))><i class="oi oi-trash" /> Borrar</button>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    <EditForm Model="TrainingSessionInscriptionDTO" OnValidSubmit="ConfirmInscriptionAsync">
+                    <EditForm Model="SessionInscriptionDTO" OnValidSubmit="ConfirmInscriptionAsync">
                         <DataAnnotationsValidator />
                         <button class="btn btn-primary mb-3" type="submit"><i class="oi oi-check" /> Confirmar inscripción</button>
                     </EditForm>
@@ -63,14 +63,14 @@ else
 }
 
 @code {
-    public List<TrainingSessionInscriptionTemporal>? trainingSessionInscriptionTemporals { get; set; }
+    public List<SessionInscriptionTemporal>? SessionInscriptionTemporals { get; set; }
     private int quantity;
     private bool loading = true;
 
     [CascadingParameter]
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    public TrainingSessionInscriptionDTO TrainingSessionInscriptionDTO { get; set; } = new();
+    public SessionInscriptionDTO SessionInscriptionDTO { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {
@@ -82,9 +82,9 @@ else
         loading = true;
         try
         {
-            var responseHppt = await repository.GetAsync<List<TrainingSessionInscriptionTemporal>>("api/TrainingSessionInscriptionTemporals/my");
-            trainingSessionInscriptionTemporals = responseHppt.Response!;
-            quantity = trainingSessionInscriptionTemporals.Count();
+            var responseHppt = await repository.GetAsync<List<SessionInscriptionTemporal>>("api/SessionInscriptionTemporals/my");
+            SessionInscriptionTemporals = responseHppt.Response!;
+            quantity = SessionInscriptionTemporals.Count();
         }
         catch (Exception ex)
         {
@@ -109,7 +109,7 @@ else
             return;
         }
 
-        var httpResponse = await repository.PostAsync("/api/TrainingSessionInscriptions", TrainingSessionInscriptionDTO);
+        var httpResponse = await repository.PostAsync("/api/SessionInscriptions", SessionInscriptionDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -128,7 +128,7 @@ else
         navigationManager.NavigateTo("/");
     }
 
-    private async Task Delete(int trainingSessionInscriptionTemporalId)
+    private async Task Delete(int SessionInscriptionTemporalId)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
@@ -145,7 +145,7 @@ else
             return;
         }
 
-        var responseHTTP = await repository.DeleteAsync($"api/TrainingSessionInscriptionTemporals/{trainingSessionInscriptionTemporalId}");
+        var responseHTTP = await repository.DeleteAsync($"api/SessionInscriptionTemporals/{SessionInscriptionTemporalId}");
 
         if (responseHTTP.Error)
         {

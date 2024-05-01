@@ -69,7 +69,8 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(t => t.FormationTopics)
                                 .Include(t => t.TrainingTopics)
                                 .AsQueryable();
-            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            var user = await _userHelper
+                .GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)
             {
                 queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);

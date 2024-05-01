@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class TrainingSessionInscriptionAttend : ISoftDetete
+    public class SessionInscriptionAttend : ISoftDetete
     {
         public int Id { get; set; }
 
         [Display(Name = "Sesión Inscrita")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        public int TrainingSessionInscriptionId { get; set; }
-        public TrainingSessionInscription? TrainingSessionInscription { get; set; }
+        public int SessionInscriptionId { get; set; }
+        public SessionInscription? SessionInscription { get; set; }
 
         [Display(Name = "Fecha y hora")]
         public DateTime? Date { get; set; }

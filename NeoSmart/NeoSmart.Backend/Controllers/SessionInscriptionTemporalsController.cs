@@ -13,10 +13,10 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TrainingSessionInscriptionTemporalsController : GenericController<TrainingSessionInscriptionTemporal>
+    public class SessionInscriptionTemporalsController : GenericController<SessionInscriptionTemporal>
     {
         private readonly DataContext _context;
-        public TrainingSessionInscriptionTemporalsController(IGenericUnitOfWork<TrainingSessionInscriptionTemporal> unitOfWork, DataContext context) : base(unitOfWork, context)
+        public SessionInscriptionTemporalsController(IGenericUnitOfWork<SessionInscriptionTemporal> unitOfWork, DataContext context) : base(unitOfWork, context)
         {
             _context = context;
         }
@@ -24,7 +24,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id:int}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            return Ok(await _context.TrainingSessionInscriptionTemporals
+            return Ok(await _context.SessionInscriptionTemporals
                 .Include(ts => ts.User!)
                 //.Include(tc => tc.TrainingCalendar!)
                 //.ThenInclude(t => t.Training!)
@@ -37,25 +37,25 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpPut("full")]
-        public async Task<IActionResult> PutAsync(TrainingSessionInscriptionTemporalDTO trainingSessionInscriptionTemporalDTO)
+        public async Task<IActionResult> PutAsync(SessionInscriptionTemporalDTO SessionInscriptionTemporalDTO)
         {
-            var currentTrainingSessionInscriptionTemporal = await _context.TrainingSessionInscriptionTemporals.FirstOrDefaultAsync(x => x.Id == trainingSessionInscriptionTemporalDTO.Id);
-            if (currentTrainingSessionInscriptionTemporal == null)
+            var currentSessionInscriptionTemporal = await _context.SessionInscriptionTemporals.FirstOrDefaultAsync(x => x.Id == SessionInscriptionTemporalDTO.Id);
+            if (currentSessionInscriptionTemporal == null)
             {
                 return NotFound();
             }
 
-            currentTrainingSessionInscriptionTemporal!.Remarks = trainingSessionInscriptionTemporalDTO.Remarks;
+            currentSessionInscriptionTemporal!.Remarks = SessionInscriptionTemporalDTO.Remarks;
 
-            _context.Update(currentTrainingSessionInscriptionTemporal);
+            _context.Update(currentSessionInscriptionTemporal);
             await _context.SaveChangesAsync();
-            return Ok(trainingSessionInscriptionTemporalDTO);
+            return Ok(SessionInscriptionTemporalDTO);
         }
 
         [HttpPost("full")]
-        public async Task<IActionResult> PostAsync(TrainingSessionInscriptionTemporalDTO trainingSessionInscriptionTemporalDTO)
+        public async Task<IActionResult> PostAsync(SessionInscriptionTemporalDTO SessionInscriptionTemporalDTO)
         {
-            var session = await _context.Sessions.FirstOrDefaultAsync(x => x.Id == trainingSessionInscriptionTemporalDTO.SessionId);
+            var session = await _context.Sessions.FirstOrDefaultAsync(x => x.Id == SessionInscriptionTemporalDTO.SessionId);
             if (session == null)
             {
                 return NotFound();
@@ -67,18 +67,18 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            var trainingSessionInscriptionTemporal = new TrainingSessionInscriptionTemporal
+            var SessionInscriptionTemporal = new SessionInscriptionTemporal
             {
                 SessionId = session.Id,
-                Remarks = trainingSessionInscriptionTemporalDTO.Remarks,
+                Remarks = SessionInscriptionTemporalDTO.Remarks,
                 User = user
             };
 
             try
             {
-                _context.Add(trainingSessionInscriptionTemporal);
+                _context.Add(SessionInscriptionTemporal);
                 await _context.SaveChangesAsync();
-                return Ok(trainingSessionInscriptionTemporalDTO);
+                return Ok(SessionInscriptionTemporalDTO);
             }
             catch (Exception ex)
             {
@@ -89,7 +89,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetAsync()
         {
-            var result = await _context.TrainingSessionInscriptionTemporals
+            var result = await _context.SessionInscriptionTemporals
                 .Include(x => x.Session!)
                 .ThenInclude(tc => tc.Training!)
                 .ThenInclude(i => i.TrainingImages!)
@@ -102,7 +102,7 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("count")]
         public async Task<ActionResult> GetCountAsync()
         {
-            return Ok(await _context.TrainingSessionInscriptionTemporals
+            return Ok(await _context.SessionInscriptionTemporals
                 .Where(x => x.User!.Email == User.Identity!.Name)
                 .CountAsync());
         }

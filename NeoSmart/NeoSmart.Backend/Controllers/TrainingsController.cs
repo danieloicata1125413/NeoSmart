@@ -30,6 +30,22 @@ namespace NeoSmart.BackEnd.Controllers
             _userHelper = userHelper;
         }
 
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetComboAllAsync(int trainingId)
+        {
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company == null)
+            {
+                return Ok(await _context.Trainings
+                .OrderBy(s => s.Description)
+                .ToListAsync());
+            }
+            return Ok(await _context.Trainings
+                .Where(c => c.Process!.Company!.Id == user.Company!.Id)
+                .OrderBy(s => s.Description)
+                .ToListAsync());
+        }
+
         [HttpGet("trainingTopics/{trainingId}")]
         public async Task<ActionResult> GetTrainingTopicsByTrainingAsync(int trainingId)
         {
@@ -52,6 +68,9 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Sessions!)
                                     .ThenInclude(o => o.User)
                                     .ThenInclude(o => o.City!)
+                                .Include(o => o.Sessions!)
+                                .ThenInclude(o => o.SessionInscriptions!)
+                                .Include(o=> o.TrainingExams!)
                                 .AsQueryable();
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)
@@ -106,9 +125,10 @@ namespace NeoSmart.BackEnd.Controllers
                                 .ThenInclude(o => o.User!)
                                 .ThenInclude(o => o.City!)
                                 .Include(o => o.Sessions!)
-                                .ThenInclude(o => o.City!)
+                                .ThenInclude(o => o.SessionInscriptions!)
                                 .Include(o => o.Sessions!)
-                                .ThenInclude(o => o.TrainingSessionInscriptions!)
+                                .ThenInclude(o => o.SessionStatus!)
+                                .Include(o => o.TrainingExams!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)
             {
@@ -124,14 +144,10 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 Training newTraining = new()
                 {
+                    Type = trainingDTO.Type,
                     ProcessId = trainingDTO.ProcessId,
                     Description = trainingDTO.Description,
-                    Requirement = trainingDTO.Requirement,
-                    DateStart = trainingDTO.DateStart,
                     Duration = trainingDTO.Duration,
-                    Type = trainingDTO.Type,
-                    Entity = trainingDTO.Entity,
-                    Price = trainingDTO.Price,
                     Sessions = new List<Session>(),
                     TrainingTopics = new List<TrainingTopic>(),
                     TrainingImages = new List<TrainingImage>(),
@@ -187,12 +203,8 @@ namespace NeoSmart.BackEnd.Controllers
                 }
                 training.ProcessId = trainingDTO.ProcessId;
                 training.Description = trainingDTO.Description;
-                training.Requirement = trainingDTO.Requirement;
-                training.DateStart = trainingDTO.DateStart;
                 training.Duration = trainingDTO.Duration;
                 training.Type = trainingDTO.Type;
-                training.Entity = trainingDTO.Entity;
-                training.Price = trainingDTO.Price;
 
                 if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
                 {
