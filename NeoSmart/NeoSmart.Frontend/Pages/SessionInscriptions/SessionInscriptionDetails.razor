@@ -99,7 +99,7 @@ else
                     </AuthorizeView>
                 </CascadingAuthenticationState>
                 <CascadingAuthenticationState>
-                    <AuthorizeView Roles="Admin, Manager">
+                    <AuthorizeView Roles="SuperAdmin,Manager">
                         <Authorized>
                             <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
                             <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>

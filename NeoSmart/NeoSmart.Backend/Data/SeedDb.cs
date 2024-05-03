@@ -35,7 +35,7 @@ namespace NeoSmart.BackEnd.Data
             await CheckFormationsAsync();
             await CheckTopicsAsync();
             await CheckRequestStatusAsync();
-            await CheckTrainingStatusAsync();
+            await CheckSessionStatusAsync();
             await CheckTrainingsAsync();
             await CheckRolesAsycn();
             await CheckSlider();
@@ -1530,7 +1530,7 @@ namespace NeoSmart.BackEnd.Data
                 await _context.SaveChangesAsync();
             }
         }
-        private async Task CheckTrainingStatusAsync()
+        private async Task CheckSessionStatusAsync()
         {
             if (!_context.SessionStatus.Any())
             {
