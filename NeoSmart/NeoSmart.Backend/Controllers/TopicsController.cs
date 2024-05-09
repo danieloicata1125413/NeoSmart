@@ -25,6 +25,42 @@ namespace NeoSmart.BackEnd.Controllers
             _userHelper = userHelper;
         }
 
+
+        [AllowAnonymous]
+        [HttpGet("combo/{companyId}")]
+        public async Task<ActionResult> GetComboAllAsync(int companyId)
+        {
+            return Ok(await _context.Topics
+                .Where(c => c.Company!.Id == companyId)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(s => s.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("comboByTrainingId/{trainingId}")]
+        public async Task<ActionResult> GetComboByTrainingAsync(int trainingId)
+        {
+            return Ok(await _context.Topics
+                .Include(t=> t.TrainingTopics!)
+                .ThenInclude(t => t.Training!)
+                .Where(t => t.TrainingTopics!.Any(x=>x.TrainingId == trainingId))
+                .OrderBy(t => t.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("comboBySesionId/{SesionId}")]
+        public async Task<ActionResult> GetComboByTrainingSesionAsync(int sesionId)
+        {
+            var trainingSesion = await _context.Sessions
+                .FirstOrDefaultAsync(x=>x.Id == sesionId);
+            return Ok(await _context.Topics
+                .Include(t => t.TrainingTopics!)
+                .ThenInclude(t => t.Training!)
+                .Where(t => t.TrainingTopics!.Any(x => x.TrainingId == trainingSesion!.TrainingId))
+                .OrderBy(t => t.Description)
+                .ToListAsync());
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
@@ -33,7 +69,8 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(t => t.FormationTopics)
                                 .Include(t => t.TrainingTopics)
                                 .AsQueryable();
-            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            var user = await _userHelper
+                .GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)
             {
                 queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
@@ -78,9 +115,9 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var topic = await _context.Topics
-                .Include(t => t.Company)
-                .Include(t => t.FormationTopics)
-                .Include(t => t.TrainingTopics)
+                .Include(t => t.Company!)
+                .Include(t => t.FormationTopics!)
+                .Include(t => t.TrainingTopics!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (topic == null)
             {

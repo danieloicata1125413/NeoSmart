@@ -17,13 +17,13 @@
     }
 </style>
 
-@if (Trainings is null)
+@if (trainings is null)
 {
     <Loading />
 }
 else
 {
-    
+
     <div class="row mb-3">
         <div class="col-7">
             <h3>Capacitaciones</h3>
@@ -48,44 +48,47 @@ else
                 SelectedPage="SelectedPageAsync" />
 
     <div class="row row-cols-1 row-cols-md-4 g-2 mt-1 mb-3">
-        @foreach (var training in Trainings!)
+        @if (trainings is not null)
         {
-            <div class="col">
-                <div class="card h-100">
-                    <div class="text-center zoom">
-                        <CarouselView Images="@training!.MainImages" />
-                        @* <img src="@training.MainImage" style="height:200px; max-width:200px;" class="text-center" alt=@training.Description /> *@
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-title text-navy"> @training.Description</h6>
-                        @* <p class="card-text smfnt">@training.Process!.Description</p> *@
-                        <div class="form-group mb-2">
-                            <p class="text-muted">@training.Duration min</p>
+            @foreach (var training in trainings!)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="text-center zoom">
+                            <CarouselView Images="@training!.MainImages" />
+                            @* <img src="@training.MainImage" style="height:200px; max-width:200px;" class="text-center" alt=@training.Description /> *@
                         </div>
-                        <div class="form-group mb-2">
-                            <MudRating SelectedValue="4" />
-                        </div>
-                        <div class="form-group mb-2">
-                            <p>Agenda:</p>
-                            @foreach (var trainingCalendar in training!.TrainingSessions!)
+                        <div class="card-body">
+                            <h6 class="card-title text-navy"> @training.Description</h6>
+                            @* <p class="card-text smfnt">@training.Process!.Description</p> *@
+                            <div class="form-group mb-2">
+                                <p class="text-muted">@training.Duration min</p>
+                            </div>
+                            <div class="form-group mb-2">
+                                <MudRating SelectedValue="4" />
+                            </div>
+                            @if (training!.Sessions != null)
                             {
-                                <div class="row">
-                                    <p>@trainingCalendar.City!.Name</p>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <p class="float-start">@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) - @trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
-                                        <button class="btn btn-sm btn-outline-primary mb-2 float-end" @onclick=@(() => AddToCartAsync(trainingCalendar.Id))><i class="oi oi-plus" /> Add</button>
+                            <div class="form-group mb-2">
+                                <p>Agenda:</p>
+                                @foreach (var trainingSession in training!.Sessions!)
+                                {
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="float-start">@trainingSession.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+                                            <button class="btn btn-sm btn-outline-primary mb-2 float-end" @onclick=@(() => AddToCartAsync(trainingSession.Id))><i class="oi oi-plus" /> Add</button>
+                                        </div>
                                     </div>
-                                </div>
+                                }
+                            </div>
                             }
                         </div>
-                    </div>
-                    <div class="card-footer text-center">
-                        <button class="btn btn-sm btn-outline-secondary" @onclick=@(() => ShowDetailsAsync(training.Id))><i class="oi oi-info" /> Detalles</button>
+                        <div class="card-footer text-center">
+                            <button class="btn btn-sm btn-outline-secondary" @onclick=@(() => ShowDetailsAsync(training.Id))><i class="oi oi-info" /> Detalles</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
 }
@@ -96,7 +99,7 @@ else
     private int counter = 0;
     private bool isAuthenticated;
 
-    public List<Training>? Trainings { get; set; }
+    public List<Training>? trainings { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
@@ -131,7 +134,7 @@ else
             return;
         }
 
-        var responseHttp = await repository.GetAsync<int>("/api/TemporalInscriptions/count");
+        var responseHttp = await repository.GetAsync<int>("/api/SessionInscriptionTemporals/count");
         if (responseHttp.Error)
         {
             return;
@@ -175,7 +178,7 @@ else
         {
             var responseHppt = await repository.GetAsync<List<Training>>(url1);
             var responseHppt2 = await repository.GetAsync<int>(url2);
-            Trainings = responseHppt.Response!;
+            trainings = responseHppt.Response!;
             totalPages = responseHppt2.Response!;
         }
         catch (Exception ex)
@@ -204,7 +207,7 @@ else
         await modalReference.Result;
     }
 
-    private async Task AddToCartAsync(int trainingCalendarId)
+    private async Task AddToCartAsync(int trainingSessionId)
     {
         if (!isAuthenticated)
         {
@@ -216,16 +219,16 @@ else
                     ShowConfirmButton = true,
                     Timer = 3000
                 });
-            await toast1.FireAsync(icon: SweetAlertIcon.Error, message: "Debes haber iniciado sesión para poder agregar capacitaciones a tu solicitud.");
+            await toast1.FireAsync(icon: SweetAlertIcon.Error, message: "Debes haber iniciado sesión para poder agregar sesiones de capacitaciones a tu solicitud.");
             return;
         }
 
-        var temporalInscriptionDTO = new TemporalInscriptionDTO
+        var sessionInscriptionTemporalDTO = new SessionInscriptionTemporalDTO
             {
-                trainingCalendarId = trainingCalendarId
+                SessionId = trainingSessionId
             };
 
-        var httpResponse = await repository.PostAsync("/api/TemporalInscriptions/full", temporalInscriptionDTO);
+        var httpResponse = await repository.PostAsync("/api/SessionInscriptionTemporals/full", sessionInscriptionTemporalDTO);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -241,7 +244,7 @@ else
                 ShowConfirmButton = true,
                 Timer = 3000
             });
-        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Capacitación programada agregada al tus solicitudes.");
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Sesión de capacitación programada agregada al tus solicitudes.");
     }
 
     private async Task ShowCartAsync()

@@ -16,12 +16,15 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="Training-tab" data-bs-toggle="tab" data-bs-target="#Training" type="button" role="tab" aria-controls="Training" aria-selected="true">Capacitación</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
+                 @if (!IsReadOnly)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
-                </li>
+                }
             </ul>
         </div>
         <div class="card-body m-2">
@@ -29,40 +32,42 @@
                 <div class="tab-pane fade show active" id="Training" role="tabpanel" aria-labelledby="Training-tab">
                     <div class="row">
                         <div class="col-6 p-2">
-                            <div class="form-group mb-2">
-                                <label class="control-label">Código:</label>
-                                <InputText class="form-control" @bind-Value="@TrainingDTO.Cod" />
-                                <ValidationMessage For="@(() => TrainingDTO.Cod)" />
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@TypeValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Capacitación Interna</label>
                             </div>
-                            <div class="form-group mb-2">
-                                <label class="control-label">Descripción:</label>
-                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" />
-                                <ValidationMessage For="@(() => TrainingDTO.Description)" />
+                            @if (!TypeValue)
+                            {
 
-                            </div>
-
+                            }
                             <div class="form-group mb-2">
-                                <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
+                                <label>Empresa:</label>
+                                <select class="form-select" @onchange="CompanyChangedAsync" disabled="@IsReadOnly">
+                                    <option value="0">-- Seleccione una empresa --</option>
+                                    @if (companies is not null)
+                                    {
+                                        @foreach (var company in companies)
+                                        {
+                                            if (TrainingDTO.Process is not null)
+                                            {
+                                                <option value="@company.Id" selected="@(company.Id == TrainingDTO.Process!.Company!.Id)">@company.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@company.Id">@company.Name</option>
+                                            }
+                                        }
+                                    }
+                                </select>
                             </div>
-                        </div>
-                        <div class="col-6 p-2">
                             <div class="form-group mb-2">
-                                <label class="control-label">Duración:</label>
-                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" />
-                                <ValidationMessage For="@(() => TrainingDTO.Duration)" />
-                            </div>
-                            <div class="form-group mb-2">
-                                <InputCheckbox @bind-Value=@TypeValue></InputCheckbox> <label class="control-label">Capacitación Interna</label>
-                            </div>
-                            <div class="form-group mb-2 @(TypeValue? "visible": "invisible")">
                                 <label>Proceso:</label>
-                                <select class="form-select" @bind="TrainingDTO.ProcessId">
+                                <select class="form-select" @bind="TrainingDTO.ProcessId" disabled="@IsReadOnly">
                                     <option value="0">-- Seleccione un proceso --</option>
                                     @if (processes is not null)
                                     {
                                         @foreach (var process in processes)
                                         {
-                                            if (TrainingDTO.ProcessId != 0)
+                                            if (TrainingDTO.Process is not null)
                                             {
                                                 <option value="@process.Id" selected="@(process.Id == TrainingDTO.Process!.Id)">@process.Description</option>
                                             }
@@ -74,6 +79,30 @@
                                     }
                                 </select>
                                 <ValidationMessage For="@(() => TrainingDTO.ProcessId)" />
+                            </div>
+                            
+                            <div class="form-group mb-2">
+                                <label class="control-label">Duración:</label>
+                                <InputNumber class="form-control" @bind-Value="@TrainingDTO.Duration" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => TrainingDTO.Duration)" />
+                            </div>
+                            <div class="form-group mb-2" disabled="@IsReadOnly">
+                                <InputCheckbox @bind-Value=@StatusValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Habilitado</label>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="col-6 p-2">
+                            <div class="form-group mb-2">
+                                <label class="control-label">Descripción:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Description" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => TrainingDTO.Description)" />
+                            </div>
+
+                            <div class="form-group mb-2">
+                                <label class="control-label">Observación:</label>
+                                <InputTextArea class="form-control" @bind-Value="@TrainingDTO.Observation" disabled="@IsReadOnly" />
+                                <ValidationMessage For="@(() => TrainingDTO.Observation)" />
                             </div>
                         </div>
                     </div>
@@ -89,8 +118,8 @@
                         {
                             foreach (TrainingImage trainingImage in TrainingDTO.TrainingImages)
                             {
-                                    <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
-                                    @* <button type="button" class="btn btn-outline-danger" @onclick="DeleteImageAction"><i class="oi oi-plus" /> eliminar Imágen</button> *@
+                                <MudImage Src="@trainingImage.Image" Width="200" Height="150" Elevation="25" Class="rounded-lg ma-4" />
+                                @* <button type="button" class="btn btn-outline-danger" @onclick="DeleteImageAction"><i class="oi oi-plus" /> eliminar Imágen</button> *@
                             }
                         }
                     </div>
@@ -109,10 +138,12 @@
 
 @code {
     private EditContext editContext = null!;
+
+    private List<Company>? companies;
     private List<Process>? processes;
     private List<MultipleSelectorModel> selected { get; set; } = new();
     private List<MultipleSelectorModel> nonSelected { get; set; } = new();
-    private bool loading;
+
     private string? imageUrl;
     bool TypeValue
     {
@@ -130,6 +161,9 @@
 
     [Parameter]
     public bool IsEdit { get; set; } = false;
+
+    [Parameter]
+    public bool IsReadOnly { get; set; } = false;
 
     [EditorRequired]
     [Parameter]
@@ -165,26 +199,47 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCompaniesAsync();
+        if (TrainingDTO!.Process != null)
+        {
+            await LoadProcessesAsync(TrainingDTO!.Process!.Company!.Id);
+        }
         editContext = new(TrainingDTO);
-        await LoadProcessesAsync();
         selected = SelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
         nonSelected = NonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
     }
 
-    private async Task LoadProcessesAsync()
+    private async Task CompanyChangedAsync(ChangeEventArgs e)
     {
-        loading = true;
-        var responseHttp = await repository.GetAsync<List<Process>>("/api/processes/combo");
+        var selectedCompany = Convert.ToInt32(e.Value!);
+        processes = null;
+        TrainingDTO.ProcessId = 0;
+        await LoadProcessesAsync(selectedCompany);
+    }
+
+    private async Task LoadCompaniesAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<Company>>("/api/companies/combo");
         if (responseHttp.Error)
         {
-            loading = false;
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
 
+        companies = responseHttp.Response;
+    }
+
+    private async Task LoadProcessesAsync(int companyId)
+    {
+        var responseHttp = await repository.GetAsync<List<Process>>($"/api/processes/combo/{companyId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
         processes = responseHttp.Response;
-        loading = false;
     }
 
     private async Task OnDataAnnotationsValidatedAsync()

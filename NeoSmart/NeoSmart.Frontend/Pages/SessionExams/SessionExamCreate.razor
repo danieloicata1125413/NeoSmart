@@ -1,0 +1,54 @@
+﻿@page "/SessionExams/create/{SessionId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<SessionExamForm Titulo="Nuevo Examen" @ref="SessionExamForm" SessionId="SessionId" SessionExam="SessionExam" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private SessionExamDTO SessionExam = new SessionExamDTO()
+        {
+            DateStart = DateTime.Now,
+            DateEnd = DateTime.Now.AddDays(1),
+            TimeStart = DateTime.Now.TimeOfDay,
+            TimeEnd = DateTime.Now.TimeOfDay,
+            Attempt = 1,
+        };
+    private SessionExamForm? SessionExamForm;
+
+    [Parameter]
+    public int SessionId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/SessionExams/full", SessionExam);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        SessionExamForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/SessionExams/{SessionId}");
+    }
+}

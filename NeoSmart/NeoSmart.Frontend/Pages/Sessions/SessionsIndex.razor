@@ -1,0 +1,280 @@
+﻿@page "/Sessions/"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<div class="row mb-3">
+    <div class="col-7">
+        <button class="btn btn-outline-primary float-start me-2" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Adicionar</button>
+        <h3>Agenda</h3>
+    </div>
+    <div class="col-5">
+        <select class="form-select" @onchange="SessionStatusChangedAsync">
+            <option value="0">-- Todos los estados --</option>
+            @if (SessionStatus is not null)
+            {
+                @foreach (var item in SessionStatus)
+                {
+                    <option value="@item.Id">@item.Description</option>
+                }
+            }
+        </select>
+        <input style="max-width: 300px;" type="text" class="form-control float-start" id="titulo" placeholder="Buscar capacitación..." @bind-value="Filter" />
+        <button type="button" class="btn btn-outline-primary float-end" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+        <button type="button" class="btn btn-outline-danger float-end" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
+    </div>
+</div>
+
+<div class="card widget-inline">
+    <div class="card-body">
+        <GenericList MyList="Sessions">
+            <NoRecords>
+                <p>Aun no hay Sesiones registradas.</p>
+            </NoRecords>
+            <Body>
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Capacitación</th>
+                            <th>Duración</th>
+                            <th>Fecha</th>
+                            <th>Capacitador</th>
+                            <th>Virtual</th>
+                            <th>Habilitado</th>
+                            <th>Inscritos</th>
+                            <th>Estado</th>
+                            <th style="width:170px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Session in Sessions!)
+                        {
+                            <tr>
+                                <td>@Session.Id</td>
+                                <td>@Session.Training!.Description</td>
+                                <td>@Session.Training!.Duration</td>
+                                <td>@Session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                                <td>@Session.ExistUser</td>
+                                <td><InputCheckbox @bind-Value=Session.Type disabled="true"></InputCheckbox></td>
+                                <td><InputCheckbox @bind-Value=Session.Status disabled="true"></InputCheckbox></td>
+                                <td>@Session!.SessionInscriptionsNumber</td>
+                                <td>@Session!.SessionStatus!.Description</td>
+                                <td>
+                                    @if (Session.SessionStatus!.Name.Equals("Complete") || Session.SessionStatus!.Name.Equals("Cancelled"))
+                                    {
+                                        <button class="btn btn-success btn-sm mx-1" @onclick=@(() => ShowInfoModalAsync(Session.Id))>Info</button>
+                                    }
+                                    <a class="btn btn-info btn-sm" href="/SessionInscriptions/@Session.Id">Inscritos</a>
+                                    <a class="btn btn-primary btn-sm" href="/SessionExams/@Session.Id">Mediciones</a>
+                                    @if (Session.SessionStatus!.Name.Equals("Scheduled"))
+                                    {
+                                        <button class="btn btn-warning btn-sm" @onclick=@(() => ShowModalAsync(Session.Id, true))><i class="oi oi-pencil" /> Editar</button>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(Session))>Borrar</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <Pagination CurrentPage="currentPage"
+                            TotalPages="totalPages"
+                            SelectedPage="SelectedPageAsync" />
+            </Body>
+        </GenericList>
+
+    </div>
+</div>
+
+
+@code {
+    private List<SessionStatus>? SessionStatus;
+    private int sessionStatusId { get; set; } = 0;
+    private List<Session>? Sessions;
+    private int currentPage = 1;
+    private int totalPages;
+
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSessionStatusAsync();
+        await LoadAsync();
+    }
+
+    private async Task SessionStatusChangedAsync(ChangeEventArgs e)
+    {
+        var selectedSessionStatus = Convert.ToInt32(e.Value!);
+        sessionStatusId = selectedSessionStatus;
+        await ApplyFilterAsync();
+    }
+
+    private async Task LoadSessionStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<SessionStatus>>("/api/SessionStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        SessionStatus = responseHttp.Response;
+    }
+
+    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (!isEdit)
+        {
+            modalReference = Modal.Show<SessionCreate>();
+        }
+        else
+        {
+            modalReference = Modal.Show<SessionEdit>(string.Empty, new ModalParameters().Add("SessionId", id));
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
+    private async Task ShowInfoModalAsync(int id = 0)
+    {
+        IModalReference modalReference;
+        modalReference = Modal.Show<TrainingDetails>(string.Empty, new ModalParameters().Add("SessionId", id).Add("Return", "/Sessions"));
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+
+        }
+    }
+
+    private async Task SelectedPageAsync(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        var ok = await LoadSessionsAsync(page);
+        if (ok)
+        {
+            await LoadPagesAsync();
+
+        }
+    }
+
+    private async Task LoadPagesAsync()
+    {
+        var url = string.Empty;
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url = $"api/Sessions/totalPages?Id={sessionStatusId}";
+        }
+        else
+        {
+            url = $"api/Sessions/totalPages?Id={sessionStatusId}&filter={Filter}";
+        }
+
+        var response = await repository.GetAsync<int>(url);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        totalPages = response.Response;
+    }
+
+    private async Task<bool> LoadSessionsAsync(int page)
+    {
+        var url = string.Empty;
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url = $"api/Sessions?page={page}&Id={sessionStatusId}";
+        }
+        else
+        {
+            url = $"api/Sessions?page={page}&Id={sessionStatusId}&filter={Filter}";
+        }
+
+        var response = await repository.GetAsync<List<Session>>(url);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return false;
+        }
+        Sessions = response.Response;
+        return true;
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        int page = 1;
+        await LoadAsync(page);
+        await SelectedPageAsync(page);
+    }
+
+    private async Task DeleteAsync(Session Session)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Esta seguro que quieres borrar el Sessión: {Session.Training!.Description}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var response = await repository.DeleteAsync($"api/Sessions/{Session.Id}");
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro borrado con éxito.");
+    }
+
+}

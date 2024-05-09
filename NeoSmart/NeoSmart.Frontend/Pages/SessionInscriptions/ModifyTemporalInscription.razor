@@ -1,0 +1,130 @@
+﻿@page "/SessionInscriptions/ModifySessionInscriptionTemporal/{SessionInscriptionTemporalId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                    <a class="btn btn-outline-success float-start me-1" href="/"><i class="oi oi-arrow-thick-left" /> Regresar</a>
+                    <h4 class="float-start">@session!.Training!.Description</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body m-2">
+            <CarouselView Images="@session!.Training!.MainImages" />
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nombre:</label>
+                        <div>
+                            <b>@session!.Training!.Description</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Descripción:</label>
+                        <div>
+                            <b>@session!.Training!.Description</b>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="row">
+                            <label>Temas:</label>
+                            @foreach (var topic in topics!)
+                            {
+                                <b>@topic</b>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <EditForm Model="SessionInscriptionTemporalDTO" OnValidSubmit="UpdateCartAsync">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label>Comentarios:</label>
+                            <div>
+                                <InputTextArea class="form-control" @bind-Value="@SessionInscriptionTemporalDTO!.Remarks" />
+                                <ValidationMessage For="@(() => SessionInscriptionTemporalDTO.Remarks)" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="submit"><i class="oi oi-check" /> Actualizar Carro</button>
+                    </EditForm>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+}
+
+@code {
+    private List<string>? topics;
+    private List<string>? images;
+    private bool loading = true;
+    private Session? session;
+    private bool isAuthenticated;
+    private SessionInscriptionTemporalDTO? SessionInscriptionTemporalDTO;
+
+    [Parameter]
+    public int SessionInscriptionTemporalId { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadSessionInscriptionTemporalAsync();
+    }
+
+    private async Task LoadSessionInscriptionTemporalAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<SessionInscriptionTemporal>($"/api/SessionInscriptionTemporals/{SessionInscriptionTemporalId}");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var SessionInscriptionTemporal = httpResponse.Response!;
+        SessionInscriptionTemporalDTO = new SessionInscriptionTemporalDTO
+            {
+                Id = SessionInscriptionTemporal.Id,
+                SessionId = SessionInscriptionTemporal.SessionId,
+                Remarks = SessionInscriptionTemporal.Remarks!
+            };
+        session = SessionInscriptionTemporal.Session;
+        topics = session!.Training!.TrainingTopics!.Select(x => x.Topic.Description).ToList();
+        images = session!.Training!.TrainingImages!.Select(x => x.Image).ToList();
+        loading = false;
+    }
+
+    public async Task UpdateCartAsync()
+    {
+        var httpResponse = await repository.PutAsync("/api/SessionInscriptionTemporals/full", SessionInscriptionTemporalDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var toast2 = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Sesión de Capacitación modificada en el carrito.");
+        navigationManager.NavigateTo("/");
+    }
+
+}

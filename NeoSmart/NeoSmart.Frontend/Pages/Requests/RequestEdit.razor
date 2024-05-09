@@ -1,0 +1,126 @@
+﻿@page "/Requests/edit/{RequestId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Leader")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <RequestForm Titulo="Editar Capacitación" @ref="RequestForm" RequestDTO="RequestDTO" IsReadOnly="false" RequestStatus="RequestStatus" OnValidSubmit="SaveAsync" ReturnAction="Return" IsEdit=true />
+}
+
+@code {
+    private Request? Request;
+    private RequestDTO? RequestDTO = new RequestDTO()
+    {
+
+    };
+    private List<RequestStatus>? RequestStatus;
+    private RequestForm? RequestForm;
+    private bool loading = true;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int RequestId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRequestStatusAsync();
+        await LoadRequestAsync();
+    }
+
+    private async Task LoadRequestStatusAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<List<RequestStatus>>("/api/RequestStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            loading = false;
+            return;
+        }
+
+        var _RequestStatus = responseHttp.Response;
+        RequestStatus = _RequestStatus!.Where(x => x.Name == "Registered").ToList();
+        loading = false;
+    }
+
+    private async Task LoadRequestAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<Request>($"/api/Requests/{RequestId}");
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Request = httpResponse.Response!;
+        RequestDTO = ToRequestDTO(Request);
+        loading = false;
+    }
+
+    private RequestDTO ToRequestDTO(Request Request)
+    {
+        return new RequestDTO
+            {
+                Id = Request.Id,
+                UserLeaderId = Request.UserLeaderId,
+                Description = Request.Description,
+                Requirement = Request.Requirement,
+                DateStart = Request.DateStart,
+                Duration = Request.Duration,
+                Type = Request.Type,
+                Entity = Request.Entity,
+                Price = Request.Price,
+                Observation = Request.Observation,
+                Status = Request.Status,
+                UserManagerId = Request.UserManagerId,
+                RequestStatusId = Request.RequestStatusId,
+                RequestStatus = Request.RequestStatus,
+                Created = Request.Created,
+                Updated = Request.Updated,
+            };
+    }
+
+    private async Task SaveAsync()
+    {
+        RequestDTO!.UserLeader = null;
+        RequestDTO!.UserManager = null;
+        RequestDTO!.RequestStatus = null;
+        var response = await repository.PutAsync($"/api/Requests/full", RequestDTO);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private void Return()
+    {
+        RequestForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Requests");
+    }
+}

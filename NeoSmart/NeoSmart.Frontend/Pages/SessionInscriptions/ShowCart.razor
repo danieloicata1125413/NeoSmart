@@ -1,0 +1,174 @@
+﻿@page "/SessionInscriptions/ShowCart"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer,Employee")]
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <GenericList MyList="SessionInscriptionTemporals">
+        <Body>
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="float-start"><i class="oi oi-cart" /> Carro de solicitudes: <strong>@quantity</strong></h4>
+                            <a class="btn btn-danger float-end me-1" href="/"><i class="oi oi-ban" /> Cerrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body m-2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Imagén</th>
+                                <th>Sesión de capacitación</th>
+                                <th>Comentarios</th>
+                                <th style="width:170px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var SessionInscriptionTemporal in SessionInscriptionTemporals!)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@SessionInscriptionTemporal.Session!.Training!.MainImage" style="width:50px;" />
+                                    </td>
+                                    <td>
+                                        @SessionInscriptionTemporal.Session!.Training!.Description
+                                    </td>
+                                    <td>
+                                        @SessionInscriptionTemporal.Remarks
+                                    </td>
+                                    <td>
+                                        <a href="/SessionInscriptions/ModifySessionInscriptionTemporal/@SessionInscriptionTemporal.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
+                                        <button class="btn btn-danger btn-sm" @onclick=@(() => Delete(SessionInscriptionTemporal.Id))><i class="oi oi-trash" /> Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <EditForm Model="SessionInscriptionDTO" OnValidSubmit="ConfirmInscriptionAsync">
+                        <DataAnnotationsValidator />
+                        <button class="btn btn-primary mb-3" type="submit"><i class="oi oi-check" /> Confirmar inscripción</button>
+                    </EditForm>
+                </div>
+            </div>
+        </Body>
+    </GenericList>
+}
+
+@code {
+    public List<SessionInscriptionTemporal>? SessionInscriptionTemporals { get; set; }
+    private int quantity;
+    private bool loading = true;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public SessionInscriptionDTO SessionInscriptionDTO { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        try
+        {
+            var responseHppt = await repository.GetAsync<List<SessionInscriptionTemporal>>("api/SessionInscriptionTemporals/my");
+            SessionInscriptionTemporals = responseHppt.Response!;
+            quantity = SessionInscriptionTemporals.Count();
+        }
+        catch (Exception ex)
+        {
+            await sweetAlertService.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+        loading = false;
+    }
+
+    private async Task ConfirmInscriptionAsync()
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres confirmar la Inscripción?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var httpResponse = await repository.PostAsync("/api/SessionInscriptions", SessionInscriptionDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Su pedido ha sido confirmado.");
+        navigationManager.NavigateTo("/");
+    }
+
+    private async Task Delete(int SessionInscriptionTemporalId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.DeleteAsync($"api/SessionInscriptionTemporals/{SessionInscriptionTemporalId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+                return;
+            }
+
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+        await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Sesión de capacitación eliminada del carro.");
+    }
+
+}

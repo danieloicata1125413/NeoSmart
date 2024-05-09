@@ -1,5 +1,5 @@
 ﻿@page "/trainings/edit/{TrainingId:int}"
-@attribute [Authorize(Roles = "SuperAdmin,Admin")]
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Leader")]
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -19,6 +19,7 @@ else
         {
             TrainingTopicIds = new List<int>()
         };
+
     private TrainingForm? trainingForm;
     private List<Topic> selectedTopics = new();
     private List<Topic> nonSelectedTopics = new();
@@ -35,6 +36,7 @@ else
         await LoadTrainingAsync();
         await LoadTopicsAsync();
     }
+
 
     private async Task LoadTrainingAsync()
     {
@@ -58,16 +60,16 @@ else
         return new TrainingDTO
             {
                 Id = training.Id,
-                Cod = training.Cod,
-                Description = training.Description,
-                Type = training.Type,
-                Duration = training.Duration,
                 ProcessId = training.ProcessId,
                 Process = training.Process,
-                TrainingImages = training.TrainingImages,
-                ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(),
+                Description = training.Description,
+                Duration = training.Duration,
+                Type = training.Type,
+                Observation = training.Observation,
                 Status = training.Status,
                 TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
+                TrainingImages = training.TrainingImages,
+                ListTrainingImages = training.TrainingImages!.Select(x => x.Image).ToList(), 
             };
     }
 
@@ -138,7 +140,7 @@ else
     private async Task LoadTopicsAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<List<Topic>>("/api/topics");
+        var httpResponse = await repository.GetAsync<List<Topic>>($"/api/topics/combo/{trainingDTO.Process!.CompanyId}");
 
         if (httpResponse.Error)
         {

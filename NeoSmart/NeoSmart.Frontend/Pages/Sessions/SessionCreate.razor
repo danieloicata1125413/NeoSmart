@@ -1,0 +1,81 @@
+﻿@page "/Session/create/{TrainingId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Trainer")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+
+<SessionForm Titulo="Nueva Sessión"
+                      @ref="SessionForm"
+                      Session="Session"
+                      SessionStatus="sessionStatus"
+                      OnValidSubmit="CreateAsync" 
+                      ReturnAction="Return" />
+
+@code {
+    private List<SessionStatus>? sessionStatus;
+    private Session Session = new()
+        {
+            TrainingId = 0,
+            DateStart = DateTime.Now,
+            Type = false,
+            Status = true
+        };
+    private SessionForm? SessionForm;
+
+    [Parameter]
+    public int TrainingId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadSessionStatusAsync();
+    }
+
+
+    private async Task LoadSessionStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<SessionStatus>>("/api/SessionStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var _sessionStatus = responseHttp.Response;
+        sessionStatus = _sessionStatus!.Where(x=> x.Name == "Scheduled").ToList();
+    }
+
+    private async Task CreateAsync()
+    {
+        var response = await repository.PostAsync("/api/Sessions", Session);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Registro creado con éxito.");
+    }
+
+    private void Return()
+    {
+        SessionForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/Sessions");
+    }
+
+}

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,32 @@ namespace NeoSmart.BackEnd.Controllers
             _userHelper = userHelper;
         }
 
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetComboAllAsync(int trainingId)
+        {
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company == null)
+            {
+                return Ok(await _context.Trainings
+                .OrderBy(s => s.Description)
+                .ToListAsync());
+            }
+            return Ok(await _context.Trainings
+                .Where(c => c.Process!.Company!.Id == user.Company!.Id)
+                .OrderBy(s => s.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("trainingTopics/{trainingId}")]
+        public async Task<ActionResult> GetTrainingTopicsByTrainingAsync(int trainingId)
+        {
+            return Ok(await _context.TrainingTopics
+                .Include(t => t.Topic!)
+                .Where(t => t.TrainingId == trainingId)
+                .OrderBy(t => t.Topic!.Description)
+                .ToListAsync());
+        }
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
@@ -36,16 +63,21 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Process!)
                                     .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
-                                    .ThenInclude(x => x.Topic)
+                                    .ThenInclude(x => x.Topic!)
                                 .Include(o => o.TrainingImages!)
-                                .Include(o=> o.TrainingSessions!)
+                                .Include(o => o.Sessions!)
+                                    .ThenInclude(o => o.User)
                                     .ThenInclude(o => o.City!)
+                                .Include(o => o.Sessions!)
+                                .ThenInclude(o => o.SessionInscriptions!)
+                                .Include(o=> o.TrainingExams!)
                                 .AsQueryable();
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user.Company != null)
             {
                 queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
             }
+
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -69,6 +101,7 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
             }
+
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
@@ -86,10 +119,16 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(o => o.Process!)
                                 .ThenInclude(o => o.Company)
                                 .Include(o => o.TrainingTopics!)
-                                .ThenInclude(x => x.Topic)
+                                .ThenInclude(x => x.Topic!)
                                 .Include(o => o.TrainingImages)
-                                .Include(o => o.TrainingSessions!)
+                                .Include(o => o.Sessions!)
+                                .ThenInclude(o => o.User!)
                                 .ThenInclude(o => o.City!)
+                                .Include(o => o.Sessions!)
+                                .ThenInclude(o => o.SessionInscriptions!)
+                                .Include(o => o.Sessions!)
+                                .ThenInclude(o => o.SessionStatus!)
+                                .Include(o => o.TrainingExams!)
                                 .FirstOrDefaultAsync(s => s.Id == id);
             if (training == null)
             {
@@ -105,27 +144,32 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 Training newTraining = new()
                 {
-                    Cod = trainingDTO.Cod.ToUpper(),
-                    Description = trainingDTO.Description,
                     Type = trainingDTO.Type,
-                    Duration = trainingDTO.Duration,
                     ProcessId = trainingDTO.ProcessId,
+                    Description = trainingDTO.Description,
+                    Duration = trainingDTO.Duration,
+                    Sessions = new List<Session>(),
                     TrainingTopics = new List<TrainingTopic>(),
                     TrainingImages = new List<TrainingImage>(),
                     Status = trainingDTO.Status,
                 };
-                foreach (var trainingImage in trainingDTO.NewTrainingImages!)
+                if (trainingDTO.NewTrainingImages != null)
                 {
-                    var photoTraining = Convert.FromBase64String(trainingImage);
-                    newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
-                }
-
-                foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
-                {
-                    var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
-                    if (topic != null)
+                    foreach (var trainingImage in trainingDTO.NewTrainingImages!)
                     {
-                        newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
+                        var photoTraining = Convert.FromBase64String(trainingImage);
+                        newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
+                    }
+                }
+                if (trainingDTO.TrainingTopicIds != null)
+                {
+                    foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
+                    {
+                        var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
+                        if (topic != null)
+                        {
+                            newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
+                        }
                     }
                 }
 
@@ -157,12 +201,10 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     return NotFound();
                 }
-
-                training.Cod = trainingDTO.Cod.ToUpper();
-                training.Description = trainingDTO.Description;
-                training.Type = trainingDTO.Type;
-                training.Duration = trainingDTO.Duration;
                 training.ProcessId = trainingDTO.ProcessId;
+                training.Description = trainingDTO.Description;
+                training.Duration = trainingDTO.Duration;
+                training.Type = trainingDTO.Type;
 
                 if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
                 {

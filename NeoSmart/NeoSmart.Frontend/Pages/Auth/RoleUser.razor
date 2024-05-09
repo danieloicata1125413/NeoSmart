@@ -1,0 +1,138 @@
+﻿@page "/RoleUser/{UserName}"
+@using Microsoft.AspNetCore.Identity
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+@if (loading == true)
+{
+    <Loading />
+}
+else
+{
+    <EditForm EditContext="editContext">
+        <div class="row">
+            <div class="col-12 justify-content-center m-auto">
+                <div class="card justify-content-center">
+                    <div class="card-header">
+                        <span>
+                            <i class="oi oi-person" /> Editar Roles Usuario
+                            <button class="btn btn-sm btn-danger float-end me-1" @onclick="CloseModalAsync"><i class="oi oi-ban" /> Cerrar</button>
+                            <button class="btn btn-sm btn-primary float-end mx-2" @onclick="SaveRoleUserAsync"><i class="oi oi-check" /> Guardar Cambios</button>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <label>@user.FullName, @user.Email</label>
+                        </div>
+                        <div class="row">
+                            <MultipleSelector NonSelected="selectedRoles" Selected="nonSelectedRoles" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private EditContext editContext = null!;
+    private List<MultipleSelectorModel> selectedRoles { get; set; } = new();
+    private List<MultipleSelectorModel> nonSelectedRoles { get; set; } = new();
+    private bool loading = true;
+    private bool isEdit = true;
+
+    public List<RoleDTO> SelectedRoles { get; set; } = new();
+
+    public List<RoleDTO> NonSelectedRoles { get; set; } = new();
+
+    [Parameter]
+    public User? user { get; set; }
+
+    private UserDTO? userDTO { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserRolesAsyc();
+        await LoadRolesAsync();
+        userDTO!.FirstName = user!.FirstName;
+        userDTO!.LastName = user!.LastName;
+        editContext = new(userDTO);
+        selectedRoles = SelectedRoles.Select(x => new MultipleSelectorModel(x.Name!, x.Name!)).ToList();
+        nonSelectedRoles = NonSelectedRoles.Select(x => new MultipleSelectorModel(x.Name!, x.Name!)).ToList();
+    }
+
+    private async Task LoadUserRolesAsyc()
+    {
+        var responseHTTP = await repository.GetAsync<UserDTO>($"/api/accounts/UserRoles/{user!.Id}");
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+                return;
+            }
+            var messageError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
+        }
+        userDTO = responseHTTP.Response;
+    }
+
+    private async Task LoadRolesAsync()
+    {
+        loading = true;
+            var httpResponse = await repository.GetAsync<List<RoleDTO>>("/api/Accounts/Roles");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var identityRoles = httpResponse.Response!;
+        foreach (var identityRole in identityRoles!)
+        {
+            var found = userDTO!.UserTypes!.FirstOrDefault(x => x == identityRole!.Name);
+            if (found == null)
+            {
+                NonSelectedRoles.Add(identityRole);
+            }
+            else
+            {
+                SelectedRoles.Add(identityRole);
+            }
+        }
+        loading = false;
+    }
+
+    private async Task CloseModalAsync()
+    {
+        isEdit = false;
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+    }
+
+    private async Task SaveRoleUserAsync()
+    {
+        if (isEdit)
+        {
+            UserRolesDTO userRolesDTO = new UserRolesDTO();
+            userRolesDTO.UserName = userDTO!.UserName!;
+            userRolesDTO!.UserTypes = selectedRoles.Select(x => x.Value).ToList();
+            var response = await repository.PostAsync("/api/Accounts/UserRoles", userRolesDTO);
+            if (response.Error)
+            {
+                var message = await response.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+            await sweetAlertService.FireAsync("Confirmación", "Su cambios realizados con exito.", SweetAlertIcon.Info);
+        }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+    }
+}

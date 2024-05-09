@@ -1,0 +1,229 @@
+﻿@page "/SessionInscriptions/Details/{SessionInscriptionId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Manager,Leader,Capacitador,Empleado")]
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">Detalle de inscripción</h4>
+                    <a class="btn btn-danger float-end me-1" href="/sessionInscriptions/My"><i class="oi oi-ban" /> Cerrar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body m-2">
+            <div class="row mx-2 my-2">
+                <div class="col-6">
+                    <h5><strong>Trabajador</strong></h5>
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Nombre</p>
+                            <p>Documento</p>
+                            <p>Teléfono</p>
+                            <p>Email</p>
+                            <p>Dirección</p>
+                        </div>
+                        <div class="col-8">
+                            <p><strong>@sessionInscription!.User!.FullName</strong></p>
+                            <p><strong>@sessionInscription!.User!.Document</strong></p>
+                            <p><strong>@sessionInscription!.User!.PhoneNumber</strong></p>
+                            <p><strong>@sessionInscription!.User!.UserName</strong></p>
+                            <p><strong>@sessionInscription!.User!.Address, @sessionInscription!.User!.City!.Name, @sessionInscription!.User!.City!.State!.Name, @sessionInscription!.User!.City.State!.Country!.Name</strong></p>
+                        </div>
+                    </div>
+                    @if (sessionInscription!.Session!.User != null)
+                    {
+                        <h5><strong>Capacitador</strong></h5>
+                        <div class="row">
+                            <div class="col-4">
+                                <p>Nombre</p>
+                                <p>Documento</p>
+                                <p>Teléfono</p>
+                                <p>Email</p>
+                            </div>
+                            <div class="col-8">
+                                <p><strong>@sessionInscription!.Session!.User!.FullName</strong></p>
+                                <p><strong>@sessionInscription!.Session!.User!.Document</strong></p>
+                                <p><strong>@sessionInscription!.Session!.User!.PhoneNumber</strong></p>
+                                <p><strong>@sessionInscription!.Session!.User!.UserName</strong></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-6">
+                    <CarouselView Images="@sessionInscription!.Session!.Training!.MainImages" />
+                    <div class="row">
+                        <div class="col-4">
+                            @* <p>Imagen</p> *@
+                            <p>Capacitación</p>
+                            <p>Fecha</p>
+                            <p>Estado</p>
+                            <p>Comentarios</p>
+                        </div>
+                        <div class="col-8">
+                            @* <p><img src="@inscription.Training!.MainImage" style="width:100px;" /></p> *@
+                            <p>@sessionInscription.Session!.Training!.Description</p>
+                            <p><strong>@($"{sessionInscription.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
+                            <p><strong>@sessionInscription.SessionInscriptionStatus!.Description</strong></p>
+                            <p><strong>@(string.IsNullOrEmpty(sessionInscription.Remarks) ? "NA" : sessionInscription.Remarks)</strong></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label>Temas:</label>
+                        @foreach (var trainingTopic in sessionInscription.Session!.Training!.TrainingTopics!)
+                        {
+                            <b>@trainingTopic.Topic!.Description</b>
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="card-footer">
+            @if (sessionInscription!.SessionInscriptionStatus!.Name.Equals("Registered"))
+            {
+                <CascadingAuthenticationState>
+                    <AuthorizeView Roles="Employee">
+                        <Authorized>
+                            <button class="btn btn-sm btn-danger float-end mx-2" @onclick=@(() => CancelInscriptionAsync())><i class="oi oi-trash" /> Cancelar</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </CascadingAuthenticationState>
+                <CascadingAuthenticationState>
+                    <AuthorizeView Roles="SuperAdmin,Manager">
+                        <Authorized>
+                            <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => RefusedInscriptionAsync())><i class="oi oi-external-link" /> Rechazar</button>
+                            <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmedOrderAsync())><i class="oi oi-thumb-up" /> Confirmar</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </CascadingAuthenticationState>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<SessionInscriptionStatus>? sessionInscriptionStatus;
+    private SessionInscription? sessionInscription;
+    private bool loading = true;
+
+    [Parameter]
+    public int SessionInscriptionId { get; set; }
+
+    [CascadingParameter]
+    CascadingAuthenticationState CascadingAuthenticationState { get; set; } = default!;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadsessionInscriptionStatusAsync();
+        await LoadAsync();
+    }
+
+    private async Task LoadsessionInscriptionStatusAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<SessionInscriptionStatus>>("/api/sessionInscriptionStatus/combo");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        sessionInscriptionStatus = responseHttp.Response;
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<SessionInscription>($"api/sessionInscriptions/{SessionInscriptionId}");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/sessionInscriptions");
+                return;
+            }
+            var messageError = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
+        }
+        sessionInscription = responseHttp.Response;
+        loading = false;
+    }
+
+    private async Task CancelInscriptionAsync()
+    {
+        var status = sessionInscriptionStatus!.Where(s => s.Name == "Cancelled").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Cancelar", status);
+        }
+    }
+
+    private async Task RefusedInscriptionAsync()
+    {
+        var status = sessionInscriptionStatus!.Where(s => s.Name == "Refused").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Rechazar", status);
+        }
+    }
+
+    private async Task ConfirmedOrderAsync()
+    {
+        var status = sessionInscriptionStatus!.Where(s => s.Name == "Confirmed").FirstOrDefault();
+        if (status != null)
+        {
+            await ModifyTemporalOrder("Confirmar", status);
+        }
+    }
+
+    private async Task ModifyTemporalOrder(string message, SessionInscriptionStatus status)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = $"¿Esta seguro que quieres {message} la solicitud?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var sessionInscriptionDTO = new SessionInscriptionDTO
+            {
+
+                Id = SessionInscriptionId,
+                SessionInscriptionStatus = status
+            };
+
+        var responseHTTP = await repository.PutAsync("api/sessionInscriptions", sessionInscriptionDTO);
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        navigationManager.NavigateTo("/sessionInscriptions");
+    }
+
+}

@@ -102,12 +102,10 @@ namespace NeoSmart.UnitTest.Controllers
                 Process = new Process
                 {
                     Id = 1,
-                    Cod = "P01",
                     Status = true,
                     Description = "Some"
                 },
                 ProcessId = 1,
-                Cod = "T01", 
                 Duration = 60,
                 Status = true,
                 Description = "Some"
@@ -154,12 +152,10 @@ namespace NeoSmart.UnitTest.Controllers
                 Process = new Process
                 {
                     Id = 1,
-                    Cod = "P01",
                     Status = true,
                     Description = "Some"
                 },
                 ProcessId = 1,
-                Cod = "T01",
                 Duration = 60,
                 Status = true,
                 Description = "Some"
@@ -208,12 +204,10 @@ namespace NeoSmart.UnitTest.Controllers
                 Process = new Process
                 {
                     Id = 1,
-                    Cod = "P01",
                     Status = true,
                     Description = "Some"
                 },
                 ProcessId = 1,
-                Cod = "T01",
                 Duration = 60,
                 Status = true,
                 Description = "Some"
@@ -240,7 +234,6 @@ namespace NeoSmart.UnitTest.Controllers
                 Process = new Process
                 {
                     Id = 1,
-                    Cod = "P01",
                     Status = true,
                     Description = "Some"
                 },
@@ -250,7 +243,6 @@ namespace NeoSmart.UnitTest.Controllers
                     new TrainingImage { Image = "image1.jpg" },
                     new TrainingImage { Image = "image2.jpg" }
                 },
-                Cod = "T01",
                 Duration = 60,
                 Status = true,
                 Description = "Some"

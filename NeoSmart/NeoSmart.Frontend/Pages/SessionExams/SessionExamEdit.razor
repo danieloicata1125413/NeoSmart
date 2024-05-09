@@ -1,0 +1,75 @@
+﻿@page "/SessionExams/edit/{SessionExamId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (SessionExam is null)
+{
+    <Loading/>
+}
+else
+{
+    <SessionExamForm Titulo="Editar Examen" @ref="SessionExamForm" SessionId="SessionId" SessionExam="SessionExam" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+}
+
+@code {
+    private SessionExamDTO? SessionExam;
+    private SessionExamForm? SessionExamForm;
+
+    public int SessionId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int SessionExamId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var response = await repository.GetAsync<SessionExamDTO>($"/api/SessionExams/{SessionExamId}");
+        if (response.Error)
+        {
+            if (response.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                Return();                
+            }
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        SessionExam = response.Response;
+        SessionId = SessionExam!.SessionId;
+    }
+
+    private async Task SaveAsync()
+    {
+        SessionExam!.Session = null;
+        SessionExam!.TrainingExam = null;
+        var response = await repository.PutAsync($"/api/SessionExams", SessionExam);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private void Return()
+    {
+        SessionExamForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/SessionExams/{SessionId}");
+    }
+}

@@ -1,25 +1,12 @@
-﻿using NeoSmart.ClassLibraries.Interfaces;
+﻿using NeoSmart.ClassLibraries.Enum;
+using NeoSmart.ClassLibraries.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace NeoSmart.ClassLibraries.Entities
 {
-    public class Training
+    public class Training : ISoftDetete
     {
         public int Id { get; set; }
-
-        [Display(Name = "Código")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Cod { get; set; }
-
-        [Display(Name = "Descripción")]
-        [DataType(DataType.MultilineText)]
-        [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Description { get; set; } = null!;
-
-        [Display(Name = "Duración")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public int Duration { get; set; }
 
         [Display(Name = "Interna")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -27,16 +14,43 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Proceso")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int ProcessId { get; set; }
         public Process? Process { get; set; }
 
-        [Display(Name = "Habilitado")]
-        public bool Status { get; set; }
+        [Display(Name = "Descripción")]
+        [DataType(DataType.MultilineText)]
+        [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string Description { get; set; } = null!;
+
+        [Display(Name = "Duración")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int Duration { get; set; }
+
+        [Display(Name = "Observación")]
+        [DataType(DataType.MultilineText)]
+        [MaxLength(1000, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        public string? Observation { get; set; } = null!;
+
         public ICollection<TrainingTopic>? TrainingTopics { get; set; }
 
         [Display(Name = "Temas")]
         public int TrainingTopicsNumber => TrainingTopics == null ? 0 : TrainingTopics.Count;
+
+        public ICollection<Session>? Sessions { get; set; }
+
+        [Display(Name = "Sesiones")]
+        public int SessionNumber => Sessions == null ? 0 : Sessions.Count;
+
+        public ICollection<TrainingExam>? TrainingExams { get; set; }
+
+        [Display(Name = "Mediciones")]
+        public int TrainingExamsNumber => TrainingExams == null ? 0 : TrainingExams.Count;
+
+
+
+
+
 
         public ICollection<TrainingImage>? TrainingImages { get; set; }
 
@@ -48,17 +62,5 @@ namespace NeoSmart.ClassLibraries.Entities
 
         [Display(Name = "Imagenes")]
         public List<string> MainImages => TrainingImages == null || TrainingImages.Count == 0 ? new List<string>() { "/img/NoImage.png" } : TrainingImages!.Select(x => x.Image).ToList();
-    
-        public ICollection<TrainingSession>? TrainingSessions { get; set; }
-
-        [Display(Name = "Sesiones")]
-        public int TrainingSessionNumber => TrainingSessions == null ? 0 : TrainingSessions.Count;
-
-        public ICollection<TrainingTopicExam>? TrainingTopicExams { get; set; }
-
-        [Display(Name = "Mediciones")]
-        public int TrainingTopicExamsNumber => TrainingTopicExams == null ? 0 : TrainingTopicExams.Count;
-
-
     }
 }

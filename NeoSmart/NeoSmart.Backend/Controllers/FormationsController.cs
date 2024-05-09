@@ -51,7 +51,6 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
-
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
@@ -99,7 +98,6 @@ namespace NeoSmart.BackEnd.Controllers
                 Formation newFormation = new()
                 {
                     CompanyId = formationDTO.CompanyId,
-                    Cod = formationDTO.Cod,
                     Description = formationDTO.Description,
                     FormationTopics = new List<FormationTopic>(),
                     FormationOccupations = new List<FormationOccupation>(),
@@ -150,7 +148,6 @@ namespace NeoSmart.BackEnd.Controllers
                     return NotFound();
                 }
                 formation.CompanyId = formationDTO.CompanyId;
-                formation.Cod = formationDTO.Cod;
                 formation.Description = formationDTO.Description;
                 if (formationDTO.FormationTopicIds != null && formationDTO.FormationTopicIds.Count > 0)
                 {

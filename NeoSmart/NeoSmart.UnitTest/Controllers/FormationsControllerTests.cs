@@ -105,7 +105,6 @@ namespace NeoSmart.UnitTest.Controllers
             _mockDbContext.Formations.Add(new Formation
             {
                 Id = 1,
-                Cod = "c01",
                 Status = true,
                 Description = "Some"
             }) ;

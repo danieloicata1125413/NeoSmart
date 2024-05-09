@@ -1,4 +1,4 @@
-﻿@page "/training/details/{TrainingId:int}"
+﻿@page "/training/details/{TrainingId:int},{Return}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -13,50 +13,89 @@ else
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h6 class="float-start">@training!.Description</h6>
-                    <a class="btn btn-danger btn-sm float-end me-1" href="/Grid"><i class="oi oi-ban" /> Cerrar</a>
+                    <h6 class="float-start">@training!.Id</h6>
+                    <a class="btn btn-danger btn-sm float-end me-1" href="@Return"><i class="oi oi-ban" /> Cerrar</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
-            <CarouselView Images="images" />
             <div class="row">
                 <div class="col-6">
-                    <div class="mb-3">
-                        <div>
-                            <b>@training.Process!.Description</b>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label>Duración:</label>
-                        <div>
-                            <b>@training.Duration</b>
-                        </div>
-                    </div>
+                    @if (images is not null)
+                    {
+                        <CarouselView Images="images" />
+                    }
                     <MudRating SelectedValue="4" />
+                </div>
+                <div class="col-6">
                     <div class="mb-3">
-                        <div class="row">
-                            <label>Temas:</label>
+                        <label>@training.Description</label>
+                    </div>
+                    <div class="mb-3">
+                        <label><b>@training.Observation</b></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    @if (!@training.Type)
+                    {
+                        <div class="form-group mb-2">
+                            <label class="control-label">Capacitación externa</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label>Capacitación interna</label>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label>Duración: @training.Duration</label>
+                    </div>
+                    
+                    @if (topics is not null)
+                    {
+                        @if (training!.TrainingTopics! is not null)
+                        {
+                            <div class="mb-3">
+                                <label><b>Temas relacionados:</b></label>
+                            </div>
                             @foreach (var topic in topics!)
                             {
-                                <b>@topic</b>
+                                <div class="mb-3">
+                                    <label>@topic</label>
+                                </div>
                             }
-                        </div>
-                    </div>
+                        }
+                    }
+
                 </div>
                 <div class="col-6">
                     <div class="form-group mb-2">
-                        <p>Agenda:</p>
-                        @foreach (var trainingCalendar in training!.TrainingSessions!)
+                        @if (training!.Sessions! is not null)
                         {
-                            <div class="row">
-                                <p>@trainingCalendar.City!.Name</p>
+                            <div class="mb-3">
+                                <label><b>Agenda disponible:</b></label>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <p class="float-start">@trainingCalendar.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) - @trainingCalendar.DateEnd.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+
+                            @foreach (var session in training!.Sessions!)
+                            {
+                                <div class="mb-3" style="background-color: #f1f1f1; padding: 5px;">
+                                    <div class="mb-3">
+                                        <label>Capacitador: @session!.ExistUser</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Fecha: @session.DateStart.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture) Horario: @session.TimeStart - @session.TimeEnd</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Inscritos: @session!.SessionInscriptionsNumber</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Estado: <b>@session.SessionStatus!.Description</b></label>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         }
                     </div>
                 </div>
@@ -66,8 +105,8 @@ else
 }
 
 @code {
-    private List<string>? topics;
-    private List<string>? images;
+    private List<string>? topics = null;
+    private List<string>? images = null;
     private bool loading = true;
     private Training? training;
     private bool isAuthenticated;
@@ -77,8 +116,8 @@ else
 
     [Parameter]
     public int TrainingId { get; set; }
-
-    public TemporalInscriptionDTO TemporalInscriptionDTO { get; set; } = new();
+    [Parameter]
+    public string Return { get; set; } = "Grid";
 
     protected async override Task OnInitializedAsync()
     {
@@ -99,12 +138,22 @@ else
         }
 
         training = httpResponse.Response!;
-        topics = training.TrainingTopics!.Select(x => x.Topic.Description).ToList();
-        images = training.TrainingImages!.Select(x => x.Image).ToList();
-        if (images.Count() == 0)
+        if (training.TrainingTopics != null)
         {
-            images!.Add(training.MainImage);
+            topics = training.TrainingTopics!.Select(x => x.Topic!.Description).ToList();
         }
+        if (training.TrainingImages != null)
+        {
+            images = training.TrainingImages!.Select(x => x.Image).ToList();
+            if (images!.Count() == 0)
+            {
+                if (training.MainImage != null)
+                {
+                    images!.Add(training.MainImage);
+                }
+            }
+        }
+
         loading = false;
     }
 }

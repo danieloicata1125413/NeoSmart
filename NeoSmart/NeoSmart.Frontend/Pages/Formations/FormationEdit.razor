@@ -38,14 +38,16 @@ else
     [Parameter]
     public int formationId { get; set; }
 
+
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadFormationAsync();
+        await LoadFormationSync();
         await LoadTopicsAsync();
         await LoadOccupationsAsync();
     }
 
-    private async Task LoadFormationAsync()
+    private async Task LoadFormationSync()
     {
         loading = true;
         var httpResponse = await repository.GetAsync<Formation>($"/api/formations/{formationId}");
@@ -65,7 +67,7 @@ else
     private async Task LoadOccupationsAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<List<Occupation>>($"/api/Occupations");
+        var httpResponse = await repository.GetAsync<List<Occupation>>($"/api/Occupations/ComboByCompany/{formationDTO.CompanyId}");
         if (httpResponse.Error)
         {
             loading = false;
@@ -96,7 +98,7 @@ else
             {
                 Id = formation.Id,
                 CompanyId = formation.CompanyId,
-                Cod = formation.Cod,
+                Company = formation.Company,
                 Description = formation.Description,
                 Status = formation.Status,
                 FormationTopicIds = formation.FormationTopics!.Select(x => x.TopicId).ToList(),
@@ -107,7 +109,7 @@ else
     private async Task LoadTopicsAsync()
     {
         loading = true;
-        var httpResponse = await repository.GetAsync<List<Topic>>("/api/topics");
+        var httpResponse = await repository.GetAsync<List<Topic>>($"/api/topics/combo/{formationDTO.CompanyId}");
 
         if (httpResponse.Error)
         {

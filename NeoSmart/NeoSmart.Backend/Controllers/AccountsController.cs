@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.ClassLibraries.Interfaces;
 using NeoSmart.ClassLibraries.Responses;
 using NeoSmart.Data.Entities;
+using System.Diagnostics.Contracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -28,9 +30,10 @@ namespace NeoSmart.BackEnd.Controllers
         private readonly IMailHelper _mailHelper;
         private readonly DataContext _context;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IMapper _mapper;
         private readonly string _container;
 
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext context, ITokenGenerator tokenGenerator)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext context, ITokenGenerator tokenGenerator, IMapper mapper)
         {
             _userHelper = userHelper;
             _configuration = configuration;
@@ -38,6 +41,7 @@ namespace NeoSmart.BackEnd.Controllers
             _mailHelper = mailHelper;
             _context = context;
             _tokenGenerator = tokenGenerator;
+            _mapper = mapper;
             _container = "users";
         }
 
@@ -47,6 +51,8 @@ namespace NeoSmart.BackEnd.Controllers
         public async Task<ActionResult> GetAll([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Users
+                .Include(c => c.Company)
+                .Include(c => c.Occupation)
                 .Include(u => u.City)
                 .AsQueryable();
 
@@ -55,9 +61,14 @@ namespace NeoSmart.BackEnd.Controllers
                 queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
                                                  x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             return Ok(await queryable
-                .OrderBy(x => x.FirstName)
+                .OrderBy(s => s.Company!.Name)
+                .ThenBy(x => x.FirstName)
                 .ThenBy(x => x.LastName)
                 .Paginate(pagination)
                 .ToListAsync());
@@ -73,7 +84,11 @@ namespace NeoSmart.BackEnd.Controllers
                 queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
                                                  x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
             }
-
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user.Company != null)
+            {
+                queryable = queryable.Where(c => c.Company!.Id == user.Company!.Id);
+            }
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
@@ -157,7 +172,7 @@ namespace NeoSmart.BackEnd.Controllers
         {
             try
             {
-                var currentUser = await _userHelper.GetUserAsync(User.Identity!.Name!);
+                var currentUser = await _userHelper.GetUserAsync(user.UserName!);
                 if (currentUser == null)
                 {
                     return NotFound();
@@ -167,6 +182,17 @@ namespace NeoSmart.BackEnd.Controllers
                 {
                     var photoUser = Convert.FromBase64String(user.Photo);
                     user.Photo = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
+                }
+                currentUser.CompanyId = null;
+                if (user.CompanyId > 0)
+                {
+                    currentUser.CompanyId = user.CompanyId;
+                }
+
+                currentUser.OccupationId = null;
+                if (user.OccupationId > 0)
+                {
+                    currentUser.OccupationId = user.OccupationId;
                 }
 
                 currentUser.Document = user.Document;
@@ -200,10 +226,18 @@ namespace NeoSmart.BackEnd.Controllers
             return Ok(await _userHelper.GetUserAsync(User.Identity!.Name!));
         }
 
+        [HttpGet("{userName}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
+        public async Task<ActionResult> GetAsync(string userName)
+        {
+            return Ok(await _userHelper.GetUserAsync(userName));
+        }
+
         [HttpPost("CreateUser")]
         public async Task<ActionResult> CreateUserAsync([FromBody] UserDTO model)
         {
-            User user = model;
+
+            User user = _mapper.Map<User>(model);
 
             if (!string.IsNullOrEmpty(model.Photo))
             {
@@ -230,7 +264,36 @@ namespace NeoSmart.BackEnd.Controllers
             return BadRequest(result.Errors.FirstOrDefault());
         }
 
+        [HttpDelete("{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
+        public async Task<ActionResult> DeleteUserAsync(Guid userId)
+        {
+            var currentUser = await _userHelper.GetUserAsync(userId);
+            if (currentUser != null)
+            {
+                var listUserRoles = await _userHelper.GetUserRolesAsync(currentUser);
+                var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listUserRoles.Select(x => x.ToString()).ToList());
+                if (result.Succeeded)
+                {
+                    result = await _userHelper.RemoveUserAsync(currentUser);
+                    if (result.Succeeded)
+                    {
+                        var response = SendRemoveConfirmationEmailAsync(currentUser);
+                        if (response.IsSuccess)
+                        {
+                            return NoContent();
+                        }
+
+                        return BadRequest(response.Message);
+                    }
+                }
+                return BadRequest(result.Errors.FirstOrDefault());
+            }
+            return BadRequest("No existe el usuario");
+        }
+
         [HttpGet("Roles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> GetRolesAsync()
         {
             var identityRoles = await _userHelper.GetRolesAsync();
@@ -238,13 +301,21 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 return NotFound();
             }
-            return Ok(
-                identityRoles.
-                Select(x => x.Name!.ToString())
-                .ToList());
+            List<RoleDTO> listRolesDTO = new List<RoleDTO>();
+            foreach (var identityRole in identityRoles!)
+            {
+                listRolesDTO.Add( new RoleDTO()
+                {
+                    Id = identityRole.Id,
+                    Name = identityRole.Name,
+                });
+            }
+            
+            return Ok(listRolesDTO);
         }
 
         [HttpGet("UserRoles/{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
         public async Task<ActionResult> GetUserRolesAsync(Guid userId)
         {
             var currentUser = await _userHelper.GetUserAsync(userId);
@@ -260,7 +331,8 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpPost("UserRoles")]
-        public async Task<ActionResult> PostUserRolesAsync([FromBody] UserDTO model)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin,Admin")]
+        public async Task<ActionResult> PostUserRolesAsync([FromBody] UserRolesDTO model)
         {
             var currentUser = await _userHelper.GetUserAsync(model.UserName!);
             if (currentUser == null)
@@ -268,7 +340,9 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
             var listRoles = await _userHelper.GetRolesAsync();
-            var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listRoles.Where(x=>x.Name != UserType.SuperAdmin.ToString()).Select(x=>x.Name!.ToString()).ToList());
+            var listUserRoles = await _userHelper.GetUserRolesAsync(currentUser);
+            //var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listRoles.Where(x => x.Name != UserType.SuperAdmin.ToString()).Select(x => x.Name!.ToString()).ToList());
+            var result = await _userHelper.RemoveUserToRoleAsync(currentUser, listUserRoles.Select(x => x.ToString()).ToList());
             if (result.Succeeded)
             {
                 result = await _userHelper.AddUserToRoleAsync(currentUser, model.UserTypes!.Select(x => x.ToString()).ToList());
@@ -341,6 +415,18 @@ namespace NeoSmart.BackEnd.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetValidate/{userName}")]
+        public async Task<ActionResult<bool>> GetValidate(string userName)
+        {
+            var CMAUser = await _userHelper.GetUserAsync(userName);
+            if (CMAUser != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private async Task<Response<string>> SendConfirmationEmailAsync(User user)
         {
             var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
@@ -355,6 +441,180 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<h1>NeoSmart - Confirmación de cuenta</h1>" +
                 $"<p>Para habilitar el usuario, por favor hacer clic 'Confirmar Email':</p>" +
                 $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
+        }
+
+        private Response<string> SendRemoveConfirmationEmailAsync(User user)
+        {
+            return _mailHelper.SendMail(user.FullName, user.Email!,
+                $"NeoSmart - Se ha eliminado tu cuenta",
+                $"<h1>NeoSmart - Confirmación de eliminación la cuenta</h1>" +
+                $"<p>{user.FullName}, Sentimos mucho que te tengas que ir, recuerda que puedes crear de nuevo tu cuenta cuando quieras.</p>" +
+                $"<p>Atentamente:</p>" +
+                $"<p>Equipo de neosmart.</p>");
+        }
+
+
+        //Recordar contraseña
+        [AllowAnonymous]
+        [HttpGet("GetPasswordResetToken/{userName}")]
+        public async Task<ActionResult<bool>> GetPasswordResetToken(string userName)
+        {
+            var user = await _userHelper.GetUserAsync(userName);
+            if (user != null)
+            {
+                var token = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                if (token != null)
+                {
+                    var result = await DeleteAllUserTokenReset(user);
+                    if (result)
+                    {
+                        var usersTokenReset = await GetUserTokenResetCreate(user, token);
+                        if (usersTokenReset != null)
+                        {
+                            var tokenLink = Url.Action("/api/accounts/ResetPasswordByToken", "accounts", new
+                            {
+                                UserName = userName,
+                                Token = usersTokenReset.Id
+                            }, HttpContext.Request.Scheme, _configuration["Url FrontEnd"]);
+                            var estado = _mailHelper.SendMail(user.FullName, user.Email!,
+                                                            "NeoSmart - Restablecimiento de contraseña",
+                                                            $"<h1>NeoSmart - Restablecimiento de contraseña</h1>" +
+                                                            $"Para restablecer su contraseña, " +
+                                                            $"por favor hacer clic en el siguiente enlace:" +
+                                                            $"</br></br><a href ={tokenLink}>Restablecer Contraseña</a>" +
+                                                            $"</br>Tiempo máximo para realizar el proceso: " + usersTokenReset.FechaMax +
+                                                            $"</br></br>NeoSmart");
+                            if (estado.IsSuccess)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SetResetPassword")]
+        public async Task<ActionResult> GetResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            var user = await _userHelper.GetUserAsync(model.Email);
+            if (user != null)
+            {
+                var aspNetUsersTokenReset = await GetUserTokenResetById(Guid.Parse(model.Token));
+                if (aspNetUsersTokenReset != null)
+                {
+                    if (aspNetUsersTokenReset.Deleted == null)
+                    {
+                        if (aspNetUsersTokenReset.FechaMax > DateTime.Now)
+                        {
+                            var identityResult = await _userHelper.ResetPasswordAsync(user, aspNetUsersTokenReset!.Token!, model.Password);
+                            if (identityResult.Succeeded)
+                            {
+                                aspNetUsersTokenReset.Processed = true;
+                                await PutUsersTokenReset(aspNetUsersTokenReset);
+                                _mailHelper.SendMail(user.FullName, user.Email!, "NeoSmart - Restablecimiento de contraseña exitoso", $"<h1>NeoSmart - Restablecimiento de contraseña exitoso!</h1>" +
+                                  $"Su contraseña ha sido modificada exitosamente." +
+                                  $"</br>Proceso realizado: " + DateTime.Now +
+                                  $"</br></br>NeoSmart");
+                                await DeleteAllUserTokenReset(user);
+                                return Ok();
+                            }
+                        }
+                        else
+                        {
+                            await DeleteUserTokenReset(aspNetUsersTokenReset.Id);
+                        }
+                    }
+                }
+            }
+            return NotFound();
+        }
+        private async Task<bool> PutUsersTokenReset(UserTokenReset usersTokenReset)
+        {
+            _context.Entry(usersTokenReset).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine("Error:", ex.Message);
+            }
+            return false;
+        }
+        private async Task<bool> DeleteAllUserTokenReset(User user)
+        {
+            var usersTokenResetList = await _context.AspNetUserTokenResets
+                .Where(x => x.UserId!.Equals(user.Id))
+                .ToListAsync();
+            foreach (UserTokenReset item in usersTokenResetList)
+            {
+                try
+                {
+                    _context.AspNetUserTokenResets.Remove(item);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+            }
+            return true;
+        }
+        private async Task<bool> DeleteUserTokenReset(Guid guid)
+        {
+            var usersTokenReset = await _context.AspNetUserTokenResets
+                .FindAsync(guid);
+            if (usersTokenReset != null)
+            {
+                try
+                {
+                    _context.AspNetUserTokenResets.Remove(usersTokenReset);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+            }
+            return true;
+        }
+        private async Task<UserTokenReset?> GetUserTokenResetCreate(User user, string token)
+        {
+            try
+            {
+                UserTokenReset userTokenReset = new UserTokenReset()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    Fecha = DateTime.Now,
+                    FechaMax = DateTime.Now.AddHours(1),
+                    Token = token,
+                    Processed = false
+                };
+                _context.AspNetUserTokenResets.Add(userTokenReset);
+                await _context.SaveChangesAsync();
+                return userTokenReset;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error:", ex.Message);
+            }
+            return null;
+        }
+
+        private async Task<UserTokenReset?> GetUserTokenResetById(Guid guid)
+        {
+            var userTokenReset = await _context.AspNetUserTokenResets
+                .FindAsync(guid);
+            if (userTokenReset != null)
+            {
+                return userTokenReset;
+            }
+            return null;
         }
 
     }

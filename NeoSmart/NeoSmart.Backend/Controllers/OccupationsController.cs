@@ -9,6 +9,7 @@ using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
+using System.ComponentModel.Design;
 
 namespace NeoSmart.BackEnd.Controllers
 {
@@ -27,10 +28,22 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("comboAll")]
-        public async Task<ActionResult> GetComboAllAsync()
+        [HttpGet("combo/{processId}")]
+        public async Task<ActionResult> GetComboAllAsync(int processId)
         {
             return Ok(await _context.Occupations
+                .Where(c => c.Process!.Id == processId)
+                .OrderBy(s => s.Process!.Company!.Name)
+                .ThenBy(s => s.Process!.Description)
+                .ThenBy(s => s.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("ComboByCompany/{companyId}")]
+        public async Task<ActionResult> GetComboByCompanyAsync(int companyId)
+        {
+            return Ok(await _context.Occupations
+                .Where(c => c.Process!.Company!.Id == companyId)
                 .OrderBy(s => s.Process!.Company!.Name)
                 .ThenBy(s => s.Process!.Description)
                 .ThenBy(s => s.Description)
@@ -109,15 +122,15 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var state = await _context.Occupations
+            var occupation = await _context.Occupations
                 .Include(s => s.Process!)
                 .ThenInclude(s => s.Company)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            if (state == null)
+            if (occupation == null)
             {
                 return NotFound();
             }
-            return Ok(state);
+            return Ok(occupation);
         }
     }
 }

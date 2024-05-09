@@ -49,10 +49,21 @@ namespace NeoSmart.BackEnd.Helper
         {
             return await _userManager.CreateAsync(user, password);
         }
+        public async Task<IdentityResult> RemoveUserAsync(User user)
+        {
+            var currentUser = await _userManager.FindByIdAsync(user.Id);
+            return await _userManager.DeleteAsync(currentUser!);
+        }
+
+        public async Task<List<User>> GetUserByRoleAsync(string roleName)
+        {
+            return (List<User>)await _userManager.GetUsersInRoleAsync(roleName);
+        }
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
+
         public async Task<IdentityResult> AddUserToRoleAsync(User user, List<string> rolesName)
         {
             return await _userManager.AddToRolesAsync(user, rolesName);
@@ -87,7 +98,10 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(string email)
         {
             var user = await _context.Users
-                .Include(x => x.Company)
+                .Include(x => x.Company!)
+                .Include(x => x.Occupation!)
+                .ThenInclude(x => x.Process!)
+                .ThenInclude(x => x.Company!)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
@@ -99,7 +113,10 @@ namespace NeoSmart.BackEnd.Helper
         public async Task<User> GetUserAsync(Guid userId)
         {
             var user = await _context.Users
-                .Include(x => x.Company)
+                .Include(x => x.Company!)
+                .Include(x => x.Occupation!)
+                .ThenInclude(x => x.Process!)
+                .ThenInclude(x => x.Company!)
                 .Include(x => x.DocumentType)
                 .Include(u => u.City!)
                 .ThenInclude(c => c.State!)
