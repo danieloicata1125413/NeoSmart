@@ -15,11 +15,13 @@
         </div>
         <div class="card-body m-2">
             <div class="form-group mb-2">
-                <label class="control-label">ExamQuestionen:</label>
-                <InputTextArea class="form-control" @bind-Value="@trainingExamQuestion.Description" />
-                <ValidationMessage For="@(() => trainingExamQuestion.Description)" />
+                <label class="control-label">Opción:</label>
+                <InputTextArea class="form-control" @bind-Value="@trainingExamQuestionOption.Description" />
+                <ValidationMessage For="@(() => trainingExamQuestionOption.Description)" />
+                <InputCheckbox @bind-Value=@CorrectValue></InputCheckbox> <label class="control-label">Opción correcta</label>
                 <InputCheckbox @bind-Value=@StatusValue></InputCheckbox> <label class="control-label">Habilitado</label>
             </div>
+            
         </div>
         <div class="card-footer">
             <button class="btn btn-primary" type="submit">Guardar</button>
@@ -29,16 +31,20 @@
 
 @code {
     private EditContext editContext = null!;
-
+    bool CorrectValue
+    {
+        get => Convert.ToBoolean(trainingExamQuestionOption.Correct);
+        set => trainingExamQuestionOption.Correct = value;
+    }
     bool StatusValue
     {
-        get => Convert.ToBoolean(trainingExamQuestion.Status);
-        set => trainingExamQuestion.Status = value;
+        get => Convert.ToBoolean(trainingExamQuestionOption.Status);
+        set => trainingExamQuestionOption.Status = value;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        editContext = new(trainingExamQuestion);
+        editContext = new(trainingExamQuestionOption);
     }
 
     [EditorRequired]
@@ -47,7 +53,7 @@
 
     [EditorRequired]
     [Parameter]
-    public TrainingExamQuestion trainingExamQuestion { get; set; } = null!;
+    public TrainingExamQuestionOption trainingExamQuestionOption { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

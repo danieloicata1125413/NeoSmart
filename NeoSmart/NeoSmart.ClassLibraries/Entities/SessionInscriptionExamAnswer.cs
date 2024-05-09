@@ -13,12 +13,12 @@ namespace NeoSmart.ClassLibraries.Entities
         public SessionInscriptionExam? SessionInscriptionExam { get; set; }
 
         [Display(Name = "Pregunta")]
-        [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        [MaxLength(500, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Question { get; set; } = null!;
 
-        [Display(Name = "Respuesta")]
-        [MaxLength(255, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        [Display(Name = "Opción")]
+        [MaxLength(500, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Answer { get; set; } = null!;
 

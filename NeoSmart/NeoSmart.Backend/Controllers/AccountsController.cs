@@ -547,14 +547,14 @@ namespace NeoSmart.BackEnd.Controllers
         }
         private async Task<bool> DeleteAllUserTokenReset(User user)
         {
-            var usersTokenResetList = await _context.AspNetUserTokenReset
+            var usersTokenResetList = await _context.AspNetUserTokenResets
                 .Where(x => x.UserId!.Equals(user.Id))
                 .ToListAsync();
             foreach (UserTokenReset item in usersTokenResetList)
             {
                 try
                 {
-                    _context.AspNetUserTokenReset.Remove(item);
+                    _context.AspNetUserTokenResets.Remove(item);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -566,13 +566,13 @@ namespace NeoSmart.BackEnd.Controllers
         }
         private async Task<bool> DeleteUserTokenReset(Guid guid)
         {
-            var usersTokenReset = await _context.AspNetUserTokenReset
+            var usersTokenReset = await _context.AspNetUserTokenResets
                 .FindAsync(guid);
             if (usersTokenReset != null)
             {
                 try
                 {
-                    _context.AspNetUserTokenReset.Remove(usersTokenReset);
+                    _context.AspNetUserTokenResets.Remove(usersTokenReset);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -595,7 +595,7 @@ namespace NeoSmart.BackEnd.Controllers
                     Token = token,
                     Processed = false
                 };
-                _context.AspNetUserTokenReset.Add(userTokenReset);
+                _context.AspNetUserTokenResets.Add(userTokenReset);
                 await _context.SaveChangesAsync();
                 return userTokenReset;
             }
@@ -608,7 +608,7 @@ namespace NeoSmart.BackEnd.Controllers
 
         private async Task<UserTokenReset?> GetUserTokenResetById(Guid guid)
         {
-            var userTokenReset = await _context.AspNetUserTokenReset
+            var userTokenReset = await _context.AspNetUserTokenResets
                 .FindAsync(guid);
             if (userTokenReset != null)
             {

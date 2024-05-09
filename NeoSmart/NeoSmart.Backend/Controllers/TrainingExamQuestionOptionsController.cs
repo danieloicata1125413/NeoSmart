@@ -13,25 +13,24 @@ namespace NeoSmart.BackEnd.Controllers
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class TrainingExamQuestionsController : GenericController<TrainingExamQuestion>
+    public class TrainingExamQuestionOptionsController : GenericController<TrainingExamQuestionOption>
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
 
-        public TrainingExamQuestionsController(IGenericUnitOfWork<TrainingExamQuestion> unitOfWork, DataContext context, IUserHelper userHelper) : base(unitOfWork, context)
+        public TrainingExamQuestionOptionsController(IGenericUnitOfWork<TrainingExamQuestionOption> unitOfWork, DataContext context, IUserHelper userHelper) : base(unitOfWork, context)
         {
             _context = context;
             _userHelper = userHelper;
         }
 
         [AllowAnonymous]
-        [HttpGet("combo/{TrainingExamId}")]
-        public async Task<ActionResult> GetComboAllAsync(int TrainingExamId)
+        [HttpGet("combo/{TrainingExamQuestionId}")]
+        public async Task<ActionResult> GetComboAllAsync(int TrainingExamQuestionId)
         {
-            return Ok(await _context.TrainingExamQuestions
-                .Where(c => c.TrainingExam!.Id == TrainingExamId)
-                .Include(c => c.TrainingExamQuestionOptions)
-                .OrderBy(s => s.TrainingExam!.Description)
+            return Ok(await _context.TrainingExamQuestionOptions
+                .Where(c => c.TrainingExamQuestion!.Id == TrainingExamQuestionId)
+                .OrderBy(s => s.TrainingExamQuestion!.Description)
                 .ThenBy(s => s.Description)
                 .ToListAsync());
         }
@@ -39,10 +38,9 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingExamQuestions
-                            .Where(x => x.TrainingExam!.Id == pagination.Id)
-                            .Include(o => o.TrainingExam)
-                            .Include(c => c.TrainingExamQuestionOptions)
+            var queryable = _context.TrainingExamQuestionOptions
+                            .Where(x => x.TrainingExamQuestion!.Id == pagination.Id)
+                            .Include(o => o.TrainingExamQuestion)
                             .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
@@ -50,7 +48,7 @@ namespace NeoSmart.BackEnd.Controllers
             }
 
             return Ok(await queryable
-                .OrderBy(s => s.TrainingExam!.Description)
+                .OrderBy(s => s.TrainingExamQuestion!.Description)
                 .ThenBy(s => s.Description)
                 .Paginate(pagination)
                 .ToListAsync());
@@ -60,15 +58,15 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("totalPages")]
         public override async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.TrainingExamQuestions
-                .Where(x => x.TrainingExam!.Id == pagination.Id)
+            var queryable = _context.TrainingExamQuestionOptions
+                .Where(x => x.TrainingExamQuestion!.Id == pagination.Id)
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
                 queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
             }
             queryable = queryable
-                 .OrderBy(s => s.TrainingExam!.Description)
+                 .OrderBy(s => s.TrainingExamQuestion!.Description)
                 .ThenBy(s => s.Description);
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
@@ -79,15 +77,14 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(int id)
         {
-            var TrainingExamQuestion = await _context.TrainingExamQuestions
-                .Include(o => o.TrainingExam)
-                .Include(c => c.TrainingExamQuestionOptions)
+            var TrainingExamQuestionOption = await _context.TrainingExamQuestionOptions
+                .Include(o => o.TrainingExamQuestion)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            if (TrainingExamQuestion == null)
+            if (TrainingExamQuestionOption == null)
             {
                 return NotFound();
             }
-            return Ok(TrainingExamQuestion);
+            return Ok(TrainingExamQuestionOption);
         }
     }
 }

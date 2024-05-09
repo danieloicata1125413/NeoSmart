@@ -12,7 +12,7 @@ using NeoSmart.Data.Entities;
 namespace NeoSmart.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240501110929_InitialDB")]
+    [Migration("20240509180238_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
@@ -887,8 +887,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.Property<string>("Answer")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("Correct")
                         .HasColumnType("bit");
@@ -901,8 +901,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.Property<string>("Question")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("SessionInscriptionExamId")
                         .HasColumnType("int");
@@ -1188,9 +1188,6 @@ namespace NeoSmart.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Correct")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -1199,8 +1196,8 @@ namespace NeoSmart.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -1216,6 +1213,44 @@ namespace NeoSmart.Data.Migrations
                     b.HasIndex("TrainingExamId");
 
                     b.ToTable("TrainingExamQuestions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingExamQuestionOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Correct")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TrainingExamQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainingExamQuestionId");
+
+                    b.ToTable("TrainingExamQuestionOptions");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
@@ -1414,6 +1449,98 @@ namespace NeoSmart.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserFirebaseToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("device")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserFirebaseTokens");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ModuleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Notify")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Redirect")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserNotifications");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTokenReset", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1452,7 +1579,7 @@ namespace NeoSmart.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserTokenReset");
+                    b.ToTable("AspNetUserTokenResets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1833,6 +1960,17 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("TrainingExam");
                 });
 
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingExamQuestionOption", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.TrainingExamQuestion", "TrainingExamQuestion")
+                        .WithMany("TrainingExamQuestionOptions")
+                        .HasForeignKey("TrainingExamQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TrainingExamQuestion");
+                });
+
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingImage", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Training", "Training")
@@ -1913,6 +2051,28 @@ namespace NeoSmart.Data.Migrations
                     b.Navigation("DocumentType");
 
                     b.Navigation("Occupation");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserFirebaseToken", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserNotification", b =>
+                {
+                    b.HasOne("NeoSmart.ClassLibraries.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.UserTokenReset", b =>
@@ -2013,6 +2173,11 @@ namespace NeoSmart.Data.Migrations
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingExam", b =>
                 {
                     b.Navigation("TrainingExamQuestions");
+                });
+
+            modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.TrainingExamQuestion", b =>
+                {
+                    b.Navigation("TrainingExamQuestionOptions");
                 });
 #pragma warning restore 612, 618
         }

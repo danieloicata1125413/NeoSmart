@@ -10,24 +10,81 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            @*  <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-            <span class="oi oi-home" aria-hidden="true"></span> Inicio
-            </NavLink> *@
-        </div>
         <AuthorizeView Roles="SuperAdmin,Admin,Manager,Leader,Trainer,Employee">
             <Authorized>
-                <div class="nav-item px-3">
 
-                    @* <NavLink class="nav-link" href="/Inscriptions">
-                    <span class="oi oi-book" aria-hidden="true"></span> Mis Capacitaciones
-                    </NavLink> *@
-                </div>
             </Authorized>
         </AuthorizeView>
+        <AuthorizeView Roles="SuperAdmin">
+            <Authorized>
+
+                <li class="nav-link collapsed"><span>Administración</span></li>
+
+                <li class="nav-item">
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="users">
+                        <MudIcon Icon="@Icons.Material.Filled.DeveloperBoard" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Usuarios</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="companies">
+                        <MudIcon Icon="@Icons.Material.Filled.ContentPasteSearch" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Empresas</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="countries">
+                        <MudIcon Icon="@Icons.Material.Filled.Notes" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Paises</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="Sliders">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Presentación</span>
+                    </a>
+                </li>
+
+            </Authorized>
+        </AuthorizeView>
+
+
+
         <AuthorizeView Roles="SuperAdmin,Admin">
             <Authorized>
-                <div class="nav-item px-3">
+
+                <li class="nav-link collapsed"><span>Maestras</span></li>
+
+                <li class="nav-item">
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="processes">
+                        <MudIcon Icon="@Icons.Material.Filled.DeveloperBoard" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Usuarios</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="occupations">
+                        <MudIcon Icon="@Icons.Material.Filled.ContentPasteSearch" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Cargos</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="formations">
+                        <MudIcon Icon="@Icons.Material.Filled.Notes" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Entrenamientos</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="topics">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Temas</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="Trainings">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Capacitaciones</span>
+                    </a>
+                </li>
+
+                <li class="nav-link collapsed"><span>Gestión</span></li>
+                <li class="nav-item">
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="Requests">
+                        <MudIcon Icon="@Icons.Material.Filled.DeveloperBoard" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Solicitudes</span>
+                    </a>
+                    <a @onclick="@(() => OnClick.InvokeAsync(false))" class="nav-link collapsed" href="Sessions">
+                        <MudIcon Icon="@Icons.Material.Filled.ContentPasteSearch" Class="mr-3" Style="font-size: 1.5 rem;" />
+                        <span>Agenda</span>
+                    </a>
+                </li>
+
+                @* <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/processes">
                         <span class="oi oi-book" aria-hidden="true"></span> Procesos
                     </NavLink>
@@ -47,14 +104,16 @@
                         <span class="oi oi-bookmark" aria-hidden="true"></span> Temas
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Requests">
-                        <span class="oi oi-book" aria-hidden="true"></span> Solicitudes
-                    </NavLink>
-                </div>
+                
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Trainings">
                         <span class="oi oi-book" aria-hidden="true"></span> Capacitaciones
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Requests">
+                        <span class="oi oi-book" aria-hidden="true"></span> Solicitudes
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -66,30 +125,31 @@
                     <NavLink class="nav-link" href="/users">
                         <span class="oi oi-people" aria-hidden="true"></span> Usuarios
                     </NavLink>
-                </div>
+                </div> *@
             </Authorized>
         </AuthorizeView>
-        <AuthorizeView Roles="SuperAdmin">
-            <Authorized>
-                <MudDivider></MudDivider>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Sliders">
-                        <span class="oi oi-book" aria-hidden="true"></span> Sliders
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/companies">
-                        <span class="oi oi-book" aria-hidden="true"></span> Empresas
-                    </NavLink>
-                </div>
 
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/countries">
-                        <span class="oi oi-globe" aria-hidden="true"></span> Paises
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
+        @* <AuthorizeView Roles="SuperAdmin">
+        <Authorized>
+        <MudDivider></MudDivider>
+        <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/Sliders">
+        <span class="oi oi-book" aria-hidden="true"></span> Sliders
+        </NavLink>
+        </div>
+        <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/companies">
+        <span class="oi oi-book" aria-hidden="true"></span> Empresas
+        </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/countries">
+        <span class="oi oi-globe" aria-hidden="true"></span> Paises
+        </NavLink>
+        </div>
+        </Authorized>
+        </AuthorizeView>  *@
     </nav>
 </div>
 
@@ -102,4 +162,6 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    [Parameter] public EventCallback<bool> OnClick { get; set; }
 }

@@ -606,6 +606,31 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserFirebaseTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    device = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Version = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserFirebaseTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserFirebaseTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
@@ -619,6 +644,35 @@ namespace NeoSmart.Data.Migrations
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Module = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModuleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Redirect = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notify = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserNotifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserNotifications_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -650,7 +704,7 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserTokenReset",
+                name: "AspNetUserTokenResets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -666,9 +720,9 @@ namespace NeoSmart.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserTokenReset", x => x.Id);
+                    table.PrimaryKey("PK_AspNetUserTokenResets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokenReset_AspNetUsers_UserId",
+                        name: "FK_AspNetUserTokenResets_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -789,8 +843,7 @@ namespace NeoSmart.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TrainingExamId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -936,6 +989,31 @@ namespace NeoSmart.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrainingExamQuestionOptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrainingExamQuestionId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Correct = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Deleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingExamQuestionOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingExamQuestionOptions_TrainingExamQuestions_TrainingExamQuestionId",
+                        column: x => x.TrainingExamQuestionId,
+                        principalTable: "TrainingExamQuestions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SessionInscriptionAttends",
                 columns: table => new
                 {
@@ -1003,8 +1081,8 @@ namespace NeoSmart.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SessionInscriptionExamId = table.Column<int>(type: "int", nullable: false),
-                    Question = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Answer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Question = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Answer = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Correct = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1040,8 +1118,18 @@ namespace NeoSmart.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserFirebaseTokens_UserId",
+                table: "AspNetUserFirebaseTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
                 table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserNotifications_UserId",
+                table: "AspNetUserNotifications",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -1082,8 +1170,8 @@ namespace NeoSmart.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserTokenReset_UserId",
-                table: "AspNetUserTokenReset",
+                name: "IX_AspNetUserTokenResets_UserId",
+                table: "AspNetUserTokenResets",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -1277,6 +1365,11 @@ namespace NeoSmart.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TrainingExamQuestionOptions_TrainingExamQuestionId",
+                table: "TrainingExamQuestionOptions",
+                column: "TrainingExamQuestionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TrainingExamQuestions_TrainingExamId",
                 table: "TrainingExamQuestions",
                 column: "TrainingExamId");
@@ -1333,13 +1426,19 @@ namespace NeoSmart.Data.Migrations
                 name: "AspNetUserClaims");
 
             migrationBuilder.DropTable(
+                name: "AspNetUserFirebaseTokens");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserNotifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserTokenReset");
+                name: "AspNetUserTokenResets");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
@@ -1369,7 +1468,7 @@ namespace NeoSmart.Data.Migrations
                 name: "Sliders");
 
             migrationBuilder.DropTable(
-                name: "TrainingExamQuestions");
+                name: "TrainingExamQuestionOptions");
 
             migrationBuilder.DropTable(
                 name: "TrainingImages");
@@ -1391,6 +1490,9 @@ namespace NeoSmart.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "SessionInscriptionExams");
+
+            migrationBuilder.DropTable(
+                name: "TrainingExamQuestions");
 
             migrationBuilder.DropTable(
                 name: "ResourceTypes");

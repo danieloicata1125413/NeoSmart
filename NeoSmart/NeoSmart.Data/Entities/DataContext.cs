@@ -37,6 +37,7 @@ namespace NeoSmart.Data.Entities
         public DbSet<TrainingResource> TrainingResources { get; set; }
         public DbSet<TrainingExam> TrainingExams { get; set; }
         public DbSet<TrainingExamQuestion> TrainingExamQuestions { get; set; }
+        public DbSet<TrainingExamQuestionOption> TrainingExamQuestionOptions { get; set; }
         public DbSet<TrainingTopic> TrainingTopics { get; set; }
 
 
@@ -50,7 +51,9 @@ namespace NeoSmart.Data.Entities
         public DbSet<SessionInscription> SessionInscriptions { get; set; }
         public DbSet<SessionStatus> SessionStatus { get; set; }
 
-        public DbSet<UserTokenReset> AspNetUserTokenReset { get; set; }
+        public DbSet<UserFirebaseToken> AspNetUserFirebaseTokens { get; set; }
+        public DbSet<UserNotification> AspNetUserNotifications { get; set; }
+        public DbSet<UserTokenReset> AspNetUserTokenResets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
