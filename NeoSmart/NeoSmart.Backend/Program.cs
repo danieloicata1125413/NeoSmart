@@ -130,6 +130,7 @@ builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IInscriptionsHelper, InscriptionsHelper>();
+builder.Services.AddScoped<ISessionInscriptionExamHelper, SessionInscriptionExamHelper>();
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddScoped<IMailHelper, MailHelper>();
 builder.Services.AddTransient<SeedDb>();

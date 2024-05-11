@@ -34,6 +34,7 @@ namespace NeoSmart.ClassLibraries.Entities
      
         [Display(Name = "Asistencia")]
         public bool SessionInscriptionAttendsExist => SessionInscriptionAttends == null || SessionInscriptionAttends.Count == 0 ? false : true;
+
        
         public ICollection<SessionInscriptionExam>? SessionInscriptionExams { get; set; }
 

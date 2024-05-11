@@ -43,6 +43,7 @@
                             <th>Capacitador</th>
                             <th>Virtual</th>
                             <th>Habilitado</th>
+                            <th>Mediciones</th>
                             <th>Inscritos</th>
                             <th>Estado</th>
                             <th style="width:170px"></th>
@@ -59,6 +60,7 @@
                                 <td>@Session.ExistUser</td>
                                 <td><InputCheckbox @bind-Value=Session.Type disabled="true"></InputCheckbox></td>
                                 <td><InputCheckbox @bind-Value=Session.Status disabled="true"></InputCheckbox></td>
+                                <td>@Session!.SessionExamsNumber</td>
                                 <td>@Session!.SessionInscriptionsNumber</td>
                                 <td>@Session!.SessionStatus!.Description</td>
                                 <td>

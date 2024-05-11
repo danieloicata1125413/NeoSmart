@@ -200,6 +200,14 @@ else
             return;
         }
         await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "La inscripción para ha sido rechazada.");
     }
 
     private async Task ShowConfirmedAsync(SessionInscription model)
@@ -214,6 +222,14 @@ else
             return;
         }
         await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "La inscripción para ha sido confirmada.");
     }
 
     private async Task ShowCancelledAsync(SessionInscription model)
@@ -228,5 +244,13 @@ else
             return;
         }
         await LoadAsync();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "La inscripción para ha sido cancelada.");
     }
 }
