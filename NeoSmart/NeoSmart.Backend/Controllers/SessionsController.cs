@@ -32,6 +32,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(s => s.SessionStatus!)
                 .Include(ts => ts.SessionInscriptionTemporals!)
                 .Include(ts => ts.SessionInscriptions!)
+                .Include(ts => ts.SessionExams!)
                 .Where(ts => ts.TrainingId == trainingId)
                 .OrderBy(ts => ts.DateStart)
                 .ThenBy(ts => ts.TimeStart)
@@ -48,6 +49,7 @@ namespace NeoSmart.BackEnd.Controllers
                                 .Include(s => s.SessionStatus!)
                                 .Include(ts => ts.SessionInscriptionTemporals!)
                                 .Include(ts => ts.SessionInscriptions!)
+                                .Include(ts => ts.SessionExams!)
                                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {

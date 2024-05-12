@@ -43,14 +43,17 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.TrainingTopics!)
                     .ThenInclude(i => i.Topic!)
                 .Include(i => i.Session!)
-                  .ThenInclude(i => i.User!)
+                    .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
                     .ThenInclude(i => i.Country!)
                 .Include(i => i.SessionInscriptionStatus!)
                 .Include(i => i.SessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionExams!)
+                    .ThenInclude(i => i.SessionInscriptionExamAnswers!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (inscription == null)
             {
@@ -86,6 +89,8 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.Country!)
                 .Include(i => i.SessionInscriptionStatus!)
                 .Include(i => i.SessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionExams!)
+                    .ThenInclude(i => i.SessionInscriptionExamAnswers!)
                 .AsQueryable();
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
@@ -147,7 +152,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.SessionInscriptionStatus!)
                 .Include(i => i.SessionInscriptionAttends!)
                 .Include(i => i.SessionInscriptionExams!)
-                    .ThenInclude(i => i.SessionExam!)
+                    .ThenInclude(i => i.SessionInscriptionExamAnswers!)
                 .AsQueryable();
 
             return Ok(await queryable
@@ -176,9 +181,13 @@ namespace NeoSmart.BackEnd.Controllers
             {
                 return NotFound();
             }
-
+            var sessionInscriptionStatus = await _context.SessionInscriptionStatus.FirstOrDefaultAsync(x => x.Id == inscriptionDTO.SessionInscriptionStatusId);
+            if (sessionInscriptionStatus == null)
+            {
+                return NotFound();
+            }
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
-            if (!isAdmin && inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Cancelled"))
+            if (!isAdmin && sessionInscriptionStatus!.Name.Equals("Cancelled"))
             {
                 return BadRequest("Solo permitido para trabajadores.");
             }
@@ -194,7 +203,7 @@ namespace NeoSmart.BackEnd.Controllers
                 return NotFound();
             }
 
-            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Confirmed"))
+            if (sessionInscriptionStatus!.Name.Equals("Confirmed"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -204,7 +213,7 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<b>Muchas gracias!</b>");
             }
 
-            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Refused"))
+            if (sessionInscriptionStatus!.Name.Equals("Refused"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -214,7 +223,7 @@ namespace NeoSmart.BackEnd.Controllers
                $"<b>Será en una nueva oportunidad!</b>");
             }
 
-            if (inscriptionDTO.SessionInscriptionStatus!.Name.Equals("Cancelled"))
+            if (sessionInscriptionStatus!.Name.Equals("Cancelled"))
             {
                 //enviar email
                 var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
@@ -223,8 +232,8 @@ namespace NeoSmart.BackEnd.Controllers
                 $"<p>Se ha cancelado tu inscripción a la capacitación: {inscription.Session!.Training!.Description}</p>" +
                 $"<b>Será en una nueva oportunidad!</b>");
             }
-
-            inscription.SessionInscriptionStatus = inscriptionDTO.SessionInscriptionStatus;
+            inscription.SessionInscriptionStatusId = sessionInscriptionStatus.Id;
+            inscription.SessionInscriptionStatus = sessionInscriptionStatus;
             _context.Update(inscription);
             await _context.SaveChangesAsync();
             return Ok(inscription);
