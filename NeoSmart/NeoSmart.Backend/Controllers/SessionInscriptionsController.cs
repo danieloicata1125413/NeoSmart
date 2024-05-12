@@ -79,6 +79,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
@@ -136,6 +137,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.User!)
                     .ThenInclude(i => i.City!)
                     .ThenInclude(i => i.State!)
@@ -144,6 +146,8 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.Occupation!)
                 .Include(i => i.SessionInscriptionStatus!)
                 .Include(i => i.SessionInscriptionAttends!)
+                .Include(i => i.SessionInscriptionExams!)
+                    .ThenInclude(i => i.SessionExam!)
                 .AsQueryable();
 
             return Ok(await queryable

@@ -79,8 +79,9 @@ namespace NeoSmart.BackEnd.Controllers
         public override async Task<IActionResult> GetAsync(int id)
         {
             var TrainingExam = await _context.TrainingExams
-                .Include(o => o.Training)
-                .Include(t => t.TrainingExamQuestions)
+                .Include(o => o.Training!)
+                .Include(t => t.TrainingExamQuestions!)
+                .ThenInclude(t => t.TrainingExamQuestionOptions!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (TrainingExam == null)
             {

@@ -52,5 +52,10 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Inscritos")]
         public int SessionInscriptionsNumber => SessionInscriptions == null ? 0 : SessionInscriptions.Count;
 
+        public ICollection<SessionExam>? SessionExams { get; set; }
+
+        [Display(Name = "Examenes")]
+        public int SessionExamsNumber => SessionExams == null ? 0 : SessionExams.Count;
+
     }
 }
