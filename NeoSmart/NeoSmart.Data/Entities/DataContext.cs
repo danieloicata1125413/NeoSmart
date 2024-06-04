@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NeoSmart.ClassLibraries.Entities;
-using NeoSmart.ClassLibraries.Enum;
 using NeoSmart.ClassLibraries.Interfaces;
 
 namespace NeoSmart.Data.Entities
@@ -67,7 +66,7 @@ namespace NeoSmart.Data.Entities
             modelBuilder.Entity<SessionStatus>().HasIndex(c => c.Name).IsUnique();
 
             modelBuilder.Entity<SessionInscription>().HasIndex(t => new { t.SessionId, t.UserId }).IsUnique();
-            modelBuilder.Entity<SessionInscriptionAttend>().HasIndex(t => t.SessionInscriptionId ).IsUnique();
+            modelBuilder.Entity<SessionInscriptionAttend>().HasIndex(t => t.SessionInscriptionId).IsUnique();
 
 
             modelBuilder.Entity<RequestStatus>().HasIndex(c => c.Name).IsUnique();

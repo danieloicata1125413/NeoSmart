@@ -1,15 +1,15 @@
 ﻿
-<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+@* <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
     <span class="oi oi-home" aria-hidden="true"></span> Inicio
-</NavLink>
+</NavLink> *@
 
 
 <AuthorizeView>
     <Authorized>
-
+@* 
         <NavLink class="nav-link" href="/Grid">
             <span class="oi oi-book" aria-hidden="true"></span> Capacitaciones
-        </NavLink>
+        </NavLink> *@
         <div class="dropdown">
             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                 @if (!string.IsNullOrEmpty(photoUser))

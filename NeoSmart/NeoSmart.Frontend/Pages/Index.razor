@@ -4,40 +4,12 @@
 
 <PageTitle>NeoSmart</PageTitle>
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView Roles="SuperAdmin,Admin,Manager,Leader,Trainer,Employee">
     <Authorized>
-        <div class="row mb-3">
-            @* <div class="col-12">
-            <div class="card widget-inline">
-            <div class="card-body">
-            <PartialPanelBuscar></PartialPanelBuscar>
-            </div>
-            </div>
-            </div> *@
-            <!-- end col-->
-            @* <div class="col-3">
-            <PartialUsuarios></PartialUsuarios>
-            </div>
-
-            <div class="col-3">
-            <div class="card widget-inline">
-            <div class="card-body p-0">
-            <PartialMensajes></PartialMensajes>
-            </div>
-            </div>
-            </div> *@
-
-        </div>
-        @* <div class="row">
-        <div class="card widget-inline">
-        <div class="card-body">
-        <PartialCalendar></PartialCalendar>
-        </div>
-        </div>
-        </div> *@
+        <TrainingGrid></TrainingGrid>
     </Authorized>
     <NotAuthorized>
-        
+        <Landing />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -47,8 +19,6 @@
         <CarouselView Images="@_source" />
     </div> *@
 }
-
-<Landing />
 
 
 @code {

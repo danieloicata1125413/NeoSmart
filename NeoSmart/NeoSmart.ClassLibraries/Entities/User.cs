@@ -1,8 +1,5 @@
-﻿using NeoSmart.ClassLibraries.Enum;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.Collections;
-using NeoSmart.ClassLibraries.DTOs;
 
 namespace NeoSmart.ClassLibraries.Entities
 {

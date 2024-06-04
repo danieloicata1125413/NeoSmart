@@ -168,24 +168,15 @@ else
         loading = false;
     }
 
-    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    private async Task ShowModalAsync()
     {
-        // IModalReference modalReference;
-
-        // if (!isEdit)
-        // {
-        //     modalReference = Modal.Show<RequestCreate>(string.Empty);
-        // }
-        // else
-        // {
-        //     modalReference = Modal.Show<RequestEdit>(string.Empty, new ModalParameters().Add("requestId", id));
-        // }
-
-        // var result = await modalReference.Result;
-        // if (result.Confirmed)
-        // {
-        //     await LoadAsync();
-        // }
+        IModalReference modalReference;
+        modalReference = Modal.Show<SessionInscriptionCreate>(string.Empty, new ModalParameters().Add("SessionId", SessionId));
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
     }
 
     private async Task ShowRefusedAsync(SessionInscription model)

@@ -74,6 +74,19 @@ namespace NeoSmart.BackEnd.Controllers
                 .ToListAsync());
         }
 
+        [HttpGet("company/{companyId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> GetByCompanyAll(int companyId)
+        {
+            var queryable = _context.Users
+                .Where(x=>x.CompanyId == companyId)
+                .AsQueryable();
+            return Ok(await queryable
+                .OrderBy(s => s.FirstName)
+                 .ThenBy(x => x.LastName)
+                .ToListAsync());
+        }
+
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {

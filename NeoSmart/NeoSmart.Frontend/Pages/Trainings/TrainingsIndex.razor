@@ -32,16 +32,17 @@ else
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Empresa</th>
+                                @* <th>Empresa</th> *@
                                 <th>Proceso</th>
                                 <th>Capacitación</th>
+                                <th>Imagen</th>
                                 <th>Duración</th>
                                 <th>Interna</th>
                                 <th>Temas</th
                                 <th>Mediciones</th>
                                 <th>Programación</th>
                                 <th>Habilitado</th>
-                                <th style="width:220px"></th>
+                                <th style="width:200px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,9 +50,10 @@ else
                             {
                                 <tr>
                                     <td>@training.Id</td>
-                                    <td>@training.Process!.Company!.Name</td>
+                                    @* <td>@training.Process!.Company!.Name</td> *@
                                     <td>@training.Process!.Description</td>
                                     <td>@training.Description</td>
+                                    <td><img src="@training.MainImage" width="70" height="auto"/></td>
                                     <td>@training.Duration</td>
                                     <td><InputCheckbox @bind-Value=training.Type disabled="true"></InputCheckbox></td>
                                     <td>@training.TrainingTopicsNumber</td>
@@ -63,9 +65,8 @@ else
                                         <a class="btn btn-info btn-sm" href="/TrainingExams/@training.Id"><i class="oi oi-pencil" /> Examen</a>
 
                                         @* <a class="btn btn-info btn-sm mx-1" href="/Sessions/@training.Id">Agenda</a> *@
-
+                                        <button class="btn btn-success btn-sm mx-1" @onclick=@(() => ShowModalTrainingTopicAsync(training.Id))>Temas</button>
                                         <button class="btn btn-warning btn-sm mx-1" @onclick=@(() => ShowModalAsync(training.Id, true))>Editar</button>
-
                                         <button class="btn btn-danger btn-sm mx-1" @onclick=@(() => DeleteAsync(training))>Borrar</button>
 
                                     </td>
@@ -125,6 +126,18 @@ else
         }
     }
 
+    private async Task ShowModalTrainingTopicAsync(int id = 0)
+    {
+        IModalReference modalReference;
+        modalReference = Modal.Show<TrainingTopicsIndex>(string.Empty, new ModalParameters().Add("TrainingId", id));
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
     private async Task SelectedPageAsync(int page)
     {
         currentPage = page;
@@ -174,7 +187,7 @@ else
         var url = string.Empty;
         if (string.IsNullOrEmpty(Filter))
         {
-            url = $"api/trainings?page={page}";
+            url = $"api/trainings/full?page={page}";
         }
         else
         {

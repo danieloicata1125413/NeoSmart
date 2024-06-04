@@ -122,6 +122,7 @@ builder.Services
     .AddDbContext<DataContext>(x =>
 {
     x.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
+    //x.UseSqlServer(configuration["ConnectionStrings:DevelopmentConnection"]);
 });
 
 builder.Services.AddScoped(typeof(IGenericUnitOfWork<>), typeof(GenericUnitOfWork<>));

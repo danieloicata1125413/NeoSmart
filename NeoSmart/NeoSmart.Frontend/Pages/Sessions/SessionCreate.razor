@@ -6,11 +6,11 @@
 
 
 <SessionForm Titulo="Nueva Sesión"
-                      @ref="SessionForm"
-                      Session="Session"
-                      SessionStatus="sessionStatus"
-                      OnValidSubmit="CreateAsync" 
-                      ReturnAction="Return" />
+             @ref="SessionForm"
+             session="Session"
+             SessionStatus="sessionStatus"
+             OnValidSubmit="CreateAsync"
+             ReturnAction="Return" />
 
 @code {
     private List<SessionStatus>? sessionStatus;
@@ -34,7 +34,6 @@
         await LoadSessionStatusAsync();
     }
 
-
     private async Task LoadSessionStatusAsync()
     {
         var responseHttp = await repository.GetAsync<List<SessionStatus>>("/api/SessionStatus/combo");
@@ -46,7 +45,7 @@
         }
 
         var _sessionStatus = responseHttp.Response;
-        sessionStatus = _sessionStatus!.Where(x=> x.Name == "Scheduled").ToList();
+        sessionStatus = _sessionStatus!.Where(x => x.Name == "Scheduled").ToList();
     }
 
     private async Task CreateAsync()

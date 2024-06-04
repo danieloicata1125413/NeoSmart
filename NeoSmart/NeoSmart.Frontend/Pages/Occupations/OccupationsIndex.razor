@@ -23,6 +23,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Empresa</th>
                             <th>Proceso</th>
                             <th>Cargo</th>
@@ -35,6 +36,7 @@
                         @foreach (var occupation in occupations!)
                         {
                             <tr>
+                                <td>@occupation.Id</td>
                                 <td>@occupation.Process!.Company!.Name</td>
                                 <td>@occupation.Process!.Description</td>
                                 <td>@occupation.Description</td>

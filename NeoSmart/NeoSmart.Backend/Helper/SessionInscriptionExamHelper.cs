@@ -41,7 +41,7 @@ namespace NeoSmart.BackEnd.Helper
             SessionInscriptionExam sessionInscriptionExam = new SessionInscriptionExam()
             {
                 SessionInscriptionId = sessionInscriptionExamDTO.SessionInscriptionId,
-                SessionExamId = sessionInscriptionExamDTO.SessionExamId,
+                SessionExamId = sessionInscriptionExamDTO.SessionExamId, 
                 Description = sessionInscriptionExamDTO.Description,
                 Created = DateTime.Now,
                 Updated = DateTime.Now,
@@ -54,7 +54,7 @@ namespace NeoSmart.BackEnd.Helper
                 {
                     SessionInscriptionExamId = sessionInscriptionExamDTO.SessionInscriptionId,
                     Question = item.Question,
-                    Answer = item.Answer,
+                    Answer = item.Answer, 
                     Correct = item.Correct,
                     Created = DateTime.Now,
                     Updated = DateTime.Now, 

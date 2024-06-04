@@ -168,6 +168,9 @@ else
 
     private async Task SaveAsync()
     {
+        trainingDTO.TrainingExams = null;
+        trainingDTO.TrainingTopics = null;
+        trainingDTO.TrainingSessions = null;
         trainingDTO.TrainingImages = null;
         var response = await repository.PutAsync($"/api/trainings/full", trainingDTO);
         if (response.Error)

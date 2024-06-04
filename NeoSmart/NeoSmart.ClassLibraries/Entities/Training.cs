@@ -47,11 +47,6 @@ namespace NeoSmart.ClassLibraries.Entities
         [Display(Name = "Mediciones")]
         public int TrainingExamsNumber => TrainingExams == null ? 0 : TrainingExams.Count;
 
-
-
-
-
-
         public ICollection<TrainingImage>? TrainingImages { get; set; }
 
         [Display(Name = "Imágenes")]

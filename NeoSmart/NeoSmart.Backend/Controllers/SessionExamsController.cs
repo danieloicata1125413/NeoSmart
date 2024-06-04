@@ -47,10 +47,11 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.TrainingExam!)
-                .ThenInclude(i => i.TrainingExamQuestions!)
+                    .ThenInclude(i => i.TrainingExamQuestions!)
                 .Include(i => i.TrainingExam!)
-                .ThenInclude(i => i.Training!)
+                    .ThenInclude(i => i.Training!)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (Exam == null)
             {
@@ -79,21 +80,17 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.TrainingExam!)
                     .ThenInclude(i => i.TrainingExamQuestions!)
                 .Include(i => i.TrainingExam!)
                     .ThenInclude(i => i.Training!)
+                .Where(s => s.Session!.SessionInscriptions!.Any(i => i.User!.Email == User.Identity!.Name))
                 .AsQueryable();
-
-            //var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
-            //if (!isAdmin)
-            //{
-            //    queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
-            //}
 
             if (pagination.Id > 0)
             {
-                queryable = queryable.Where(c => c.SessionId == pagination.Id);
+                queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
             }
 
             return Ok(await queryable
@@ -111,17 +108,14 @@ namespace NeoSmart.BackEnd.Controllers
                 return BadRequest("User not valid.");
             }
 
-            var queryable = _context.SessionExams.AsQueryable();
+            var queryable = _context.SessionExams
+                .Where(s => s.Session!.User!.Email == User.Identity!.Name)
+                .AsQueryable();
 
-            //var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString());
-            //if (!isAdmin)
-            //{
-            //    queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
-            //}
 
             if (pagination.Id > 0)
             {
-                queryable = queryable.Where(c => c.SessionId == pagination.Id);
+                queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
             }
 
             double count = await queryable.CountAsync();
@@ -144,6 +138,7 @@ namespace NeoSmart.BackEnd.Controllers
                 .Include(i => i.Session!)
                   .ThenInclude(i => i.User!)
                 .Include(i => i.Session!)
+                    .ThenInclude(i => i.SessionExams!)
                 .Include(i => i.TrainingExam!)
                     .ThenInclude(i => i.TrainingExamQuestions!)
                 .Include(i => i.TrainingExam!)

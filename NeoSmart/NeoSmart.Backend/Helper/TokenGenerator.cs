@@ -38,17 +38,21 @@ namespace NeoSmart.BackEnd.Helper
                 new Claim("CityId", user.CityId.ToString()),
                 
             };
+            if (!string.IsNullOrEmpty(user.PhoneNumber))
+            {
+                claims.Add(new Claim("Phone", user.PhoneNumber));
+            }
             if (user.Company != null)
             {
-                new Claim("Company", user.Company!.Name.ToString());
+                claims.Add(new Claim("Company", user.Company!.Name.ToString()));
             }
 
             if (user.Occupation != null)
             {
-                new Claim("Occupation", user.Occupation!.Description.ToString());
+                claims.Add(new Claim("Occupation", user.Occupation!.Description.ToString()));
                 if (user.Occupation!.Process != null)
                 {
-                    new Claim("Process", user.Occupation!.Process!.Description.ToString());
+                    claims.Add(new Claim("Process", user.Occupation!.Process!.Description.ToString()));
                 }
             }
 

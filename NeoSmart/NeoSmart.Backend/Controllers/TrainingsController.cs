@@ -1,16 +1,13 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.BackEnd.Helper;
-using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.BackEnd.Interfaces;
 using NeoSmart.ClassLibraries.DTOs;
 using NeoSmart.ClassLibraries.Entities;
 using NeoSmart.ClassLibraries.Helpers;
 using NeoSmart.Data.Entities;
-using System.Diagnostics;
+using System.Linq;
 
 namespace NeoSmart.BackEnd.Controllers
 {
@@ -31,7 +28,7 @@ namespace NeoSmart.BackEnd.Controllers
         }
 
         [HttpGet("combo")]
-        public async Task<ActionResult> GetComboAllAsync(int trainingId)
+        public async Task<ActionResult> GetComboAllAsync()
         {
             var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user.Company == null)
@@ -42,6 +39,15 @@ namespace NeoSmart.BackEnd.Controllers
             }
             return Ok(await _context.Trainings
                 .Where(c => c.Process!.Company!.Id == user.Company!.Id)
+                .OrderBy(s => s.Description)
+                .ToListAsync());
+        }
+
+        [HttpGet("combo/{companyId}")]
+        public async Task<ActionResult> GetComboAllAsync(int companyId)
+        {
+            return Ok(await _context.Trainings
+                .Where(c => c.Process!.Company!.Id == companyId)
                 .OrderBy(s => s.Description)
                 .ToListAsync());
         }
@@ -59,36 +65,76 @@ namespace NeoSmart.BackEnd.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.Trainings
-                                .Include(o => o.Process!)
-                                    .ThenInclude(o => o.Company)
-                                .Include(o => o.TrainingTopics!)
-                                    .ThenInclude(x => x.Topic!)
-                                .Include(o => o.TrainingImages!)
-                                .Include(o => o.Sessions!)
-                                    .ThenInclude(o => o.User)
-                                    .ThenInclude(o => o.City!)
-                                .Include(o => o.Sessions!)
-                                .ThenInclude(o => o.SessionInscriptions!)
-                                .Include(o=> o.TrainingExams!)
-                                .AsQueryable();
-            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
-            if (user.Company != null)
+            try
             {
-                queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
-            }
+                var queryable = _context.Trainings
+                                    .Include(o => o.TrainingImages!)
+                                    .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+                var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+                if (user.Company != null)
+                {
+                    queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
+                }
+
+                if (!string.IsNullOrWhiteSpace(pagination.Filter))
+                {
+                    queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
+                }
+                List<Training> result = await queryable
+                    .OrderBy(s => s.Process!.Company!.Name)
+                    .ThenBy(s => s.Process!.Description)
+                    .ThenBy(s => s.Description)
+                    .Paginate(pagination)
+                    .ToListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
+                return NoContent();
             }
+        }
 
-            return Ok(await queryable
-                .OrderBy(s => s.Process!.Company!.Name)
-                .ThenBy(s => s.Process!.Description)
-                .ThenBy(s => s.Description)
-                .Paginate(pagination)
-                .ToListAsync());
+        [HttpGet("full")]
+        public async Task<IActionResult> GetFullAsync([FromQuery] PaginationDTO pagination)
+        {
+            try
+            {
+                var queryable = _context.Trainings
+                                    .Include(o => o.Process!)
+                                    .Include(o => o.TrainingTopics!)
+                                        .ThenInclude(x => x.Topic!)
+                                    .Include(o => o.Sessions!)
+                                        .ThenInclude(o => o.User!)
+                                    .Include(o => o.Sessions!)
+                                        .ThenInclude(o => o.SessionInscriptions!)
+                                        .ThenInclude(o => o.SessionInscriptionStatus!)
+                                    .Include(o => o.TrainingExams!)
+                                    .Include(o => o.TrainingImages!)
+                                    .AsQueryable();
+
+                var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+                if (user.Company != null)
+                {
+                    queryable = queryable.Where(c => c.Process!.Company!.Id == user.Company!.Id);
+                }
+
+                if (!string.IsNullOrWhiteSpace(pagination.Filter))
+                {
+                    queryable = queryable.Where(x => x.Description.ToLower().Contains(pagination.Filter.ToLower()));
+                }
+                List<Training> result = await queryable
+                    .OrderBy(s => s.Process!.Company!.Name)
+                    .ThenBy(s => s.Process!.Description)
+                    .ThenBy(s => s.Description)
+                    .Paginate(pagination)
+                    .ToListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NoContent();
+            }
         }
 
         [HttpGet("totalPages")]
@@ -161,17 +207,18 @@ namespace NeoSmart.BackEnd.Controllers
                         newTraining.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
                     }
                 }
-                if (trainingDTO.TrainingTopicIds != null)
-                {
-                    foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
-                    {
-                        var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
-                        if (topic != null)
-                        {
-                            newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
-                        }
-                    }
-                }
+
+                //if (trainingDTO.TrainingTopicIds != null)
+                //{
+                //    foreach (var trainingTopicId in trainingDTO.TrainingTopicIds!)
+                //    {
+                //        var topic = await _context.Topics.FirstOrDefaultAsync(x => x.Id == trainingTopicId);
+                //        if (topic != null)
+                //        {
+                //            newTraining.TrainingTopics.Add(new TrainingTopic { Topic = topic });
+                //        }
+                //    }
+                //}
 
                 _context.Add(newTraining);
                 await _context.SaveChangesAsync();
@@ -196,6 +243,7 @@ namespace NeoSmart.BackEnd.Controllers
                     .Include(x => x.TrainingTopics!)
                     .ThenInclude(x => x.Topic)
                     .Include(x => x.Process)
+                    .Include(x => x.TrainingImages!)
                     .FirstOrDefaultAsync(x => x.Id == trainingDTO.Id);
                 if (training == null)
                 {
@@ -203,18 +251,79 @@ namespace NeoSmart.BackEnd.Controllers
                 }
                 training.ProcessId = trainingDTO.ProcessId;
                 training.Description = trainingDTO.Description;
+                training.Observation = trainingDTO.Observation;
                 training.Duration = trainingDTO.Duration;
                 training.Type = trainingDTO.Type;
 
-                if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
+                //if (trainingDTO.TrainingTopicIds != null && trainingDTO.TrainingTopicIds.Count > 0)
+                //{
+                //    training.TrainingTopics = trainingDTO.TrainingTopicIds!.Select(x => new TrainingTopic { TopicId = x }).ToList();
+                //}
+                if (trainingDTO.NewTrainingImages != null)
                 {
-                    training.TrainingTopics = trainingDTO.TrainingTopicIds!.Select(x => new TrainingTopic { TopicId = x }).ToList();
+                    foreach (var trainingImage in trainingDTO.NewTrainingImages!)
+                    {
+                        var photoTraining = Convert.FromBase64String(trainingImage);
+                        training.TrainingImages.Add(new TrainingImage { Image = await _fileStorage.SaveFileAsync(photoTraining, ".jpg", "trainings") });
+                    }
                 }
-
                 training.Status = trainingDTO.Status;
                 _context.Update(training);
                 await _context.SaveChangesAsync();
                 return Ok(trainingDTO);
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Ya existe un capacitación con el mismo codigo.");
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+        }
+
+        [HttpPut("topicsfull")]
+        public async Task<ActionResult> PutFullTopicsAsync(TrainingTopicsDTO trainingTopicsDTO)
+        {
+            try
+            {
+                var training = await _context.Trainings
+                    .Include(x => x.TrainingTopics!)
+                    .ThenInclude(x => x.Topic)
+                    .Include(x => x.Process)
+                    .Include(x => x.TrainingImages!)
+                    .FirstOrDefaultAsync(x => x.Id == trainingTopicsDTO.Id);
+                if (training == null)
+                {
+                    return NotFound();
+                }
+                if (training.TrainingTopics == null)
+                {
+                    training.TrainingTopics = new List<TrainingTopic>();
+                }
+                var TrainingTopics = await _context.TrainingTopics
+                    .Where(x => x.TrainingId == trainingTopicsDTO.Id)
+                    .ToListAsync();
+                foreach (var topic in TrainingTopics)
+                {
+                    _context.Remove(topic);
+                    await _context.SaveChangesAsync();
+                }
+                if (trainingTopicsDTO.TrainingTopicIds != null && trainingTopicsDTO.TrainingTopicIds.Count > 0)
+                {
+                    foreach (var topic in trainingTopicsDTO.TrainingTopicIds)
+                    {
+                        if (!training.TrainingTopics.Any(x => x.TopicId == topic))
+                        {
+                            training.TrainingTopics.Add(new TrainingTopic { TrainingId = training.Id, TopicId = topic });
+                        }
+                    }
+                }
+                //training.TrainingTopics = new List<TrainingTopic>();
+                //training.TrainingTopics = trainingTopicsDTO.TrainingTopicIds!.Select(x => new TrainingTopic { TrainingId = training.Id, TopicId = x }).ToList();
+                _context.Update(training);
+                await _context.SaveChangesAsync();
+                return Ok(training);
             }
             catch (DbUpdateException)
             {

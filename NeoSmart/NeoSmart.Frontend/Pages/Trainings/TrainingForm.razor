@@ -18,9 +18,9 @@
                 </li>
                  @if (!IsReadOnly)
                 {
-                    <li class="nav-item" role="presentation">
+                    @* <li class="nav-item" role="presentation">
                         <button class="nav-link" id="TrainingTopics-tab" data-bs-toggle="tab" data-bs-target="#TrainingTopics" type="button" role="tab" aria-controls="TrainingTopics" aria-selected="false">Temas</button>
-                    </li>
+                    </li> *@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="TrainingImages-tab" data-bs-toggle="tab" data-bs-target="#TrainingImages" type="button" role="tab" aria-controls="TrainingImages" aria-selected="false">Imágenes</button>
                 </li>
@@ -89,8 +89,6 @@
                             <div class="form-group mb-2" disabled="@IsReadOnly">
                                 <InputCheckbox @bind-Value=@StatusValue disabled="@IsReadOnly"></InputCheckbox> <label class="control-label">Habilitado</label>
                             </div>
-                            
-                            
                         </div>
                         <div class="col-6 p-2">
                             <div class="form-group mb-2">
@@ -107,11 +105,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="TrainingTopics" role="tabpanel" aria-labelledby="TrainingTopics-tab">
+                @* <div class="tab-pane fade" id="TrainingTopics" role="tabpanel" aria-labelledby="TrainingTopics-tab">
                     <div class="col-12 p-2">
                         <MultipleSelector NonSelected="nonSelected" Selected="selected" />
                     </div>
-                </div>
+                </div> *@
                 <div class="tab-pane fade" id="TrainingImages" role="tabpanel" aria-labelledby="TrainingImages-tab">
                     <div class="col-12 mb-3">
                         @if (TrainingDTO.TrainingImages is not null)

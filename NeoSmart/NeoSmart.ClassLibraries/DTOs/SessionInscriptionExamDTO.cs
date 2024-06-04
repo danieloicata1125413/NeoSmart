@@ -27,7 +27,7 @@ namespace NeoSmart.ClassLibraries.DTOs
         [Display(Name = "Documento")]
         public string? Certificate { get; set; } = null!;
 
-        public ICollection<SessionInscriptionExamAnswer>? SessionInscriptionExamAnswers { get; set; }
+        public ICollection<SessionInscriptionExamAnswerDTO>? SessionInscriptionExamAnswers { get; set; }
 
         [Display(Name = "Preguntas")]
         public int SessionInscriptionExamAnswersNumber => SessionInscriptionExamAnswers == null ? 0 : SessionInscriptionExamAnswers.Count;

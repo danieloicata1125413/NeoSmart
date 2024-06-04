@@ -17,7 +17,7 @@ namespace NeoSmart.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1796,7 +1796,7 @@ namespace NeoSmart.Data.Migrations
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.SessionExam", b =>
                 {
                     b.HasOne("NeoSmart.ClassLibraries.Entities.Session", "Session")
-                        .WithMany()
+                        .WithMany("SessionExams")
                         .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2125,6 +2125,8 @@ namespace NeoSmart.Data.Migrations
 
             modelBuilder.Entity("NeoSmart.ClassLibraries.Entities.Session", b =>
                 {
+                    b.Navigation("SessionExams");
+
                     b.Navigation("SessionInscriptionTemporals");
 
                     b.Navigation("SessionInscriptions");

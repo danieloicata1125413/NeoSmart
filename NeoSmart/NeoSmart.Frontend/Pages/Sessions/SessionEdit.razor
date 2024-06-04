@@ -5,11 +5,11 @@
 @inject SweetAlertService sweetAlertService
 
 <SessionForm Titulo="Editar Sesión"
-                      @ref="SessionForm"
-                    Session="session"
-                        SessionStatus="sessionStatus"
-                      OnValidSubmit="SaveAsync"
-                      ReturnAction="Return" />
+             @ref="SessionForm"
+             session="session"
+             SessionStatus="sessionStatus"
+             OnValidSubmit="SaveAsync"
+             ReturnAction="Return" />
 
 @code {
     private List<SessionStatus>? sessionStatus;

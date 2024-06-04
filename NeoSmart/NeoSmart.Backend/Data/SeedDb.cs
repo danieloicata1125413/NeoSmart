@@ -47,6 +47,9 @@ namespace NeoSmart.BackEnd.Data
             await CheckUserAsync("890900652-3", "123456", "Coordinador", "Interno", "coordinador@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Manager, "Inicio123*");
             await CheckUserAsync("890900652-3", "1234567", "Lider", "Interno", "lider@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Leader, "Inicio123*");
             await CheckUserAsync("890900652-3", "12345678", "Capacitador", "Interno", "capacitador@neosmart.com.co", null, "CARRERA", "MEDELLÍN", null, UserType.Trainer, "Inicio123*");
+            await CheckUserAsync("890900652-3", "23520955", "Trabajador", "Interno", "trabajador@neosmart.com.co", "3177457755", "CARRERA", "MEDELLÍN", null, UserType.Employee, "Inicio123*");
+            await CheckUseCompanysrAsync();
+
         }
         private async Task CheckRolesAsycn()
         {
@@ -1341,7 +1344,7 @@ namespace NeoSmart.BackEnd.Data
                 _context.Companies.Add(new Company
                 {
                     Id = 0,
-                    Name = "INVESA SA",
+                    Name = "Inversiones quimicas HED",
                     Nit = "890900652-3",
                     City = await _context.Cities.FirstOrDefaultAsync(x => x.Name.ToUpper().Equals("MEDELLÍN")),
                     Status = true,
@@ -1558,6 +1561,63 @@ namespace NeoSmart.BackEnd.Data
                 _context.Sliders.Add(new Slider { Description = "Base", Image = "https://neosmartstorage.blob.core.windows.net/sliders/f2ee58b1-831b-4c0b-97eb-f7859aff5d7c.jpg" });
                 await _context.SaveChangesAsync();
             }
+        }
+        private async Task CheckUseCompanysrAsync()
+        {
+            //ATI
+            await CheckUserAsync("830118667-1", "1052381821", "DAVID ALFONSO", "BLANCO CAMARGO", "davidblancoc@yopmail.com", "3108145253", "CARRERA 6 No. 16 - 83", "DUITAMA", 40, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1053615655", "MARIA FERNANDA", "ALVARADO ORJUELA", "marcelaorjuela74@yopmail.com", "3124453130", "CARRERA 24D N° 11A-01", "DUITAMA", 21, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1007707804", "CAMILO ANDRES", "GUERRERO GUERRERO", "camiloguerrero656@yopmail.com", "3124453130", "AVENIDA CIRCUNVALAR 20 68", "DUITAMA", 22, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1052413439", "ANDRES YOVANNY", "PEÑALOZA PUERTO", "andrespuerto1713@yopmail.com", "3004148157", "CARRERA 40 22 77", "DUITAMA", 22, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "23690684", "ROSIBEL", "VELANDIA", "sierrarosibel424@yopmail.com", "3143701420", "VEREDA LLANO DEL ARBOL", "DUITAMA", 27, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1118552779", "CLAUDIA PAOLA", "SORIANO AREVALO", "claudiasoriano9211@yopmail.com", "3182299213", "CALLE 16 A 25 35", "DUITAMA", 38, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "4119484", "JULIO ORLANDO", "UNIVIO AVELLA", "julioorlando2017univio@yopmail.com", "3123378732", "CARRERA  2A # 4- 05", "DUITAMA", 27, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1054680699", "MARIA CAMILA", "JIMENEZ CORREDOR", "mcjimenez1054@yopmail.com", "3202512572", "CARRERA 4 No 18 O5", "DUITAMA", 22, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "46450396", "MILENA ESPERANZA", "PORRAS  AMAYA", "milenaporras46@yopmail.com", "3102369645", "CARRERAA 25 20 90 APTO 401", "DUITAMA", 20, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1005451893", "EDIER JULIAN", "QUIROGA RODRIGUEZ", "edierquiroga2018@yopmail.com", "3112716658", "Calle 52 a # 94 - linea ferrea", "DUITAMA", 9, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "40042175", "BLANCA PATRICIA", "BERNAL PARDO", "blancabernal.2719@yopmail.com", "3105672436", "TR 27 VEREDA TOIBITA", "DUITAMA", 27, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "23589136", "LUZ ESTELLA", "RODRIGUEZ GUERRERO", "luesroc@yopmail.com", "3124579997", "CRA 14 #2-20", "DUITAMA", 8, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "4191541", "JOSE EFRAIN", "RUIZ SUAREZ", "efrainruiz2360@yopmail.com", "3208870277", "CL 26 20 61", "DUITAMA", 27, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "7175771", "HANDERSON RUBIEL ", "SALCEDO TREJOS", "handersonrst@yopmail.com", "3102453945", "CR 8 62 34", "DUITAMA", 39, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "1052400019", "LEIDY CAROLINA", "OLIVARES ARAQUE", "carolina1052@yopmail.com", "3203348069", "CR 25 A 11 31", "DUITAMA", 7, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "46681790", "MIRIAN YANED", "CAMARGO FONSECA", "yaned.201@yopmail.com", "3212838662", "CL 18 27 12", "DUITAMA", 27, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "23857812", "OLGA SOFIA", "ORGANISTA MUNOZ", "olsofy@yopmail.com", "3137220737", "CL 20 22 27", "DUITAMA", 33, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "46682393", "CLAUDIA ANDREA", "CHAVARRIA RONDON", "julife0408@yopmail.com", "3102658769", "MZ D CA 15 SAN DANIEL", "DUITAMA", 16, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "40032731", "CLAUDIA PATRICIA", "RODRIGUEZ GUASGUITA", "clagua9@yopmail.com", "3158654763", "SEC TRES ESQUINAS", "DUITAMA", 17, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("830118667-1", "46454633", "CLAUDIA MILENA", "REYES GIL", "cmreyesg@yopmail.com", "3127874784", "CR 17 23 43", "DUITAMA", 13, UserType.Employee, "Inicio123*");
+
+            //INVESA
+            await CheckUserAsync("890900652-3", "1007420186", "ANGEL RODOLFO", "MORENO CAMARGO", "morerodolfoangel1234@yopmail.com", "3003450627", "Vereda novaré", "MEDELLÍN", 1, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1002396460", "LORENA ALEXANDRA", "SANCHEZ QUITO", "lorenagarcho03@yopmail.com", "3002829531", "CALLE 12a N 5-28 BARRIO JORDAN", "MEDELLÍN", 2, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1002309076", "DAVID MATEO", "MARTINEZ QUICA", "davidmatius27@yopmail.com", "3003170841", "CARRERA 12 11 40 SUR", "MEDELLÍN", 3, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "9636381", "HECTOR FAVIO", "CHAPARRO HERRERA", "hefachahe51@yopmail.com", "3003951910", "VEREDA CORAZON", "MEDELLÍN", 4, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "74082667", "WILLIAM REYNALDO", "ACEVEDO ROJAS", "williamacevedo1983@yopmail.com", "3003297534", "CARRERA 3 6 09 - BARRIO SAN PEDRO", "MEDELLÍN", 5, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1058461508", "EDWIN DAVID", "CHOCONTA LOPEZ", "davidchl2796@yopmail.com", "3007705489", "VEREDA TOTA SECTOR BAJO", "MEDELLÍN", 10, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1052359048", "MARIA HERMENCIA", "SANCHEZ", "riverasanchezmaria@yopmail.com", "3004792805", "VEREDA VALLE", "MEDELLÍN", 11, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1002702250", "VELA", "AMAYA YAMITH", "yamithvelaamaya@yopmail.com", "3008511029", "VEREDA SOAQUIRA", "MEDELLÍN", 12, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "53006936", "FRANCY NELLY", "SALAMANCA MENDOZA", "francysalamanca966@yopmail.com", "3009978481", "CARRERA 3 5-03", "MEDELLÍN", 14, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1054146174", "JERSON ALEXANDER", "SUPELANO LOPEZ", "jersonalexlopez2017@yopmail.com", "3003253609", "CALLE 20A No. 20-22", "MEDELLÍN", 15, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1054683589", "NIXON DANIEL", "REYES GUTIERREZ", "rnixondaniel@yopmail.com", "3004103486", "CARRERA 1e #1b -09 BARRIO COAMIGOS", "MEDELLÍN", 18, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1053614025", "SANDRA CATALINA", "BENITEZ MARTINEZ", "catabenitez0512@yopmail.com", "3008146656", "CARRERA 22 20A 37", "MEDELLÍN", 19, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "93437648", "HAITHER", "ARELLANOS QUINTANA", "haitherarellano29@yopmail.com", "3003478484", "VEREDA LA FIEBRE FINCA AQUITOY", "MEDELLÍN", 23, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1002602616", "MAURI ALEXANDER", "BOSIGA MARTÍNEZ", "mauryalex315@yopmail.com", "3002365969", "CARRERA 13 No 9 32", "MEDELLÍN", 24, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1052412442", "YERALDIN", "BARRERA VALDERRAMA", "yeralbarrera29@yopmail.com", "3004467895", "CALLE 14 12 14", "MEDELLÍN", 25, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1050200121", "YUDI ALEJANDRA", "VARGAS RIVERA", "riveraaleja918@yopmail.com", "3008878282", "CALLE 18 SUR 7 47 BARRIO VENECIA", "MEDELLÍN", 26, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1057597300", "JEYSON  ANDRES", "PEREZ BARRAGAN", "jeysonpb21@yopmail.com", "3008556894", "CARRERA 14A # 6-22", "MEDELLÍN", 28, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "74188653", "HIDELFONSO", "PEREZ PEREZ", "perilde18@yopmail.com", "3004693818", "CALLE 34 A No. 10 BIS - 93", "MEDELLÍN", 31, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1053538153", "JOSE AGUSTIN", "AVELLA", "janitsuga71@yopmail.com", "3003850598", "VEREDA SAN MIGUEL", "MEDELLÍN", 32, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1054679772", "EDWIN RICARDO", "CASTRO REYES", "ricardo_1990@yopmail.com", "3003003319", "CARRERA 1 E N 18 09", "MEDELLÍN", 35, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1058058758", "JHON JAIRO", "AGUIRRE TEJEDOR", "jhonjairo1994@yopmail.com", "3004698163", "CARRERA  2 # 5-114", "MEDELLÍN", 36, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "7334295", "JOSE EULICES", "RUIZ RUIZ", "joseeulisesruiz2021@yopmail.com", "3004050272", "ALMEIDA VDA TONA", "MEDELLÍN", 37, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1054659066", "LUIS ESTEBAN", "BEJARANO DAZA", "fj46628@yopmail.com", "3003481346", "VDA LA VEGA", "MEDELLÍN", 15, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "74180909", "WILLIAM ARMANDO", "RUIZ ALBARRACIN", "wara1974@yopmail.com", "3004730534", "CALLE 7A 14A-13", "MEDELLÍN", 18, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1049646333", "ANDRES MAURICIO", "DIAZ JIMENEZ", "amdj960613@yopmail.com", "3002516341", "TRANSVERSAL 17B No. 32- 17", "MEDELLÍN", 19, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1057586290", "LIZETH VANESSA", "PALACIOS NOVA", "lizethvanessapalaciosnova@yopmail.com", "3008396375", "calle 21 11a 51", "MEDELLÍN", 23, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1007196568", "SANDRA DANIELA", "SALAMANCA PORRAS", "daniiela3678@yopmail.com", "3002354879", "CARRERA 20a N° 3-42", "MEDELLÍN", 24, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1118540872", "JOSE ANDRES", "ROJAS CARREÑO", "joseandresrojasca@yopmail.com", "3004002730", "vereda ochica la montaña", "MEDELLÍN", 25, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1002300000", "CARLOS DANIEL", "ALDANA RODRIGUEZ", "alcardaniel@yopmail.com", "3003965204", "VRD. LLANO GRANDE", "MEDELLÍN", 26, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "1054681341", "JHON FREDY", "CORTES LEON", "jhonf1693@yopmail.com", "3005260357", "CALLE 95 A SUR No. 14 - 28", "MEDELLÍN", 28, UserType.Employee, "Inicio123*");
+            await CheckUserAsync("890900652-3", "4081282", "MANUEL ANTONIO", "MOLINA ROJAS", "mmolinarojas37@yopmail.com", "3002328611", "CENTRO", "MEDELLÍN", 31, UserType.Employee, "Inicio123*");
         }
         private async Task CheckUserAsync(string? nit, string document, string firstName, string lastName, string email, string? phoneNumber, string address, string city, int? occupationId, UserType userType, string pass)
         {

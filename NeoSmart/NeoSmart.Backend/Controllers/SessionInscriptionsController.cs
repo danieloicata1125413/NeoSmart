@@ -249,5 +249,50 @@ namespace NeoSmart.BackEnd.Controllers
             }
             return BadRequest(response.Message);
         }
+
+        [HttpPost("full")]
+        public async Task<IActionResult> PostFullAsync(SessionInscriptionCreateDTO sessionInscriptionCreate)
+        {
+            var response = await _inscriptionsHelper.ProcessInscriptionFullAsync(User.Identity!.Name!, sessionInscriptionCreate);
+            if (response.IsSuccess)
+            {
+                return NoContent();
+            }
+            return BadRequest(response.Message);
+        }
+
+        [HttpGet("Certificate/{id:int}")]
+        public async Task<ActionResult> GetCertificateAsync(int id)
+        {
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var inscription = await _context.SessionInscriptions
+                .Include(s => s.User)
+                .Include(s => s.Session!)
+                .ThenInclude(s => s.Training)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (inscription == null)
+            {
+                return NotFound();
+            }
+
+                //enviar email
+                var response = _mailHelper.SendMail(inscription.User!.FullName, inscription.User!.Email!,
+                $"NeoSmart - Nuevo certificado",
+                $"<h4>Hola {inscription.User!.FirstName},</h4>" +
+                $"<p>Se ha generado un certificado de la capacitación: {inscription.Session!.Training!.Description}</p>" +
+                $"<b>Felicitaciones!</b>");
+
+            inscription.Certificate = "https://neosmartstorage.blob.core.windows.net/certicados/NeoSmartCertificado.pdf";
+            _context.Update(inscription);
+            await _context.SaveChangesAsync();
+            return Ok(inscription);
+        }
+
     }
 }
