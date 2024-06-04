@@ -1,0 +1,129 @@
+﻿@page "/SessionInscriptionCreate/{sessionId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Leader")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (loading)
+{
+    <Loading />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col">
+                    <h4 class="float-start">@session!.Training!.Description</h4>
+                    <button class="btn btn-danger float-end me-1" @onclick="ReturnAction"><i class="oi oi-ban" /> Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body m-2">
+            <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" @onclick="SaveAsync">Guardar</button>
+        </div>
+    </div>
+}
+@code {
+    private SessionInscriptionCreateDTO sessionInscriptionCreate = new SessionInscriptionCreateDTO()
+        {
+            Users = new List<string>()
+        };
+    private List<User>? users { get; set; }
+    public Session session { get; set; } = null!;
+    private List<User> selectedUsers = new();
+    private List<User> nonSelectedUsers = new();
+    private List<MultipleSelectorModel> selected { get; set; } = new();
+    private List<MultipleSelectorModel> nonSelected { get; set; } = new();
+    private bool loading = true;
+
+    [EditorRequired]
+    [Parameter]
+    public int sessionId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadsessionInscriptionAsync();
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadsessionInscriptionAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<Session>($"/api/sessions/{sessionId}");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        session = responseHttp.Response!;
+        sessionInscriptionCreate.SesionId = session!.Id;
+        loading = false;
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        loading = true;
+        var responseHttp = await repository.GetAsync<List<User>>($"/api/accounts/company/{session!.Training!.Process!.Company!.Id}");
+        if (responseHttp.Error)
+        {
+            loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        users = responseHttp.Response!;
+        foreach (var user in users!)
+        {
+            var found = session!.SessionInscriptions!.FirstOrDefault(x => x.UserId == user.Id);
+            if (found == null)
+            {
+                nonSelectedUsers.Add(user);
+            }
+            else
+            {
+                selectedUsers.Add(user);
+            }
+        }
+        selected = selectedUsers.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.FullName)).ToList();
+        nonSelected = nonSelectedUsers.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.FullName)).ToList();
+        loading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        sessionInscriptionCreate.Users = selected.Select(x => x.Key).ToList();
+        var response = await repository.PostAsync($"/api/sessionInscriptions/full", sessionInscriptionCreate);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        ReturnAction();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private async Task ReturnAction()
+    {
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+    }
+}

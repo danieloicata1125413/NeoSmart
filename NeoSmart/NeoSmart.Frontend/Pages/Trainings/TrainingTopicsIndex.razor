@@ -1,0 +1,146 @@
+﻿@page "/TrainingTopics/{TrainingId:int}"
+@attribute [Authorize(Roles = "SuperAdmin,Admin,Leader")]
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+@if (loading == true)
+{
+    <Loading />
+}
+else
+{
+    <div class="card widget-inline">
+        <div class="card-body">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <h4 class="float-start">@training.Description</h4>
+                        <button class="btn btn-danger float-end me-1" @onclick="Return"><i class="oi oi-ban" /> Cerrar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body m-2">
+                <div class="col-12 p-2">
+                    <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" @onclick="SaveAsync">Guardar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Training? training;
+    private TrainingTopicsDTO? trainingTopicsDTO = new TrainingTopicsDTO()
+        {
+            TrainingTopicIds = new List<int>()
+        };
+
+    private List<Topic> selectedTopics = new();
+    private List<Topic> nonSelectedTopics = new();
+    private List<MultipleSelectorModel> selected { get; set; } = new();
+    private List<MultipleSelectorModel> nonSelected { get; set; } = new();
+    private bool loading = true;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public int TrainingId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTrainingAsync();
+        await LoadTopicsAsync();
+    }
+
+    private async Task LoadTrainingAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<Training>($"/api/trainings/{TrainingId}");
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        training = httpResponse.Response!;
+        trainingTopicsDTO = ToTrainingTopicsDTO(training);
+        loading = false;
+    }
+
+    private TrainingTopicsDTO ToTrainingTopicsDTO(Training training)
+    {
+        return new TrainingTopicsDTO
+            {
+                Id = training.Id,
+                TrainingTopicIds = training.TrainingTopics!.Select(x => x.TopicId).ToList(),
+            };
+    }
+
+    private async Task LoadTopicsAsync()
+    {
+        loading = true;
+        var httpResponse = await repository.GetAsync<List<Topic>>($"/api/topics/combo/{training.Process!.CompanyId}");
+
+        if (httpResponse.Error)
+        {
+            loading = false;
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var topics = httpResponse.Response!;
+        foreach (var topic in topics!)
+        {
+            var found = training!.TrainingTopics!.FirstOrDefault(x => x.TopicId == topic.Id);
+            if (found == null)
+            {
+                nonSelectedTopics.Add(topic);
+            }
+            else
+            {
+                selectedTopics.Add(topic);
+            }
+        }
+        selected = selectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+        nonSelected = nonSelectedTopics.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Description)).ToList();
+        loading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        trainingTopicsDTO.TrainingTopicIds = selected.Select(x => int.Parse(x.Key)).ToList();
+        trainingTopicsDTO.TrainingTopics = null;
+        var response = await repository.PutAsync($"/api/trainings/topicsfull", trainingTopicsDTO);
+        if (response.Error)
+        {
+            var message = await response.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowConfirmButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Success, message: "Cambios guardados con éxito.");
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo($"/trainings");
+    }
+}
