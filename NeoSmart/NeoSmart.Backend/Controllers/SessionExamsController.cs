@@ -93,7 +93,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             if (pagination.Id > 0)
             {
-                queryable = queryable.Where(c => c.SessionId == pagination.Id);
+                queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
             }
 
             return Ok(await queryable
@@ -121,7 +121,7 @@ namespace NeoSmart.BackEnd.Controllers
 
             if (pagination.Id > 0)
             {
-                queryable = queryable.Where(c => c.SessionId == pagination.Id);
+                queryable = queryable.Where(s => s.Session!.User!.Email == User.Identity!.Name);
             }
 
             double count = await queryable.CountAsync();
