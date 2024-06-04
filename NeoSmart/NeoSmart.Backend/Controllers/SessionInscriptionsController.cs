@@ -151,8 +151,6 @@ namespace NeoSmart.BackEnd.Controllers
                     .ThenInclude(i => i.Occupation!)
                 .Include(i => i.SessionInscriptionStatus!)
                 .Include(i => i.SessionInscriptionAttends!)
-                .Include(i => i.SessionInscriptionExams!)
-                    .ThenInclude(i => i.SessionInscriptionExamAnswers!)
                 .AsQueryable();
 
             return Ok(await queryable
